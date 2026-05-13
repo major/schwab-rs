@@ -21,6 +21,11 @@ pub(crate) fn n(v: f64) -> Number {
 ///
 /// Panics if the file doesn't exist or can't be read.
 pub(crate) fn fixture(name: &str) -> String {
-    std::fs::read_to_string(format!("tests/fixtures/{name}"))
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join(name);
+
+    std::fs::read_to_string(path)
         .unwrap_or_else(|err| panic!("failed to load fixture {name}: {err}"))
 }
