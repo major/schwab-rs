@@ -71,16 +71,24 @@ Used when the API includes a type discriminator field:
 
 `Order` contains `Vec<Option<Order>>` for child orders. `TransactionInstrument` uses `Box<Option<...>>` to break infinite size. Use `Box` when a type would otherwise be infinitely sized.
 
+## Doc Comment Conventions
+
+- Every public type (struct/enum) requires a `///` doc comment (enforced by `#![deny(missing_docs)]`)
+- Types use `#[allow(missing_docs)]` since their fields/variants mirror JSON field names and are self-documenting
+- Place the doc comment before the derive block, and `#[allow(missing_docs)]` immediately before `pub struct`/`pub enum`
+
 ## Adding New Types
 
 1. Determine which file the type belongs in (`enums.rs`, `market_data.rs`, or `trader.rs`)
-2. Use `Option<T>` for every field
-3. Add `#[non_exhaustive]` to enums
-4. Match the serde rename pattern of neighboring types
-5. Use `Number` for all numeric fields, never `f64` or `Decimal` directly
-6. Add the type to the corresponding OpenAPI spec reference in `docs/` if applicable
-7. Test deserialization with a fixture in `tests/fixtures/`
-8. Verify compilation with both `cargo test` and `cargo test --features decimal`
+2. Add a `///` doc comment describing the type
+3. Use `Option<T>` for every field
+4. Add `#[non_exhaustive]` to enums
+5. Add `#[allow(missing_docs)]` before the type to suppress field/variant doc requirements
+6. Match the serde rename pattern of neighboring types
+7. Use `Number` for all numeric fields, never `f64` or `Decimal` directly
+8. Add the type to the corresponding OpenAPI spec reference in `docs/` if applicable
+9. Test deserialization with a fixture in `tests/fixtures/`
+10. Verify compilation with both `cargo test` and `cargo test --features decimal`
 
 ## Keeping Documentation Current
 

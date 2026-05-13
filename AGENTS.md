@@ -47,8 +47,12 @@ src/
 - `Config` builder: `Config::new(bearer_token)` with optional base URL overrides
 - All response model fields are `Option<T>` (Schwab API returns partial data)
 - All enums are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
-- Clippy: `-D clippy::all -A missing_docs -A clippy::needless_borrow -A clippy::large_enum_variant`
+- Clippy: `-D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant`
+- `#![deny(missing_docs)]` in `lib.rs` - all public items require doc comments (compile error if missing)
 - Doc comments: short one-line summaries, action-verb start ("Get", "Place", "Parse")
+- `# Errors` section required on all public `Result`-returning methods
+- Model types use `#[allow(missing_docs)]` since struct fields and enum variants mirror JSON field names
+- Rustdoc links in private modules must use `crate::Error` paths; `pub mod auth` can use bare `Error`
 - US English spelling enforced
 
 ## Security (Non-Negotiable)

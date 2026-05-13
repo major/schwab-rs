@@ -43,6 +43,9 @@ For methods with query parameters, build a `Vec<(&str, String)>` using helpers f
 
 For POST/PUT with a JSON body, use `self.send_empty()` or `self.send_empty_with_location()` which accept a `reqwest::RequestBuilder`.
 
+6. Add a `# Errors` doc section listing specific `Error` variants returned by the method
+7. Use `crate::Error::VariantName` in rustdoc links (private modules cannot resolve bare `Error`)
+
 ## Client Internals (`client.rs`)
 
 - `ApiBase` enum selects between market data and trader base URLs
