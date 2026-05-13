@@ -16,11 +16,11 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 ## Quick start
 
-The crate is not published to crates.io yet. Add it from GitHub while the API is settling:
+Add `schwab` from crates.io:
 
 ```toml
 [dependencies]
-schwab = { git = "https://github.com/major/schwab-rs" }
+schwab = "0.1"
 ```
 
 ```rust
@@ -84,7 +84,7 @@ cargo test --features test_online
 
 ## API stability
 
-`schwab-rs` is pre-1.0. Public APIs may change while the crate tracks Schwab API behavior and fills out coverage for Market Data and Trader endpoints. Pin an exact git revision for production use until a crates.io release and semver policy are published.
+`schwab-rs` is pre-1.0. Public APIs may change while the crate tracks Schwab API behavior and fills out coverage for Market Data and Trader endpoints. Pin an exact crate version for production use.
 
 ## Minimum supported Rust version
 

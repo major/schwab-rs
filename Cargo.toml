@@ -9,7 +9,6 @@ repository = "https://github.com/major/schwab-rs"
 homepage = "https://github.com/major/schwab-rs"
 keywords = ["schwab", "trading", "finance", "api-client"]
 categories = ["api-bindings", "finance"]
-publish = false
 
 [dependencies]
 base64 = "0.22.1"
