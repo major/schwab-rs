@@ -14,7 +14,7 @@ publish = false
 [dependencies]
 base64 = "0.22.1"
 rand = "0.10.0"
-rcgen = "0.12.1"
+rcgen = "0.14.0"
 reqwest = { version = "0.13.3", default-features = false, features = ["form", "json", "query", "rustls"] }
 rustls = { version = "0.23.35", default-features = false, features = ["ring", "std"] }
 serde = { version = "1.0.228", features = ["derive"] }
