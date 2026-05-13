@@ -21,7 +21,7 @@ use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use base64::Engine;
-use rand::RngCore;
+use rand::Rng;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderValue};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
