@@ -1,0 +1,87 @@
+# src/models/ - API Response Types
+
+## Module Structure
+
+- `mod.rs` - `Number` type alias, `Quotes`/`Quote` compatibility aliases, re-exports all submodules
+- `enums.rs` - ~50 enums shared across market data and trader APIs
+- `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
+- `trader.rs` - accounts, orders, transactions, user preferences
+
+Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
+
+## Number Type Alias
+
+```rust
+#[cfg(not(feature = "decimal"))]
+pub type Number = f64;
+
+#[cfg(feature = "decimal")]
+pub type Number = rust_decimal::Decimal;
+```
+
+All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. This ensures the `decimal` feature flag works transparently. Both variants must compile and pass tests.
+
+## Type Design Rules
+
+### All fields are `Option<T>`
+
+Schwab's API returns partial data. Every response struct field must be `Option<T>`. No exceptions.
+
+### All enums are `#[non_exhaustive]`
+
+Schwab may add new variants at any time. Every enum gets `#[non_exhaustive]` so downstream code is forced to handle unknown variants.
+
+### Derive conventions
+
+- Structs: `Clone, Debug, Deserialize, PartialEq`
+- Enums: `Clone, Debug, Deserialize, Serialize, PartialEq, Eq` (when all variants are unit-like)
+- Add `Serialize` to enums that appear in request payloads or query parameters
+- Use `Eq` only when all fields support it (no `Number`/`f64` fields)
+
+## Serde Patterns
+
+### Field renaming
+
+Most structs use `#[serde(rename_all = "camelCase")]` to match the Schwab JSON API.
+
+### Enum renaming
+
+Varies by enum. Common patterns:
+- `#[serde(rename_all = "SCREAMING_SNAKE_CASE")]` - most market data enums
+- `#[serde(rename_all = "camelCase")]` - some trader enums
+- Individual `#[serde(rename = "...")]` on specific variants when the API uses inconsistent casing
+
+### Untagged enums (polymorphic responses)
+
+Used when the API returns different shapes without a discriminator field:
+
+- `QuoteResponseObject` - dispatches to per-asset response types (equity, option, forex, etc.)
+- `AccountsInstrument` - dispatches by instrument shape
+- `TransactionInstrument` - dispatches by instrument shape, uses `Box<Option<T>>` for recursive types
+
+Untagged enums try variants in declaration order. Put the most specific (most fields) variants first.
+
+### Tagged enums (discriminated unions)
+
+Used when the API includes a type discriminator field:
+
+- `SecuritiesAccount` - `#[serde(tag = "type")]` with `"MARGIN"` / `"CASH"` variants
+
+### Recursive types
+
+`Order` contains `Vec<Option<Order>>` for child orders. `TransactionInstrument` uses `Box<Option<...>>` to break infinite size. Use `Box` when a type would otherwise be infinitely sized.
+
+## Adding New Types
+
+1. Determine which file the type belongs in (`enums.rs`, `market_data.rs`, or `trader.rs`)
+2. Use `Option<T>` for every field
+3. Add `#[non_exhaustive]` to enums
+4. Match the serde rename pattern of neighboring types
+5. Use `Number` for all numeric fields, never `f64` or `Decimal` directly
+6. Add the type to the corresponding OpenAPI spec reference in `docs/` if applicable
+7. Test deserialization with a fixture in `tests/fixtures/`
+8. Verify compilation with both `cargo test` and `cargo test --features decimal`
+
+## Keeping Documentation Current
+
+When model types change (new structs, renamed fields, added enum variants), update this file to reflect the current state. Also update the root `AGENTS.md` and `src/AGENTS.md` if the change affects project-wide conventions or module architecture. Keep `README.md`, `.coderabbit.yaml`, and `.github/copilot-instructions.md` in sync with the actual code.
