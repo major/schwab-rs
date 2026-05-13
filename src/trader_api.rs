@@ -14,7 +14,7 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_accounts(&self, fields: Option<&str>) -> Result<Vec<Account>> {
         let url = self.endpoint_url(ApiBase::Trader, &["accounts"])?;
@@ -27,7 +27,7 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_account_numbers(&self) -> Result<Vec<AccountNumberHash>> {
         let url = self.endpoint_url(ApiBase::Trader, &["accounts", "accountNumbers"])?;
@@ -38,8 +38,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_account(
         &self,
@@ -57,8 +57,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_orders(
         &self,
@@ -75,8 +75,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn place_order<B>(
         &self,
@@ -96,8 +96,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn cancel_order(&self, account_number: impl AsRef<str>, order_id: i64) -> Result<()> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
@@ -113,8 +113,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_order(&self, account_number: impl AsRef<str>, order_id: i64) -> Result<Order> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
@@ -130,8 +130,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn replace_order<B>(
         &self,
@@ -161,8 +161,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn preview_order<B>(
         &self,
@@ -190,8 +190,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_transactions(
         &self,
@@ -211,8 +211,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `account_number` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_transaction_by_id(
         &self,
@@ -232,7 +232,7 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_all_orders(&self, options: OrderListOptions) -> Result<Vec<Order>> {
         let url = self.endpoint_url(ApiBase::Trader, &["orders"])?;
@@ -244,7 +244,7 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_user_preference(&self) -> Result<Vec<UserPreference>> {
         let url = self.endpoint_url(ApiBase::Trader, &["userPreference"])?;

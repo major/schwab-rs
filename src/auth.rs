@@ -66,7 +66,7 @@ impl AuthConfig {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::InvalidAuthConfig`] if any field is empty or the callback URL
+    /// Returns [`crate::Error::InvalidAuthConfig`] if any field is empty or the callback URL
     /// is not on `127.0.0.1`.
     pub fn new(
         client_id: impl Into<String>,
@@ -87,7 +87,7 @@ impl AuthConfig {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::InvalidAuthConfig`] if the resulting configuration is invalid.
+    /// Returns [`crate::Error::InvalidAuthConfig`] if the resulting configuration is invalid.
     pub fn oauth_base_url(mut self, oauth_base_url: impl Into<String>) -> Result<Self> {
         self.oauth_base_url = oauth_base_url
             .into()
@@ -335,7 +335,7 @@ impl Provider {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::InvalidAuthConfig`] if the auth configuration is invalid.
+    /// Returns [`crate::Error::InvalidAuthConfig`] if the auth configuration is invalid.
     pub fn new<S>(config: AuthConfig, store: S) -> Result<Self>
     where
         S: TokenStore + 'static,
@@ -347,7 +347,7 @@ impl Provider {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::InvalidAuthConfig`] if the auth configuration is invalid.
+    /// Returns [`crate::Error::InvalidAuthConfig`] if the auth configuration is invalid.
     pub fn from_token_file(config: AuthConfig, token_path: impl Into<PathBuf>) -> Result<Self> {
         Self::new(config, FileTokenStore::new(token_path))
     }
@@ -370,7 +370,7 @@ impl Provider {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::AuthExpired`] if the refresh token has expired.
+    /// Returns [`crate::Error::AuthExpired`] if the refresh token has expired.
     /// Returns an [`Error`] if the token store cannot be read, the refresh request
     /// fails, or the refreshed token cannot be persisted.
     #[instrument(skip_all)]
@@ -395,7 +395,7 @@ impl Provider {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::AuthExpired`] if the refresh token has expired.
+    /// Returns [`crate::Error::AuthExpired`] if the refresh token has expired.
     /// Returns an [`Error`] if the token store cannot be read, the refresh request
     /// fails, or the refreshed token cannot be persisted.
     #[instrument(skip_all)]
@@ -446,7 +446,7 @@ impl Provider {
 ///
 /// # Errors
 ///
-/// Returns [`Error::InvalidAuthConfig`] if the auth configuration is invalid.
+/// Returns [`crate::Error::InvalidAuthConfig`] if the auth configuration is invalid.
 pub fn authorize_url(config: &AuthConfig) -> Result<AuthContext> {
     authorize_url_with_state(config, &random_oauth_state()?)
 }
@@ -586,7 +586,7 @@ pub fn parse_redirect_url(
 ///
 /// # Errors
 ///
-/// Returns [`Error::AuthCallback`] if the redirect URL is malformed or fails
+/// Returns [`crate::Error::AuthCallback`] if the redirect URL is malformed or fails
 /// the CSRF state check. Returns an [`Error`] if the token exchange fails.
 #[instrument(skip_all)]
 pub async fn exchange_redirect_url<S>(
@@ -610,7 +610,7 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`Error::AuthExpired`] if the refresh token is missing or has expired.
+/// Returns [`crate::Error::AuthExpired`] if the refresh token is missing or has expired.
 /// Returns an [`Error`] if the refresh request fails or the response cannot be decoded.
 #[instrument(skip_all)]
 pub async fn refresh_token_file(config: &AuthConfig, token_file: &TokenFile) -> Result<TokenFile> {
@@ -704,8 +704,8 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`Error::InvalidAuthConfig`] if the auth configuration is invalid.
-/// Returns [`Error::AuthCallback`] if the callback listener fails to bind.
+/// Returns [`crate::Error::InvalidAuthConfig`] if the auth configuration is invalid.
+/// Returns [`crate::Error::AuthCallback`] if the callback listener fails to bind.
 pub fn start_login<S>(config: AuthConfig, store: S) -> Result<LoginSession>
 where
     S: TokenStore + 'static,
@@ -751,7 +751,7 @@ impl LoginSession {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::AuthCallback`] if the callback times out, the state does not
+    /// Returns [`crate::Error::AuthCallback`] if the callback times out, the state does not
     /// match, or the listener thread panics. Returns an [`Error`] if the token
     /// exchange or persistence fails.
     #[instrument(skip_all)]

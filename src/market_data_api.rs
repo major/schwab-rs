@@ -20,8 +20,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::EmptySymbols`] if all provided symbols are empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::EmptySymbols`] if all provided symbols are empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_quotes<S>(&self, symbols: impl IntoIterator<Item = S>) -> Result<Quotes>
     where
@@ -35,8 +35,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::EmptySymbols`] if all provided symbols are empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::EmptySymbols`] if all provided symbols are empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_quotes_with_options<S>(
         &self,
@@ -60,8 +60,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `symbol_id` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol_id` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_quote(
         &self,
@@ -79,8 +79,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if the symbol is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if the symbol is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_option_chain(&self, options: OptionChainOptions) -> Result<OptionChain> {
         required_text("symbol", &options.symbol)?;
@@ -93,8 +93,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `symbol` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_expiration_chain(&self, symbol: impl AsRef<str>) -> Result<ExpirationChain> {
         let symbol = required_text("symbol", symbol.as_ref())?;
@@ -107,8 +107,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `symbol` or `projection` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` or `projection` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_instruments(
         &self,
@@ -134,8 +134,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `cusip_id` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `cusip_id` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_instrument_by_cusip(
         &self,
@@ -150,8 +150,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if all market values are empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if all market values are empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_market_hours<S>(
         &self,
@@ -172,8 +172,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `market_id` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `market_id` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_market_hour(
         &self,
@@ -191,8 +191,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `symbol_id` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol_id` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_movers(
         &self,
@@ -209,8 +209,8 @@ impl Client {
     ///
     /// # Errors
     ///
-    /// Returns [`Error::MissingRequiredParameter`] if `symbol` is empty.
-    /// Returns an [`Error`] if the request fails or the response cannot be decoded.
+    /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` is empty.
+    /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
     #[instrument(skip_all)]
     pub async fn get_price_history(
         &self,
