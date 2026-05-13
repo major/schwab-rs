@@ -30,9 +30,9 @@ decimal = ["dep:rust_decimal"]
 test_online = []
 
 [dev-dependencies]
-assert-json-diff = "2"
-mockito = "1"
-tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread"] }
+assert-json-diff = "=2.0.2"
+mockito = "=1.7.2"
+tokio = { version = "=1.48.0", features = ["macros", "rt-multi-thread"] }
 
 [package.metadata.docs.rs]
 all-features = true
