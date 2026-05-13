@@ -1,0 +1,8 @@
+{
+  "AAPL": {
+    "assetMainType": "EQUITY",
+    "quote": {
+      "lastPrice": 123.45
+    }
+  }
+}

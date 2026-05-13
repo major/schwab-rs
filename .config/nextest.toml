@@ -1,0 +1,8 @@
+[profile.default]
+retries = 2
+slow-timeout = { period = "30s", terminate-after = 3 }
+leak-timeout = "1s"
+
+[profile.ci]
+retries = 3
+fail-fast = false

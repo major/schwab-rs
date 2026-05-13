@@ -1,0 +1,5736 @@
+{
+  "components": {
+    "examples": {
+      "GetExpirationChain": {
+        "summary": "Get ExpirationChain for AAPL",
+        "value": {
+          "expirationList": [
+            {
+              "daysToExpiration": 2,
+              "expirationDate": "2022-01-07",
+              "expirationType": "W",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 9,
+              "expirationDate": "2022-01-14",
+              "expirationType": "W",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 16,
+              "expirationDate": "2022-01-21",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 23,
+              "expirationDate": "2022-01-28",
+              "expirationType": "W",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 30,
+              "expirationDate": "2022-02-04",
+              "expirationType": "W",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 37,
+              "expirationDate": "2022-02-11",
+              "expirationType": "W",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 44,
+              "expirationDate": "2022-02-18",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 72,
+              "expirationDate": "2022-03-18",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 99,
+              "expirationDate": "2022-04-14",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 135,
+              "expirationDate": "2022-05-20",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 163,
+              "expirationDate": "2022-06-17",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 191,
+              "expirationDate": "2022-07-15",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 254,
+              "expirationDate": "2022-09-16",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 380,
+              "expirationDate": "2023-01-20",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 436,
+              "expirationDate": "2023-03-17",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 527,
+              "expirationDate": "2023-06-16",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 618,
+              "expirationDate": "2023-09-15",
+              "expirationType": "S",
+              "standard": true
+            },
+            {
+              "daysToExpiration": 744,
+              "expirationDate": "2024-01-19",
+              "expirationType": "S",
+              "standard": true
+            }
+          ]
+        }
+      },
+      "GetInstrumentByCusip": {
+        "summary": "Get getinstruments for cusip",
+        "value": {
+          "assetType": "EQUITY",
+          "cusip": "037833100",
+          "description": "Apple Inc",
+          "exchange": "NASDAQ",
+          "symbol": "AAPL"
+        }
+      },
+      "GetInstruments": {
+        "summary": "symbol=AAPL,BAC&projection=symbol-search",
+        "value": {
+          "instruments": [
+            {
+              "assetType": "EQUITY",
+              "cusip": "037833100",
+              "description": "Apple Inc",
+              "exchange": "NASDAQ",
+              "symbol": "AAPL"
+            },
+            {
+              "assetType": "EQUITY",
+              "cusip": "060505104",
+              "description": "Bank Of America Corp",
+              "exchange": "NYSE",
+              "symbol": "BAC"
+            }
+          ]
+        }
+      },
+      "GetMarketHour": {
+        "summary": "Get market hours for equity market",
+        "value": {
+          "equity": {
+            "EQ": {
+              "category": "NULL",
+              "date": "2022-04-14",
+              "exchange": "NULL",
+              "isOpen": true,
+              "marketType": "EQUITY",
+              "product": "EQ",
+              "productName": "equity",
+              "sessionHours": {
+                "postMarket": [
+                  {
+                    "end": "2022-04-14T20:00:00-04:00",
+                    "start": "2022-04-14T16:00:00-04:00"
+                  }
+                ],
+                "preMarket": [
+                  {
+                    "end": "2022-04-14T09:30:00-04:00",
+                    "start": "2022-04-14T07:00:00-04:00"
+                  }
+                ],
+                "regularMarket": [
+                  {
+                    "end": "2022-04-14T16:00:00-04:00",
+                    "start": "2022-04-14T09:30:00-04:00"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "GetMarketHours": {
+        "summary": "Get getMarketHours for EQUITY and OPTION",
+        "value": {
+          "equity": {
+            "EQ": {
+              "date": "2022-04-14",
+              "isOpen": true,
+              "marketType": "EQUITY",
+              "product": "EQ",
+              "productName": "equity",
+              "sessionHours": {
+                "postMarket": [
+                  {
+                    "end": "2022-04-14T20:00:00-04:00",
+                    "start": "2022-04-14T16:00:00-04:00"
+                  }
+                ],
+                "preMarket": [
+                  {
+                    "end": "2022-04-14T09:30:00-04:00",
+                    "start": "2022-04-14T07:00:00-04:00"
+                  }
+                ],
+                "regularMarket": [
+                  {
+                    "end": "2022-04-14T16:00:00-04:00",
+                    "start": "2022-04-14T09:30:00-04:00"
+                  }
+                ]
+              }
+            }
+          },
+          "option": {
+            "EQO": {
+              "date": "2022-04-14",
+              "isOpen": true,
+              "marketType": "OPTION",
+              "product": "EQO",
+              "productName": "equity option",
+              "sessionHours": {
+                "regularMarket": [
+                  {
+                    "end": "2022-04-14T16:00:00-04:00",
+                    "start": "2022-04-14T09:30:00-04:00"
+                  }
+                ]
+              }
+            },
+            "IND": {
+              "date": "2022-04-14",
+              "isOpen": true,
+              "marketType": "OPTION",
+              "product": "IND",
+              "productName": "index option",
+              "sessionHours": {
+                "regularMarket": [
+                  {
+                    "end": "2022-04-14T16:15:00-04:00",
+                    "start": "2022-04-14T09:30:00-04:00"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "MultiCriteriaSearch": {
+        "summary": "Search by Symbols+Cusips+SSIDs",
+        "value": {
+          "$DJI": {
+            "assetMainType": "INDEX",
+            "quote": {
+              "52WeekHigh": 34744.56,
+              "52WeekLow": 34364.39,
+              "closePrice": 34738.06,
+              "highPrice": 34744.56,
+              "lastPrice": 34436.13,
+              "lowPrice": 34364.39,
+              "netChange": -301.93,
+              "netPercentChange": -0.8691619508976618,
+              "openPrice": 34694.5,
+              "securityStatus": "Unknown",
+              "totalVolume": 106647543,
+              "tradeTime": 1644854683055
+            },
+            "realtime": true,
+            "reference": {
+              "description": "Dow Jones Industrial Average",
+              "exchange": "0",
+              "exchangeName": "Index"
+            },
+            "ssid": 0,
+            "symbol": "$DJI"
+          },
+          "$SPX": {
+            "assetMainType": "INDEX",
+            "quote": {
+              "52WeekHigh": 4423.46,
+              "52WeekLow": 4385.52,
+              "closePrice": 4766.18,
+              "highPrice": 4423.46,
+              "lastPrice": 4396.2,
+              "lowPrice": 4385.52,
+              "netChange": -369.98,
+              "netPercentChange": -7.762610728088331,
+              "openPrice": 4412.61,
+              "securityStatus": "Unknown",
+              "totalVolume": 628009977,
+              "tradeTime": 1644854683056
+            },
+            "realtime": true,
+            "reference": {
+              "description": "S&P DOW JONES INDEX            S&P 500",
+              "exchange": "0",
+              "exchangeName": "Index"
+            },
+            "ssid": 1819771877,
+            "symbol": "$SPX"
+          },
+          "/ESZ21": {
+            "assetMainType": "FUTURE",
+            "quote": {
+              "askPrice": 4694.5,
+              "askSize": 113,
+              "askTime": 0,
+              "bidPrice": 4694.25,
+              "bidSize": 57,
+              "bidTime": 0,
+              "closePrice": 4696,
+              "futurePercentChange": -0.0003,
+              "highPrice": 4701,
+              "lastPrice": 4694.5,
+              "lastSize": 3,
+              "lowPrice": 4679.25,
+              "mark": 0,
+              "netChange": -1.5,
+              "openInterest": 2328678,
+              "openPrice": 4696.5,
+              "quoteTime": 1637168671400,
+              "securityStatus": "Unknown",
+              "settleTime": 0,
+              "tick": 0.25,
+              "tickAmount": 12.5,
+              "totalVolume": 550778,
+              "tradeTime": 1637168671399
+            },
+            "realtime": true,
+            "reference": {
+              "description": "E-mini S&P 500 Index Futures,Dec-2021,ETH",
+              "exchange": "@",
+              "exchangeName": "XCME",
+              "futureActiveSymbol": "/ESZ21",
+              "futureExpirationDate": 1639717200000,
+              "futureIsActive": true,
+              "futureIsTradable": true,
+              "futureMultiplier": 50,
+              "futurePriceFormat": "D,D",
+              "futureSettlementPrice": 4696,
+              "futureTradingHours": "GLBX(de=1640;0=-17001600;1=r-17001600d-15551640;7=d-16401555)",
+              "product": "/ES"
+            },
+            "ssid": 0,
+            "symbol": "/ESZ21"
+          },
+          "AAAHX": {
+            "assetMainType": "MUTUAL_FUND",
+            "fundamental": {
+              "avg10DaysVolume": 0,
+              "avg1YearVolume": 0,
+              "divAmount": 0,
+              "divFreq": 0,
+              "divPayAmount": 0,
+              "divYield": 0,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "peRatio": 0
+            },
+            "quote": {
+              "52WeekHigh": 10.64,
+              "52WeekLow": 9.95,
+              "closePrice": 10.53,
+              "nAV": 0,
+              "netChange": 0,
+              "netPercentChange": 0,
+              "securityStatus": "Normal",
+              "totalVolume": 0,
+              "tradeTime": 0
+            },
+            "realtime": true,
+            "reference": {
+              "cusip": "02507J789",
+              "description": "One Choice Blend+ 2015 Portfolio  I Class",
+              "exchange": "3",
+              "exchangeName": "Mutual Fund"
+            },
+            "ssid": -1,
+            "symbol": "AAAHX"
+          },
+          "AAAIX": {
+            "assetMainType": "MUTUAL_FUND",
+            "fundamental": {
+              "avg10DaysVolume": 0,
+              "avg1YearVolume": 0,
+              "divAmount": 0,
+              "divFreq": 0,
+              "divPayAmount": 0,
+              "divYield": 0.83059,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "peRatio": 0
+            },
+            "quote": {
+              "52WeekHigh": 9.24,
+              "52WeekLow": 7.48,
+              "closePrice": 9.12,
+              "nAV": 0,
+              "netChange": -0.03,
+              "netPercentChange": -0.32894736842104566,
+              "securityStatus": "Normal",
+              "totalVolume": 0,
+              "tradeTime": 0
+            },
+            "realtime": true,
+            "reference": {
+              "cusip": "025085853",
+              "description": "American Century Strategic Allocation: Aggressive Fund - I Class",
+              "exchange": "3",
+              "exchangeName": "Mutual Fund"
+            },
+            "ssid": -1,
+            "symbol": "AAAIX"
+          },
+          "AAPL": {
+            "assetMainType": "EQUITY",
+            "fundamental": {
+              "avg10DaysVolume": 1,
+              "avg1YearVolume": 0,
+              "divAmount": 1.1,
+              "divFreq": 0,
+              "divPayAmount": 0,
+              "divYield": 1.1,
+              "eps": 0,
+              "fundLeverageFactor": 1.1,
+              "peRatio": 1.1
+            },
+            "quote": {
+              "52WeekHigh": 169,
+              "52WeekLow": 1.1,
+              "askMICId": "MEMX",
+              "askPrice": 168.41,
+              "askSize": 400,
+              "askTime": 1644854683672,
+              "bidMICId": "IEGX",
+              "bidPrice": 168.4,
+              "bidSize": 400,
+              "bidTime": 1644854683633,
+              "closePrice": 177.57,
+              "highPrice": 169,
+              "lastMICId": "XADF",
+              "lastPrice": 168.405,
+              "lastSize": 200,
+              "lowPrice": 167.09,
+              "mark": 168.405,
+              "markChange": -9.164999999999992,
+              "markPercentChange": -5.161344821760428,
+              "netChange": -9.165,
+              "netPercentChange": -5.161344821760428,
+              "openPrice": 167.37,
+              "quoteTime": 1644854683672,
+              "securityStatus": "Normal",
+              "totalVolume": 22361159,
+              "tradeTime": 1644854683408,
+              "volatility": 0.0347
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "037833100",
+              "description": "Apple Inc",
+              "exchange": "Q",
+              "exchangeName": "NASDAQ"
+            },
+            "regular": {
+              "regularMarketLastPrice": 168.405,
+              "regularMarketLastSize": 2,
+              "regularMarketNetChange": -9.165,
+              "regularMarketPercentChange": -5.161344821760428,
+              "regularMarketTradeTime": 1644854683408
+            },
+            "ssid": 1973757747,
+            "symbol": "AAPL"
+          },
+          "AMZN  220617C03170000": {
+            "assetMainType": "OPTION",
+            "quote": {
+              "askPrice": 223,
+              "askSize": 2,
+              "askTime": 0,
+              "bidPrice": 217.65,
+              "bidSize": 2,
+              "bidTime": 0,
+              "closePrice": 357.75,
+              "delta": 0.5106,
+              "gamma": 0.0007,
+              "highPrice": 0,
+              "impliedYield": 0.042,
+              "indAskPrice": 0,
+              "indBidPrice": 0,
+              "indQuoteTime": 0,
+              "lastPrice": 0,
+              "lastSize": 0,
+              "lowPrice": 0,
+              "mark": 220.325,
+              "markChange": -137.425,
+              "markPercentChange": -38.41369671558351,
+              "moneyIntrinsicValue": -40.795,
+              "netChange": 0,
+              "netPercentChange": 0,
+              "openInterest": 0,
+              "openPrice": 0,
+              "quoteTime": 1644854683379,
+              "rho": 4.5173,
+              "securityStatus": "Normal",
+              "theoreticalOptionValue": 221.4,
+              "theta": -0.9619,
+              "timeValue": 220.325,
+              "totalVolume": 0,
+              "tradeTime": 0,
+              "underlyingPrice": 3129.205,
+              "vega": 7.1633,
+              "volatility": 32.8918
+            },
+            "realtime": true,
+            "reference": {
+              "contractType": "C",
+              "daysToExpiration": 123,
+              "description": "Amazon.com Inc 06/17/2022 $3170 Call",
+              "exchange": "o",
+              "exchangeName": "OPR",
+              "expirationDay": 17,
+              "expirationMonth": 6,
+              "expirationYear": 2022,
+              "isPennyPilot": true,
+              "lastTradingDay": 1655510400000,
+              "multiplier": 100,
+              "settlementType": "P",
+              "strikePrice": 3170,
+              "underlying": "AMZN",
+              "uvExpirationType": "S"
+            },
+            "ssid": 72507798,
+            "symbol": "AMZN  220617C03170000"
+          },
+          "BAC": {
+            "assetMainType": "EQUITY",
+            "fundamental": {
+              "avg10DaysVolume": 43411957,
+              "avg1YearVolume": 40653250,
+              "declarationDate": "2021-07-21T05:00:00Z",
+              "divAmount": 0.75,
+              "divExDate": "2021-09-02T05:00:00Z",
+              "divFreq": 4,
+              "divPayAmount": 0.75,
+              "divPayDate": "2021-09-24T05:00:00Z",
+              "divYield": 1.77,
+              "eps": 2.996,
+              "fundLeverageFactor": 0,
+              "nextDivExDate": "2021-12-27T06:00:00Z",
+              "nextDivPayDate": "2021-12-27T06:00:00Z",
+              "peRatio": 13.50133
+            },
+            "quote": {
+              "52WeekHigh": 48.185,
+              "52WeekLow": 22.95,
+              "askMICId": "XNYS",
+              "askPrice": 47.2,
+              "askSize": 2100,
+              "askTime": 1644854683639,
+              "bidMICId": "XNYS",
+              "bidPrice": 47.19,
+              "bidSize": 3700,
+              "bidTime": 1644854683640,
+              "closePrice": 44.49,
+              "highPrice": 48.185,
+              "lastMICId": "ARCX",
+              "lastPrice": 47.195,
+              "lastSize": 200,
+              "lowPrice": 47.06,
+              "mark": 47.195,
+              "markChange": 2.7049999999999983,
+              "markPercentChange": 6.080017981568888,
+              "netChange": 2.705,
+              "netPercentChange": 6.080017981568888,
+              "openPrice": 48.02,
+              "quoteTime": 1644854683640,
+              "securityStatus": "Normal",
+              "totalVolume": 13573182,
+              "tradeTime": 1644854683638,
+              "volatility": 0.0206
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "060505104",
+              "description": "Bank Of America Corp",
+              "exchange": "N",
+              "exchangeName": "NYSE"
+            },
+            "regular": {
+              "regularMarketLastPrice": 47.195,
+              "regularMarketLastSize": 2,
+              "regularMarketNetChange": 2.705,
+              "regularMarketPercentChange": 6.080017981568888,
+              "regularMarketTradeTime": 1644854683638
+            },
+            "ssid": 851234497,
+            "symbol": "BAC"
+          },
+          "CNSWF": {
+            "assetMainType": "EQUITY",
+            "quote": {
+              "52WeekHigh": 1709.738,
+              "52WeekLow": 904.0901,
+              "askPrice": 1693.4699,
+              "askSize": 30000,
+              "askTime": 1644849000567,
+              "bidPrice": 1688.4547,
+              "bidSize": 20000,
+              "bidTime": 1644849000567,
+              "closePrice": 1856.4626,
+              "highPrice": 1709.738,
+              "lastPrice": 1693.4541,
+              "lastSize": 100,
+              "lowPrice": 1680.1511,
+              "mark": 1693.4541,
+              "netChange": -163.0084,
+              "openPrice": 1682.0121,
+              "quoteTime": 1644854655233,
+              "securityStatus": "Normal",
+              "totalVolume": 13901,
+              "tradeTime": 1644854560000,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "21037X100",
+              "description": "Constellation Softwr",
+              "exchange": "9",
+              "exchangeName": "OTC Markets",
+              "otcMarketTier": "PC"
+            },
+            "regular": {
+              "regularMarketLastPrice": 1693.4541,
+              "regularMarketLastSize": 1,
+              "regularMarketNetChange": -163.0084,
+              "regularMarketTradeTime": 1644854560000
+            },
+            "ssid": 807850646,
+            "symbol": "CNSWF"
+          },
+          "DJX   231215C00290000": {
+            "assetMainType": "OPTION",
+            "quote": {
+              "askPrice": 76.95,
+              "askSize": 11,
+              "askTime": 0,
+              "bidPrice": 70.9,
+              "bidSize": 11,
+              "bidTime": 0,
+              "closePrice": 86.2,
+              "delta": 0,
+              "gamma": 0,
+              "highPrice": 0,
+              "impliedYield": 0,
+              "indAskPrice": 79.55,
+              "indBidPrice": 73.25,
+              "indQuoteTime": 1644614546536,
+              "lastPrice": 0,
+              "lastSize": 0,
+              "lowPrice": 0,
+              "mark": 73.925,
+              "markChange": -12.274999999999991,
+              "markPercentChange": -14.24013921113688,
+              "moneyIntrinsicValue": 0,
+              "netChange": 0,
+              "netPercentChange": 0,
+              "openInterest": 0,
+              "openPrice": 0,
+              "quoteTime": 1644854648305,
+              "rho": 0,
+              "securityStatus": "Normal",
+              "theoreticalOptionValue": 0,
+              "theta": 0,
+              "timeValue": 0,
+              "totalVolume": 0,
+              "tradeTime": 0,
+              "underlyingPrice": 0,
+              "vega": -999,
+              "volatility": 0
+            },
+            "realtime": true,
+            "reference": {
+              "contractType": "C",
+              "daysToExpiration": 669,
+              "description": "DOW JONES INDUS IND 12/15/2023 $290 Call",
+              "exchange": "o",
+              "exchangeName": "OPR",
+              "expirationDay": 15,
+              "expirationMonth": 12,
+              "expirationYear": 2023,
+              "isPennyPilot": true,
+              "lastTradingDay": 1702602000000,
+              "multiplier": 100,
+              "settlementType": "A",
+              "strikePrice": 290,
+              "underlying": "$DJX",
+              "uvExpirationType": "S"
+            },
+            "ssid": 69272575,
+            "symbol": "DJX   231215C00290000"
+          },
+          "EATOF": {
+            "assetMainType": "EQUITY",
+            "assetSubType": "ETF",
+            "quote": {
+              "52WeekHigh": 47.1993,
+              "52WeekLow": 24.2835,
+              "askPrice": 33.1512,
+              "askSize": 400000,
+              "askTime": 1644849000044,
+              "bidPrice": 33.0487,
+              "bidSize": 250000,
+              "bidTime": 1644849000044,
+              "closePrice": 40.198,
+              "highPrice": 33.1196,
+              "lastPrice": 33.1196,
+              "lastSize": 200,
+              "lowPrice": 32.82,
+              "mark": 33.1196,
+              "netChange": -7.0784,
+              "openPrice": 32.82,
+              "quoteTime": 1644854660496,
+              "securityStatus": "Normal",
+              "totalVolume": 1017,
+              "tradeTime": 1644850274000,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "30052J102",
+              "description": "EVOLVE AUTMBL INVTN INDX ETF",
+              "exchange": "9",
+              "exchangeName": "OTC Markets",
+              "otcMarketTier": "EM"
+            },
+            "regular": {
+              "regularMarketLastPrice": 33.1196,
+              "regularMarketLastSize": 2,
+              "regularMarketNetChange": -7.0784,
+              "regularMarketTradeTime": 1644850274000
+            },
+            "ssid": 43253301,
+            "symbol": "EATOF"
+          },
+          "EBIZ": {
+            "assetMainType": "EQUITY",
+            "assetSubType": "ETF",
+            "fundamental": {
+              "avg10DaysVolume": 0,
+              "avg1YearVolume": 0,
+              "declarationDate": "2020-12-29T06:00:00Z",
+              "divAmount": 0,
+              "divExDate": "2020-12-30T06:00:00Z",
+              "divFreq": 1,
+              "divPayAmount": 0.26641,
+              "divPayDate": "2021-01-08T06:00:00Z",
+              "divYield": 0.88276,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "fundStrategy": "P",
+              "nextDivExDate": "2022-01-10T06:00:00Z",
+              "nextDivPayDate": "2022-01-10T06:00:00Z",
+              "peRatio": 0
+            },
+            "quote": {
+              "52WeekHigh": 37.9754,
+              "52WeekLow": 24.52,
+              "askMICId": "XNAS",
+              "askPrice": 24.85,
+              "askSize": 200,
+              "askTime": 1644854683318,
+              "bidMICId": "XNAS",
+              "bidPrice": 24.79,
+              "bidSize": 200,
+              "bidTime": 1644854683318,
+              "closePrice": 27.45,
+              "highPrice": 24.8303,
+              "lastMICId": "XADF",
+              "lastPrice": 24.8303,
+              "lastSize": 100,
+              "lowPrice": 24.52,
+              "mark": 24.8303,
+              "markChange": -2.619699999999998,
+              "markPercentChange": -9.543533697632052,
+              "netChange": -2.6197,
+              "netPercentChange": -9.543533697632052,
+              "openPrice": 24.55,
+              "quoteTime": 1644854683318,
+              "securityStatus": "Normal",
+              "totalVolume": 1626,
+              "tradeTime": 1644850278470,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "37954Y467",
+              "description": "GLOBAL X E-COMMERCE ETF",
+              "exchange": "Q",
+              "exchangeName": "NASDAQ"
+            },
+            "regular": {
+              "regularMarketLastPrice": 24.8303,
+              "regularMarketLastSize": 1,
+              "regularMarketNetChange": -2.6197,
+              "regularMarketPercentChange": -9.543533697632052,
+              "regularMarketTradeTime": 1644850278470
+            },
+            "ssid": 52313178,
+            "symbol": "EBIZ"
+          },
+          "EUR/USD": {
+            "assetMainType": "FOREX",
+            "quote": {
+              "52WeekHigh": 1.135,
+              "52WeekLow": 1.1331,
+              "askPrice": 1.13456,
+              "askSize": 1000000,
+              "bidPrice": 1.13434,
+              "bidSize": 1000000,
+              "closePrice": 1.13191,
+              "highPrice": 1.135,
+              "lastPrice": 1.13445,
+              "lastSize": 0,
+              "lowPrice": 1.1331,
+              "mark": 1.13445,
+              "netChange": 0.00254,
+              "netPercentChange": 0,
+              "openPrice": 1.13324,
+              "quoteTime": 1637236739892,
+              "securityStatus": "Unknown",
+              "tick": 0,
+              "tickAmount": 0,
+              "totalVolume": 0,
+              "tradeTime": 1637236739892
+            },
+            "realtime": true,
+            "reference": {
+              "description": "Euro/USDollar Spot",
+              "exchange": "T",
+              "exchangeName": "GFT",
+              "isTradable": false,
+              "marketMaker": "",
+              "product": "",
+              "tradingHours": ""
+            },
+            "ssid": 1,
+            "symbol": "EUR/USD"
+          },
+          "MRAD": {
+            "assetMainType": "EQUITY",
+            "assetSubType": "ETF",
+            "fundamental": {
+              "avg10DaysVolume": 1606,
+              "avg1YearVolume": 0,
+              "divAmount": 0,
+              "divFreq": 0,
+              "divPayAmount": 0,
+              "divYield": 0,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "fundStrategy": "A",
+              "peRatio": 0
+            },
+            "quote": {
+              "52WeekHigh": 31.96,
+              "52WeekLow": 22.18,
+              "askMICId": "IEGX",
+              "askPrice": 22.29,
+              "askSize": 500,
+              "askTime": 1644854676848,
+              "bidMICId": "EDGX",
+              "bidPrice": 22.22,
+              "bidSize": 500,
+              "bidTime": 1644854681062,
+              "closePrice": 26.8633,
+              "highPrice": 22.18,
+              "lastPrice": 22.18,
+              "lastSize": 100,
+              "lowPrice": 22.18,
+              "mark": 22.22,
+              "markChange": -4.6433,
+              "markPercentChange": -17.284920318799255,
+              "netChange": -4.6833,
+              "netPercentChange": -17.433822352428777,
+              "openPrice": 22.18,
+              "quoteTime": 1644854681062,
+              "securityStatus": "Normal",
+              "totalVolume": 100,
+              "tradeTime": 1644851921969,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "402031868",
+              "description": "Guinness Atkinson Fds SMART ETFS ADVERTISING MKT TCH ETF",
+              "exchange": "P",
+              "exchangeName": "NYSE Arca"
+            },
+            "regular": {
+              "regularMarketLastPrice": 22.18,
+              "regularMarketLastSize": 1,
+              "regularMarketNetChange": -4.6833,
+              "regularMarketPercentChange": -17.433822352428777,
+              "regularMarketTradeTime": 1644851921969
+            },
+            "ssid": 67229687,
+            "symbol": "MRAD"
+          },
+          "MVEN": {
+            "assetMainType": "EQUITY",
+            "fundamental": {
+              "avg10DaysVolume": 299530,
+              "avg1YearVolume": 430760,
+              "divAmount": 0,
+              "divFreq": 0,
+              "divPayAmount": 0,
+              "divYield": 0,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "peRatio": -0.68777
+            },
+            "quote": {
+              "52WeekHigh": 3,
+              "52WeekLow": 0.42,
+              "askPrice": 0,
+              "askSize": 0,
+              "askTime": 0,
+              "bidPrice": 0,
+              "bidSize": 0,
+              "bidTime": 0,
+              "closePrice": 13.42,
+              "highPrice": 0,
+              "lastPrice": 0.42,
+              "lastSize": 0,
+              "lowPrice": 0,
+              "mark": 0.42,
+              "markChange": -13,
+              "markPercentChange": -96.87034277198212,
+              "netChange": -13,
+              "netPercentChange": -96.87034277198212,
+              "openPrice": 0,
+              "quoteTime": 0,
+              "securityStatus": "Normal",
+              "totalVolume": 0,
+              "tradeTime": 1644353952708,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "88339B102",
+              "description": "Themaven Inc",
+              "exchange": "u",
+              "exchangeName": "Nasdaq OTCBB",
+              "otcMarketTier": "QX"
+            },
+            "regular": {
+              "regularMarketLastPrice": 0.42,
+              "regularMarketLastSize": 0,
+              "regularMarketNetChange": -13,
+              "regularMarketPercentChange": -96.87034277198212,
+              "regularMarketTradeTime": 1644353952708
+            },
+            "ssid": 39225080,
+            "symbol": "MVEN"
+          },
+          "SOBS": {
+            "assetMainType": "EQUITY",
+            "fundamental": {
+              "avg10DaysVolume": 1296,
+              "avg1YearVolume": 0,
+              "declarationDate": "2021-09-21T05:00:00Z",
+              "divAmount": 1.48,
+              "divExDate": "2021-09-30T05:00:00Z",
+              "divFreq": 4,
+              "divPayAmount": 1.47,
+              "divPayDate": "2021-10-29T05:00:00Z",
+              "divYield": 3.869,
+              "eps": 0,
+              "fundLeverageFactor": 0,
+              "nextDivExDate": "2022-01-31T06:00:00Z",
+              "nextDivPayDate": "2022-01-31T06:00:00Z",
+              "peRatio": 0
+            },
+            "quote": {
+              "52WeekHigh": 43,
+              "52WeekLow": 30.28,
+              "askPrice": 45,
+              "askSize": 200,
+              "askTime": 0,
+              "bidPrice": 39,
+              "bidSize": 100,
+              "bidTime": 0,
+              "closePrice": 38.219,
+              "highPrice": 0,
+              "lastPrice": 38.219,
+              "lastSize": 0,
+              "lowPrice": 0,
+              "mark": 38.219,
+              "markChange": 0,
+              "markPercentChange": 0,
+              "netChange": 0,
+              "netPercentChange": 0,
+              "openPrice": 0,
+              "quoteTime": 1644613200189,
+              "securityStatus": "Normal",
+              "totalVolume": 0,
+              "tradeTime": 0,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "83441Q105",
+              "description": "Solvay Bank Corp Sol",
+              "exchange": "9",
+              "exchangeName": "OTC Markets",
+              "otcMarketTier": "PC"
+            },
+            "regular": {
+              "regularMarketLastPrice": 38.219,
+              "regularMarketLastSize": 0,
+              "regularMarketNetChange": 0,
+              "regularMarketPercentChange": 0,
+              "regularMarketTradeTime": 0
+            },
+            "ssid": 561081427,
+            "symbol": "SOBS"
+          },
+          "TOITF": {
+            "assetMainType": "EQUITY",
+            "quote": {
+              "52WeekHigh": 75.702,
+              "52WeekLow": 45.3933,
+              "askPrice": 75.978,
+              "askSize": 10000,
+              "askTime": 1644849000209,
+              "bidPrice": 72.5951,
+              "bidSize": 10000,
+              "bidTime": 1644849000209,
+              "closePrice": 92.7,
+              "highPrice": 75.702,
+              "lastPrice": 75.702,
+              "lastSize": 100,
+              "lowPrice": 72.5478,
+              "mark": 75.702,
+              "netChange": -16.998,
+              "openPrice": 74.8977,
+              "quoteTime": 1644854676927,
+              "securityStatus": "Normal",
+              "totalVolume": 4274,
+              "tradeTime": 1644854585000,
+              "volatility": 0
+            },
+            "quoteType": "NBBO",
+            "realtime": true,
+            "reference": {
+              "cusip": "89072T102",
+              "description": "TOPICUS COM INC",
+              "exchange": "9",
+              "exchangeName": "OTC Markets",
+              "otcMarketTier": "PC"
+            },
+            "regular": {
+              "regularMarketLastPrice": 75.702,
+              "regularMarketLastSize": 1,
+              "regularMarketNetChange": -16.998,
+              "regularMarketTradeTime": 1644854585000
+            },
+            "ssid": 68444487,
+            "symbol": "TOITF"
+          }
+        }
+      },
+      "SearchMoversByIndexSymbol": {
+        "summary": "Search by \"$DJI\"",
+        "value": {
+          "screeners": [
+            {
+              "change": 10,
+              "description": "Dow jones",
+              "direction": "up",
+              "last": 100,
+              "symbol": "$DJI",
+              "totalVolume": 100
+            },
+            {
+              "change": 10,
+              "description": "Dow jones",
+              "direction": "up",
+              "last": 100,
+              "symbol": "$DJI",
+              "totalVolume": 100
+            },
+            {
+              "change": 10,
+              "description": "Dow jones",
+              "direction": "up",
+              "last": 100,
+              "symbol": "$DJI",
+              "totalVolume": 100
+            }
+          ]
+        }
+      },
+      "SingleSymbolCriteriaSearch": {
+        "summary": "Search by symbol AAPL",
+        "value": {
+          "candles": [
+            {
+              "close": 175.04,
+              "datetime": 1639137600000,
+              "high": 175.15,
+              "low": 175.01,
+              "open": 175.01,
+              "volume": 10719
+            },
+            {
+              "close": 175.05,
+              "datetime": 1639137660000,
+              "high": 175.09,
+              "low": 175.05,
+              "open": 175.08,
+              "volume": 500
+            },
+            {
+              "close": 176.25,
+              "datetime": 1640307300000,
+              "high": 176.27,
+              "low": 176.22,
+              "open": 176.22,
+              "volume": 3395
+            },
+            {
+              "close": 176.26,
+              "datetime": 1640307360000,
+              "high": 176.27,
+              "low": 176.26,
+              "open": 176.26,
+              "volume": 2174
+            },
+            {
+              "close": 176.3,
+              "datetime": 1640307420000,
+              "high": 176.31,
+              "low": 176.26,
+              "open": 176.26,
+              "volume": 15401
+            },
+            {
+              "close": 176.3,
+              "datetime": 1640307480000,
+              "high": 176.3,
+              "low": 176.3,
+              "open": 176.3,
+              "volume": 1700
+            },
+            {
+              "close": 176.32,
+              "datetime": 1640307540000,
+              "high": 176.5,
+              "low": 176.3,
+              "open": 176.3,
+              "volume": 5941
+            }
+          ],
+          "empty": false,
+          "previousClose": 174.56,
+          "previousCloseDate": 1639029600000,
+          "symbol": "AAPL"
+        }
+      }
+    },
+    "headers": {
+      "Schwab-Client-CorrelId": {
+        "description": "Used to identify an individual request throughout the lifetime of the request and across systems.",
+        "required": true,
+        "schema": {
+          "example": "0a7f446a-7d74-49c8-a1e5-ca8ed59a3386",
+          "type": "string"
+        }
+      },
+      "SchwabClientCorrelId": {
+        "description": "This **Correlation ID** is unique to the operation. The generated GUID can be used to track an individual service call if support is needed.\n",
+        "required": true,
+        "schema": {
+          "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+          "format": "uuid",
+          "type": "string"
+        }
+      }
+    },
+    "parameters": {
+      "PathParamCusip": {
+        "description": "cusip of a security",
+        "in": "path",
+        "name": "cusip_id",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "PathParamMarket": {
+        "description": "market id",
+        "in": "path",
+        "name": "market_id",
+        "required": true,
+        "schema": {
+          "enum": [
+            "equity",
+            "option",
+            "bond",
+            "future",
+            "forex"
+          ],
+          "type": "string"
+        }
+      },
+      "PathParamSymbol": {
+        "description": "Index Symbol",
+        "example": "$DJI",
+        "in": "path",
+        "name": "symbol_id",
+        "required": true,
+        "schema": {
+          "enum": [
+            "$DJI",
+            "$COMPX",
+            "$SPX",
+            "NYSE",
+            "NASDAQ",
+            "OTCBB",
+            "INDEX_ALL",
+            "EQUITY_ALL",
+            "OPTION_ALL",
+            "OPTION_PUT",
+            "OPTION_CALL"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamContractType": {
+        "description": "Contract Type",
+        "in": "query",
+        "name": "contractType",
+        "required": false,
+        "schema": {
+          "enum": [
+            "CALL",
+            "PUT",
+            "ALL"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamDate": {
+        "description": "Valid date range is from currentdate to 1 year from today. It will default to current day if not entered. Date format:YYYY-MM-DD",
+        "in": "query",
+        "name": "date",
+        "required": false,
+        "schema": {
+          "format": "date",
+          "type": "string"
+        }
+      },
+      "QueryParamDaysToExpiration": {
+        "description": "Days to expiration to use in calculations. Applies only to ANALYTICAL strategy chains (see strategy param)",
+        "in": "query",
+        "name": "daysToExpiration",
+        "required": false,
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "QueryParamEntitlement": {
+        "description": "Applicable only if its retail token, entitlement of client PP-PayingPro, NP-NonPro and PN-NonPayingPro",
+        "in": "query",
+        "name": "entitlement",
+        "schema": {
+          "enum": [
+            "PN",
+            "NP",
+            "PP"
+          ],
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "QueryParamExpMonth": {
+        "description": "Expiration month",
+        "in": "query",
+        "name": "expMonth",
+        "required": false,
+        "schema": {
+          "enum": [
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEP",
+            "OCT",
+            "NOV",
+            "DEC",
+            "ALL"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamFrequency": {
+        "description": "To return movers with the specified directions of up or down",
+        "in": "query",
+        "name": "frequency",
+        "required": false,
+        "schema": {
+          "default": 0,
+          "enum": [
+            0,
+            1,
+            5,
+            10,
+            30,
+            60
+          ],
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "QueryParamFromDate": {
+        "description": "From date(pattern: yyyy-MM-dd)",
+        "in": "query",
+        "name": "fromDate",
+        "required": false,
+        "schema": {
+          "format": "date",
+          "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
+          "type": "string"
+        }
+      },
+      "QueryParamIncludeQuotes": {
+        "description": "Underlying quotes to be included",
+        "in": "query",
+        "name": "includeUnderlyingQuote",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "QueryParamInterestRate": {
+        "description": "Interest rate to use in calculations. Applies only to ANALYTICAL strategy chains (see strategy param)",
+        "in": "query",
+        "name": "interestRate",
+        "required": false,
+        "schema": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "QueryParamInterval": {
+        "description": "Strike interval for spread strategy chains (see strategy param)",
+        "in": "query",
+        "name": "interval",
+        "required": false,
+        "schema": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "QueryParamIsRealTimeRequest": {
+        "description": "Only applicable if its Advisor token, Get realtime Optionchain and skip entitlement check",
+        "example": true,
+        "in": "query",
+        "name": "isRealTimeRequest",
+        "required": false,
+        "schema": {
+          "enum": [
+            true,
+            false
+          ],
+          "type": "boolean"
+        }
+      },
+      "QueryParamMarkets": {
+        "description": "List of markets",
+        "in": "query",
+        "name": "markets",
+        "required": true,
+        "schema": {
+          "items": {
+            "enum": [
+              "equity",
+              "option",
+              "bond",
+              "future",
+              "forex"
+            ],
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "QueryParamOptionType": {
+        "description": "Option Type",
+        "in": "query",
+        "name": "optionType",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "QueryParamRange": {
+        "description": "Range(ITM/NTM/OTM etc.)",
+        "in": "query",
+        "name": "range",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "QueryParamSort": {
+        "description": "Sort by a particular attribute",
+        "example": "VOLUME",
+        "in": "query",
+        "name": "sort",
+        "required": false,
+        "schema": {
+          "enum": [
+            "VOLUME",
+            "TRADES",
+            "PERCENT_CHANGE_UP",
+            "PERCENT_CHANGE_DOWN"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamSsymbol": {
+        "description": "symbol of a security",
+        "in": "query",
+        "name": "symbol",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "QueryParamStrategy": {
+        "description": "OptionChain strategy. Default is SINGLE. ANALYTICAL allows the use of volatility, underlyingPrice, interestRate, and daysToExpiration params to calculate theoretical values.",
+        "in": "query",
+        "name": "strategy",
+        "required": false,
+        "schema": {
+          "enum": [
+            "SINGLE",
+            "ANALYTICAL",
+            "COVERED",
+            "VERTICAL",
+            "CALENDAR",
+            "STRANGLE",
+            "STRADDLE",
+            "BUTTERFLY",
+            "CONDOR",
+            "DIAGONAL",
+            "COLLAR",
+            "ROLL"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamStrikeCount": {
+        "description": "The Number of strikes to return above or below the at-the-money price",
+        "in": "query",
+        "name": "strikeCount",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "QueryParamStrikePrice": {
+        "description": "Strike Price",
+        "in": "query",
+        "name": "strike",
+        "required": false,
+        "schema": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "QueryParamSymbol": {
+        "description": "Enter one symbol",
+        "example": "AAPL",
+        "in": "query",
+        "name": "symbol",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "QueryParamToDate": {
+        "description": "To date (pattern: yyyy-MM-dd)",
+        "in": "query",
+        "name": "toDate",
+        "required": false,
+        "schema": {
+          "format": "date",
+          "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
+          "type": "string"
+        }
+      },
+      "QueryParamUnderlyingPrice": {
+        "description": "Underlying price to use in calculations. Applies only to ANALYTICAL strategy chains (see strategy param)",
+        "in": "query",
+        "name": "underlyingPrice",
+        "required": false,
+        "schema": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "QueryParamVolatility": {
+        "description": "Volatility to use in calculations.  Applies only to ANALYTICAL strategy chains (see strategy param)",
+        "in": "query",
+        "name": "volatility",
+        "required": false,
+        "schema": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "QueryParamenddate": {
+        "description": "The end date, Time   in milliseconds since the UNIX epoch eg 1451624400000<br> If not   specified, the endDate will default to the market close of previous business day.",
+        "in": "query",
+        "name": "endDate",
+        "required": false,
+        "schema": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "QueryParamfrequency": {
+        "description": "The time frequency duration<br><br> If the frequencyType is <br> &#8226; <b>minute</b> - valid values are 1, 5, 10, 15, 30<br> &#8226; <b>daily</b> - valid value is 1<br> &#8226; <b>weekly</b> - valid value is 1<br> &#8226; <b>monthly</b> - valid value is 1<br><br> If frequency  is not specified, default value is <b>1</b><br>",
+        "in": "query",
+        "name": "frequency",
+        "required": false,
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "QueryParamfrequencytype": {
+        "description": "The time frequencyType<br><br> If the periodType is <br> &#8226; <b>day</b> - valid value is minute<br> &#8226; <b>month</b> - valid values are daily, weekly<br> &#8226; <b>year</b> - valid values are daily, weekly, monthly<br> &#8226; <b>ytd</b> - valid values are daily, weekly<br><br> If frequencyType  is not specified, default value depends on the periodType<br> &#8226; <b>day</b> - defaulted to minute.<br> &#8226; <b>month</b> - defaulted to weekly.<br> &#8226; <b>year</b> - defaulted to monthly.<br> &#8226; <b>ytd</b> - defaulted to weekly.<br>",
+        "in": "query",
+        "name": "frequencyType",
+        "required": false,
+        "schema": {
+          "enum": [
+            "minute",
+            "daily",
+            "weekly",
+            "monthly"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamneedextendedhoursdata": {
+        "description": "Need extended hours data",
+        "in": "query",
+        "name": "needExtendedHoursData",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "QueryParamneedpreviousclose": {
+        "description": "Need previous close price/date",
+        "in": "query",
+        "name": "needPreviousClose",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "QueryParamperiod": {
+        "description": "The number of chart period types.<br><br> If the periodType is <br> &#8226; <b>day</b> - valid values are 1, 2, 3, 4, 5, 10<br> &#8226; <b>month</b> - valid values are 1, 2, 3, 6<br> &#8226; <b>year</b> - valid values are 1, 2, 3, 5, 10, 15, 20<br> &#8226; <b>ytd</b> - valid values are 1<br><br> If   the period is not specified and the periodType is<br> &#8226; <b>day</b> - default period is 10.<br> &#8226; <b>month</b> - default period is 1.<br> &#8226; <b>year</b> - default period is 1.<br> &#8226; <b>ytd</b> - default period is 1.<br>",
+        "in": "query",
+        "name": "period",
+        "required": false,
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "QueryParamperiodtype": {
+        "description": "The chart period being requested.",
+        "in": "query",
+        "name": "periodType",
+        "required": false,
+        "schema": {
+          "enum": [
+            "day",
+            "month",
+            "year",
+            "ytd"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamprojection": {
+        "description": "search by",
+        "in": "query",
+        "name": "projection",
+        "required": true,
+        "schema": {
+          "enum": [
+            "symbol-search",
+            "symbol-regex",
+            "desc-search",
+            "desc-regex",
+            "search",
+            "fundamental"
+          ],
+          "type": "string"
+        }
+      },
+      "QueryParamstartdate": {
+        "description": "The start date, Time   in milliseconds since the UNIX epoch eg 1451624400000<br>If not   specified startDate will be (endDate - period) excluding weekends and holidays.",
+        "in": "query",
+        "name": "startDate",
+        "required": false,
+        "schema": {
+          "format": "int64",
+          "type": "integer"
+        }
+      },
+      "QueryParamsymbol": {
+        "description": "The Equity symbol used to look up price history",
+        "example": "AAPL",
+        "in": "query",
+        "name": "symbol",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "header-apmid": {
+        "description": "APM ID to identify client uniqueid",
+        "in": "header",
+        "name": "Schwab-Client-AppId",
+        "required": true,
+        "schema": {
+          "example": "AD00001234",
+          "maxLength": 10,
+          "type": "string"
+        }
+      },
+      "header-channelid": {
+        "description": "Identifies the channel (2 letter code).",
+        "in": "header",
+        "name": "Schwab-Client-Channel",
+        "required": true,
+        "schema": {
+          "example": "Y2",
+          "maxLength": 2,
+          "minLength": 2,
+          "type": "string"
+        }
+      },
+      "header-correlid": {
+        "description": "This **Correlation ID** is unique to the operation. The GUID that is generated can be used to track an individual service call if support is needed.",
+        "in": "header",
+        "name": "Schwab-Client-CorrelId",
+        "required": true,
+        "schema": {
+          "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+          "type": "string"
+        }
+      },
+      "header-functionid": {
+        "description": "Identifies the page or source in the channel where quote is being called from. MDS will provide you the Function ID\u2019s to use after getting a walk through of the pages needing MDS Quote data.",
+        "in": "header",
+        "name": "Schwab-Client-FunctionId",
+        "required": true,
+        "schema": {
+          "example": "TR123",
+          "maxLength": 5,
+          "minLength": 5,
+          "type": "string"
+        }
+      },
+      "header-resource-version": {
+        "description": "This is the *requested API version*.",
+        "in": "header",
+        "name": "Schwab-Resource-Version",
+        "required": true,
+        "schema": {
+          "example": "1",
+          "type": "string"
+        }
+      },
+      "quotes-path-param-symbol": {
+        "description": "Symbol of instrument",
+        "example": "TSLA",
+        "in": "path",
+        "name": "symbol_id",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "quotes-query-param-cusips": {
+        "description": "Comma separated list of cusip(s) to look up a quote",
+        "example": "808524680,594918104",
+        "in": "query",
+        "name": "cusips",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "quotes-query-param-fields": {
+        "description": "Request for subset of data by passing coma separated list of root nodes, possible root nodes are quote, fundamental, extended, reference, regular. Sending `quote, fundamental` in request will return quote and fundamental data in response. Dont send this attribute for full response.",
+        "in": "query",
+        "name": "fields",
+        "required": false,
+        "schema": {
+          "default": "all",
+          "example": "quote,reference",
+          "type": "string"
+        }
+      },
+      "quotes-query-param-indicative": {
+        "description": "Include indicative symbol quotes for all ETF symbols in request. If ETF symbol ABC is in request and indicative=true API will return quotes for ABC and its corresponding indicative quote for $ABC.IV",
+        "example": false,
+        "in": "query",
+        "name": "indicative",
+        "schema": {
+          "enum": [
+            true,
+            false
+          ],
+          "type": "boolean"
+        }
+      },
+      "quotes-query-param-realtime": {
+        "description": "Only applicable if its Advisor token, returns realtime quotes and skip entitlement check",
+        "example": true,
+        "in": "query",
+        "name": "realtime",
+        "schema": {
+          "enum": [
+            true,
+            false
+          ],
+          "type": "boolean"
+        }
+      },
+      "quotes-query-param-ssids": {
+        "description": "Comma separated list of Schwab Unique Security Indetifier SSID(s) to look up a quote",
+        "example": "1516105793,34621523",
+        "in": "query",
+        "name": "ssids",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "quotes-query-param-symbols": {
+        "description": "Comma separated list of symbol(s) to look up a quote",
+        "example": "MRAD,EATOF,EBIZ,AAPL,BAC,AAAHX,AAAIX,$DJI,$SPX,MVEN,SOBS,TOITF,CNSWF,AMZN  230317C01360000,DJX   231215C00290000,/ESH23,./ADUF23C0.55,AUD/CAD",
+        "in": "query",
+        "name": "symbols",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "ErrorResponse400": {
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "detail": "Missing header",
+                  "id": "6808262e-52bb-4421-9d31-6c0e762e7dd5",
+                  "source": {
+                    "header": "Authorization"
+                  },
+                  "status": "400",
+                  "title": "Bad Request"
+                },
+                {
+                  "detail": "Search combination should have min of 1.",
+                  "id": "0be22ae7-efdf-44d9-99f4-f138049d76ca",
+                  "source": {
+                    "pointer": [
+                      "/data/attributes/symbols",
+                      "/data/attributes/cusips",
+                      "/data/attributes/ssids"
+                    ]
+                  },
+                  "status": "400",
+                  "title": "Bad Request"
+                },
+                {
+                  "detail": "valid fields should be any of all,fundamental,reference,extended,quote,regular or empty value",
+                  "id": "28485414-290f-42e2-992b-58ea3e3203b1",
+                  "source": {
+                    "parameter": "fields"
+                  },
+                  "status": "400",
+                  "title": "Bad Request"
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        },
+        "description": "Error response for generic client error 400",
+        "headers": {
+          "Schwab-Client-CorrelId": {
+            "description": "This **Correlation ID** is unique to the operation. The GUID that is generated can be used to track an individual service call if support is needed.",
+            "schema": {
+              "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+              "type": "string"
+            }
+          },
+          "Schwab-Resource-Version": {
+            "description": "This is the *requested API version*.",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ErrorResponse401": {
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "id": "0be22ae7-efdf-44d9-99f4-f138049d76ca",
+                  "status": 401,
+                  "title": "Unauthorized"
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        },
+        "description": "Error response for 401 Unauthorized",
+        "headers": {
+          "Schwab-Client-CorrelId": {
+            "description": "This **Correlation ID** is unique to the operation. The GUID that is generated can be used to track an individual service call if support is needed.",
+            "schema": {
+              "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+              "type": "string"
+            }
+          },
+          "Schwab-Resource-Version": {
+            "description": "This is the *requested API version*.",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ErrorResponse404": {
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "id": "0be22ae7-efdf-44d9-99f4-f138049d76ca",
+                  "status": 404,
+                  "title": "Not Found"
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        },
+        "description": "Error response for 404 Not Found",
+        "headers": {
+          "Schwab-Client-CorrelId": {
+            "description": "This **Correlation ID** is unique to the operation. The GUID that is generated can be used to track an individual service call if support is needed.",
+            "schema": {
+              "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+              "type": "string"
+            }
+          },
+          "Schwab-Resource-Version": {
+            "description": "This is the *requested API version*.",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ErrorResponse500": {
+        "content": {
+          "application/json": {
+            "example": {
+              "errors": [
+                {
+                  "id": "0be22ae7-efdf-44d9-99f4-f138049d76ca",
+                  "status": 500,
+                  "title": "Internal Server Error"
+                }
+              ]
+            },
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        },
+        "description": "Error response for 500 Internal Server Error",
+        "headers": {
+          "Schwab-Client-CorrelId": {
+            "description": "This **Correlation ID** is unique to the operation. The GUID that is generated can be used to track an individual service call if support is needed.",
+            "schema": {
+              "example": "977dbd7f-992e-44d2-a5f4-e213d29c8691",
+              "type": "string"
+            }
+          },
+          "Schwab-Resource-Version": {
+            "description": "This is the *requested API version*.",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "AssetMainType": {
+        "description": "Instrument's asset type",
+        "enum": [
+          "BOND",
+          "EQUITY",
+          "FOREX",
+          "FUTURE",
+          "FUTURE_OPTION",
+          "INDEX",
+          "MUTUAL_FUND",
+          "OPTION"
+        ],
+        "type": "string"
+      },
+      "Bond": {
+        "properties": {
+          "assetType": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "bondFactor": {
+            "type": "string"
+          },
+          "bondMultiplier": {
+            "type": "string"
+          },
+          "bondPrice": {
+            "type": "number"
+          },
+          "cusip": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "Candle": {
+        "properties": {
+          "close": {
+            "format": "double",
+            "type": "number"
+          },
+          "datetime": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "datetimeISO8601": {
+            "format": "yyyy-MM-dd",
+            "type": "string"
+          },
+          "high": {
+            "format": "double",
+            "type": "number"
+          },
+          "low": {
+            "format": "double",
+            "type": "number"
+          },
+          "open": {
+            "format": "double",
+            "type": "number"
+          },
+          "volume": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CandleList": {
+        "properties": {
+          "candles": {
+            "items": {
+              "$ref": "#/components/schemas/Candle"
+            },
+            "type": "array"
+          },
+          "empty": {
+            "type": "boolean"
+          },
+          "previousClose": {
+            "format": "double",
+            "type": "number"
+          },
+          "previousCloseDate": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "previousCloseDateISO8601": {
+            "format": "yyyy-MM-dd",
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ContractType": {
+        "description": "Indicates call or put",
+        "enum": [
+          "P",
+          "C"
+        ],
+        "type": "string"
+      },
+      "DivFreq": {
+        "description": "Dividend frequency 1 \u2013 once a year or annually 2 \u2013 2x a year or semi-annualy 3 - 3x a year (ex. ARCO, EBRPF) 4 \u2013 4x a year or quarterly 6 - 6x per yr or every other month 11 \u2013 11x a year (ex. FBND, FCOR) 12 \u2013 12x a year or monthly",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          6,
+          11,
+          12,
+          null
+        ],
+        "nullable": true,
+        "type": "integer"
+      },
+      "EquityAssetSubType": {
+        "description": "Asset Sub Type (only there if applicable)",
+        "enum": [
+          "COE",
+          "PRF",
+          "ADR",
+          "GDR",
+          "CEF",
+          "ETF",
+          "ETN",
+          "UIT",
+          "WAR",
+          "RGT",
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "EquityResponse": {
+        "description": "Quote info of Equity security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "assetSubType": {
+            "$ref": "#/components/schemas/EquityAssetSubType"
+          },
+          "extended": {
+            "$ref": "#/components/schemas/ExtendedMarket"
+          },
+          "fundamental": {
+            "$ref": "#/components/schemas/Fundamental"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteEquity"
+          },
+          "quoteType": {
+            "$ref": "#/components/schemas/QuoteType"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceEquity"
+          },
+          "regular": {
+            "$ref": "#/components/schemas/RegularMarket"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Error": {
+        "properties": {
+          "detail": {
+            "description": "Detailed error description.",
+            "example": "Search combination should not exceed 500.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique error id.",
+            "example": "9821320c-8500-4edf-bd46-a9299c13d2e0",
+            "format": "uuid",
+            "readOnly": true,
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ErrorSource"
+          },
+          "status": {
+            "description": "The HTTP status code .",
+            "enum": [
+              "400",
+              "401",
+              "404",
+              "500"
+            ],
+            "example": "400",
+            "readOnly": true,
+            "type": "string"
+          },
+          "title": {
+            "description": "Short error description.",
+            "example": "Missing header",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "ErrorSource": {
+        "description": "Who is responsible for triggering these errors.",
+        "properties": {
+          "header": {
+            "description": "header name which lead to this error message.",
+            "example": "Schwab-Client-CorrelId",
+            "readOnly": true,
+            "type": "string"
+          },
+          "parameter": {
+            "description": "parameter name which lead to this error message.",
+            "example": "fields",
+            "readOnly": true,
+            "type": "string"
+          },
+          "pointer": {
+            "description": "list of attributes which lead to this error message.",
+            "example": [
+              "/data/attributes/symbols",
+              "/data/attributes/cusips",
+              "/data/attributes/ssids"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "ExerciseType": {
+        "description": "option contract exercise type America or European",
+        "enum": [
+          "A",
+          "E"
+        ],
+        "type": "string"
+      },
+      "Expiration": {
+        "description": "expiration type",
+        "properties": {
+          "daysToExpiration": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "expiration": {
+            "type": "string"
+          },
+          "expirationType": {
+            "$ref": "#/components/schemas/ExpirationType"
+          },
+          "optionRoots": {
+            "type": "string"
+          },
+          "settlementType": {
+            "$ref": "#/components/schemas/SettlementType"
+          },
+          "standard": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "ExpirationChain": {
+        "properties": {
+          "expirationList": {
+            "items": {
+              "$ref": "#/components/schemas/Expiration"
+            },
+            "type": "array"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ExpirationType": {
+        "description": "M for End Of Month Expiration Calendar Cycle. (To match the last business day of the month), Q for Quarterly expirations (last business day of the quarter month MAR/JUN/SEP/DEC), W for Weekly expiration (also called Friday Short Term Expirations) and S for Expires 3rd Friday of the month (also known as regular options).",
+        "enum": [
+          "M",
+          "Q",
+          "S",
+          "W"
+        ],
+        "type": "string"
+      },
+      "ExtendedMarket": {
+        "description": "Quote data for extended hours",
+        "properties": {
+          "askPrice": {
+            "description": "Extended market ask price",
+            "example": 124.85,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Extended market ask size",
+            "example": 51771,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidPrice": {
+            "description": "Extended market bid price",
+            "example": 124.85,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Extended market bid size",
+            "example": 51771,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lastPrice": {
+            "description": "Extended market last price",
+            "example": 124.85,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Regular market last size",
+            "example": 51771,
+            "format": "int32",
+            "type": "integer"
+          },
+          "mark": {
+            "description": "mark price",
+            "example": 1.1246,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Extended market quote time in milliseconds since Epoch",
+            "example": 1621368000400,
+            "format": "int64",
+            "type": "integer"
+          },
+          "totalVolume": {
+            "description": "Total volume",
+            "example": 12345,
+            "format": "int64",
+            "type": "number"
+          },
+          "tradeTime": {
+            "description": "Extended market trade time in milliseconds since Epoch",
+            "example": 1621368000400,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ForexResponse": {
+        "description": "Quote info of Forex security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteForex"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceForex"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "FundStrategy": {
+        "description": "FundStrategy \"A\" - Active \"L\" - Leveraged \"P\" - Passive \"Q\" - Quantitative \"S\" - Short",
+        "enum": [
+          "A",
+          "L",
+          "P",
+          "Q",
+          "S",
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "Fundamental": {
+        "description": "Fundamentals of a security",
+        "properties": {
+          "avg10DaysVolume": {
+            "description": "Average 10 day volume",
+            "format": "double",
+            "type": "number"
+          },
+          "avg1YearVolume": {
+            "description": "Average 1 day volume",
+            "format": "double",
+            "type": "number"
+          },
+          "declarationDate": {
+            "description": "Declaration date in yyyy-mm-ddThh:mm:ssZ",
+            "example": "2021-04-28T00:00:00Z",
+            "format": "date-time",
+            "pattern": "yyyy-MM-dd'T'HH:mm:ssZ",
+            "type": "string"
+          },
+          "divAmount": {
+            "description": "Dividend Amount",
+            "example": 0.88,
+            "format": "double",
+            "type": "number"
+          },
+          "divExDate": {
+            "description": "Dividend date in yyyy-mm-ddThh:mm:ssZ",
+            "example": "2021-05-07T00:00:00Z",
+            "format": "yyyy-MM-dd'T'HH:mm:ssZ",
+            "type": "string"
+          },
+          "divFreq": {
+            "$ref": "#/components/schemas/DivFreq"
+          },
+          "divPayAmount": {
+            "description": "Dividend Pay Amount",
+            "example": 0.22,
+            "format": "double",
+            "type": "number"
+          },
+          "divPayDate": {
+            "description": "Dividend pay date in yyyy-mm-ddThh:mm:ssZ",
+            "example": "2021-05-13T00:00:00Z",
+            "format": "date-time",
+            "pattern": "yyyy-MM-dd'T'HH:mm:ssZ",
+            "type": "string"
+          },
+          "divYield": {
+            "description": "Dividend yield",
+            "example": 0.7,
+            "format": "double",
+            "type": "number"
+          },
+          "eps": {
+            "description": "Earnings per Share",
+            "example": 4.45645,
+            "format": "double",
+            "type": "number"
+          },
+          "fundLeverageFactor": {
+            "description": "Fund Leverage Factor + > 0 <-",
+            "example": -1,
+            "format": "double",
+            "type": "number"
+          },
+          "fundStrategy": {
+            "$ref": "#/components/schemas/FundStrategy"
+          },
+          "nextDivExDate": {
+            "description": "Next Dividend date",
+            "example": "2021-02-12T00:00:00Z",
+            "format": "date-time",
+            "pattern": "yyyy-MM-dd'T'HH:mm:ssZ",
+            "type": "string"
+          },
+          "nextDivPayDate": {
+            "description": "Next Dividend pay date",
+            "example": "2021-02-12T00:00:00Z",
+            "format": "date-time",
+            "pattern": "yyyy-MM-dd'T'HH:mm:ssZ",
+            "type": "string"
+          },
+          "peRatio": {
+            "description": "P/E Ratio",
+            "example": 28.599,
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "FundamentalInst": {
+        "properties": {
+          "avg10DaysVolume": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "avg1DayVolume": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "avg3MonthVolume": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "beta": {
+            "format": "double",
+            "type": "number"
+          },
+          "bookValuePerShare": {
+            "format": "double",
+            "type": "number"
+          },
+          "corpactionDate": {
+            "type": "string"
+          },
+          "currentRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "declarationDate": {
+            "type": "string"
+          },
+          "divGrowthRate3Year": {
+            "format": "double",
+            "type": "number"
+          },
+          "dividendAmount": {
+            "format": "double",
+            "type": "number"
+          },
+          "dividendDate": {
+            "type": "string"
+          },
+          "dividendFreq": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "dividendPayAmount": {
+            "format": "double",
+            "type": "number"
+          },
+          "dividendPayDate": {
+            "type": "string"
+          },
+          "dividendYield": {
+            "format": "double",
+            "type": "number"
+          },
+          "dtnVolume": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "eps": {
+            "format": "double",
+            "type": "number"
+          },
+          "epsChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "epsChangePercentTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "epsChangeYear": {
+            "format": "double",
+            "type": "number"
+          },
+          "epsTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "fundLeverageFactor": {
+            "format": "double",
+            "type": "number"
+          },
+          "fundStrategy": {
+            "type": "string"
+          },
+          "grossMarginMRQ": {
+            "format": "double",
+            "type": "number"
+          },
+          "grossMarginTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "high52": {
+            "format": "double",
+            "type": "number"
+          },
+          "interestCoverage": {
+            "format": "double",
+            "type": "number"
+          },
+          "low52": {
+            "format": "double",
+            "type": "number"
+          },
+          "ltDebtToEquity": {
+            "format": "double",
+            "type": "number"
+          },
+          "marketCap": {
+            "format": "double",
+            "type": "number"
+          },
+          "marketCapFloat": {
+            "format": "double",
+            "type": "number"
+          },
+          "netProfitMarginMRQ": {
+            "format": "double",
+            "type": "number"
+          },
+          "netProfitMarginTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "nextDividendDate": {
+            "type": "string"
+          },
+          "nextDividendPayDate": {
+            "type": "string"
+          },
+          "operatingMarginMRQ": {
+            "format": "double",
+            "type": "number"
+          },
+          "operatingMarginTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "pbRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "pcfRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "peRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "pegRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "prRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "quickRatio": {
+            "format": "double",
+            "type": "number"
+          },
+          "returnOnAssets": {
+            "format": "double",
+            "type": "number"
+          },
+          "returnOnEquity": {
+            "format": "double",
+            "type": "number"
+          },
+          "returnOnInvestment": {
+            "format": "double",
+            "type": "number"
+          },
+          "revChangeIn": {
+            "format": "double",
+            "type": "number"
+          },
+          "revChangeTTM": {
+            "format": "double",
+            "type": "number"
+          },
+          "revChangeYear": {
+            "format": "double",
+            "type": "number"
+          },
+          "sharesOutstanding": {
+            "format": "double",
+            "type": "number"
+          },
+          "shortIntDayToCover": {
+            "format": "double",
+            "type": "number"
+          },
+          "shortIntToFloat": {
+            "format": "double",
+            "type": "number"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "totalDebtToCapital": {
+            "format": "double",
+            "type": "number"
+          },
+          "totalDebtToEquity": {
+            "format": "double",
+            "type": "number"
+          },
+          "vol10DayAvg": {
+            "format": "double",
+            "type": "number"
+          },
+          "vol1DayAvg": {
+            "format": "double",
+            "type": "number"
+          },
+          "vol3MonthAvg": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "FutureOptionResponse": {
+        "description": "Quote info of Future Option security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteFutureOption"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceFutureOption"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "FutureResponse": {
+        "description": "Quote info of Future security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteFuture"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceFuture"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Hours": {
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "isOpen": {
+            "type": "boolean"
+          },
+          "marketType": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "product": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "sessionHours": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/Interval"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "IndexResponse": {
+        "description": "Quote info of Index security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteIndex"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceIndex"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Instrument": {
+        "properties": {
+          "assetType": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "cusip": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "InstrumentResponse": {
+        "properties": {
+          "assetType": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "bondFactor": {
+            "type": "string"
+          },
+          "bondInstrumentInfo": {
+            "$ref": "#/components/schemas/Bond"
+          },
+          "bondMultiplier": {
+            "type": "string"
+          },
+          "bondPrice": {
+            "type": "number"
+          },
+          "cusip": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "fundamental": {
+            "$ref": "#/components/schemas/FundamentalInst"
+          },
+          "instrumentInfo": {
+            "$ref": "#/components/schemas/Instrument"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "BOND",
+              "EQUITY",
+              "ETF",
+              "EXTENDED",
+              "FOREX",
+              "FUTURE",
+              "FUTURE_OPTION",
+              "FUNDAMENTAL",
+              "INDEX",
+              "INDICATOR",
+              "MUTUAL_FUND",
+              "OPTION",
+              "UNKNOWN"
+            ],
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "Interval": {
+        "properties": {
+          "end": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MutualFundAssetSubType": {
+        "description": "Asset Sub Type (only there if applicable)",
+        "enum": [
+          "OEF",
+          "CEF",
+          "MMF",
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "MutualFundResponse": {
+        "description": "Quote info of MutualFund security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "assetSubType": {
+            "$ref": "#/components/schemas/MutualFundAssetSubType"
+          },
+          "fundamental": {
+            "$ref": "#/components/schemas/Fundamental"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteMutualFund"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceMutualFund"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OptionChain": {
+        "properties": {
+          "callExpDateMap": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OptionContractMap"
+            },
+            "type": "object"
+          },
+          "daysToExpiration": {
+            "format": "double",
+            "type": "number"
+          },
+          "interestRate": {
+            "format": "double",
+            "type": "number"
+          },
+          "interval": {
+            "format": "double",
+            "type": "number"
+          },
+          "isDelayed": {
+            "type": "boolean"
+          },
+          "isIndex": {
+            "type": "boolean"
+          },
+          "putExpDateMap": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OptionContractMap"
+            },
+            "type": "object"
+          },
+          "status": {
+            "type": "string"
+          },
+          "strategy": {
+            "enum": [
+              "SINGLE",
+              "ANALYTICAL",
+              "COVERED",
+              "VERTICAL",
+              "CALENDAR",
+              "STRANGLE",
+              "STRADDLE",
+              "BUTTERFLY",
+              "CONDOR",
+              "DIAGONAL",
+              "COLLAR",
+              "ROLL"
+            ],
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "underlying": {
+            "$ref": "#/components/schemas/Underlying"
+          },
+          "underlyingPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "volatility": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "OptionContract": {
+        "properties": {
+          "askPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "closePrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "daysToExpiration": {
+            "format": "int",
+            "type": "number"
+          },
+          "deliverableNote": {
+            "type": "string"
+          },
+          "delta": {
+            "format": "double",
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exchangeName": {
+            "type": "string"
+          },
+          "expirationDate": {
+            "type": "string"
+          },
+          "expirationType": {
+            "$ref": "#/components/schemas/ExpirationType"
+          },
+          "gamma": {
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "intrinsicValue": {
+            "format": "double",
+            "type": "number"
+          },
+          "isInTheMoney": {
+            "type": "boolean"
+          },
+          "isIndexOption": {
+            "type": "boolean"
+          },
+          "isMini": {
+            "type": "boolean"
+          },
+          "isNonStandard": {
+            "type": "boolean"
+          },
+          "isPennyPilot": {
+            "type": "boolean"
+          },
+          "lastPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "lastTradingDay": {
+            "format": "long",
+            "type": "number"
+          },
+          "lowPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "markChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "markPercentChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "markPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "multiplier": {
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "openInterest": {
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "optionDeliverablesList": {
+            "items": {
+              "$ref": "#/components/schemas/OptionDeliverables"
+            },
+            "type": "array"
+          },
+          "optionRoot": {
+            "type": "string"
+          },
+          "percentChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "putCall": {
+            "enum": [
+              "PUT",
+              "CALL"
+            ],
+            "type": "string"
+          },
+          "quoteTimeInLong": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "rho": {
+            "format": "double",
+            "type": "number"
+          },
+          "settlementType": {
+            "$ref": "#/components/schemas/SettlementType"
+          },
+          "strikePrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "theoreticalOptionValue": {
+            "format": "double",
+            "type": "number"
+          },
+          "theoreticalVolatility": {
+            "format": "double",
+            "type": "number"
+          },
+          "theta": {
+            "format": "double",
+            "type": "number"
+          },
+          "timeValue": {
+            "format": "double",
+            "type": "number"
+          },
+          "totalVolume": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "tradeDate": {
+            "format": "integer",
+            "type": "number"
+          },
+          "tradeTimeInLong": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "vega": {
+            "format": "double",
+            "type": "number"
+          },
+          "volatility": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "OptionContractMap": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/OptionContract"
+        },
+        "type": "object"
+      },
+      "OptionDeliverables": {
+        "properties": {
+          "assetType": {
+            "type": "string"
+          },
+          "currencyType": {
+            "type": "string"
+          },
+          "deliverableUnits": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OptionResponse": {
+        "description": "Quote info of Option security",
+        "properties": {
+          "assetMainType": {
+            "$ref": "#/components/schemas/AssetMainType"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/QuoteOption"
+          },
+          "realtime": {
+            "description": "is quote realtime",
+            "example": true,
+            "type": "boolean"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ReferenceOption"
+          },
+          "ssid": {
+            "description": "SSID of instrument",
+            "example": 1234567890,
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "description": "Symbol of instrument",
+            "example": "AAPL",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteEquity": {
+        "description": "Quote data of Equity security",
+        "properties": {
+          "52WeekHigh": {
+            "description": "Higest price traded in the past 12 months, or 52 weeks",
+            "example": 145.09,
+            "format": "double",
+            "type": "number"
+          },
+          "52WeekLow": {
+            "description": "Lowest price traded in the past 12 months, or 52 weeks",
+            "example": 77.581,
+            "format": "double",
+            "type": "number"
+          },
+          "askMICId": {
+            "description": "ask MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "askPrice": {
+            "description": "Current Best Ask Price",
+            "example": 124.63,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Number of shares for ask",
+            "example": 700,
+            "format": "int32",
+            "type": "integer"
+          },
+          "askTime": {
+            "description": "Last ask time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "bidMICId": {
+            "description": "bid MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "bidPrice": {
+            "description": "Current Best Bid Price",
+            "example": 124.6,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Number of shares for bid",
+            "example": 300,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidTime": {
+            "description": "Last bid time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "lastMICId": {
+            "description": "Last MIC Code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "lastPrice": {
+            "example": 122.3,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Number of shares traded with last trade",
+            "example": 100,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "description": "Mark price",
+            "example": 52.93,
+            "format": "double",
+            "type": "number"
+          },
+          "markChange": {
+            "description": "Mark Price change",
+            "example": -0.01,
+            "format": "double",
+            "type": "number"
+          },
+          "markPercentChange": {
+            "description": "Mark Price percent change",
+            "example": -0.0189,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Last quote time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          },
+          "volatility": {
+            "description": "Option Risk/Volatility Measurement",
+            "example": 0.0094,
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteError": {
+        "description": "Partial or Custom errors per request",
+        "properties": {
+          "invalidCusips": {
+            "description": "list of invalid cusips from request",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "invalidSSIDs": {
+            "description": "list of invalid SSIDs from request",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "invalidSymbols": {
+            "description": "list of invalid symbols from request",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteForex": {
+        "description": "Quote data of Forex security",
+        "properties": {
+          "52WeekHigh": {
+            "description": "Higest price traded in the past 12 months, or 52 weeks",
+            "example": 145.09,
+            "format": "double",
+            "type": "number"
+          },
+          "52WeekLow": {
+            "description": "Lowest price traded in the past 12 months, or 52 weeks",
+            "example": 77.581,
+            "format": "double",
+            "type": "number"
+          },
+          "askPrice": {
+            "description": "Current Best Ask Price",
+            "example": 124.63,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Number of shares for ask",
+            "example": 700,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidPrice": {
+            "description": "Current Best Bid Price",
+            "example": 124.6,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Number of shares for bid",
+            "example": 300,
+            "format": "int32",
+            "type": "integer"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "lastPrice": {
+            "example": 122.3,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Number of shares traded with last trade",
+            "example": 100,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "example": 52.74,
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "description": "Mark price",
+            "example": 52.93,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Last quote time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "tick": {
+            "description": "Tick Price",
+            "example": 0,
+            "format": "double",
+            "type": "number"
+          },
+          "tickAmount": {
+            "description": "Tick Amount",
+            "example": 0,
+            "format": "double",
+            "type": "number"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteFuture": {
+        "description": "Quote data of Future security",
+        "properties": {
+          "askMICId": {
+            "description": "ask MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "askPrice": {
+            "description": "Current Best Ask Price",
+            "example": 4083.25,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Number of shares for ask",
+            "example": 36,
+            "format": "int32",
+            "type": "integer"
+          },
+          "askTime": {
+            "description": "Last ask time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "bidMICId": {
+            "description": "bid MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "bidPrice": {
+            "description": "Current Best Bid Price",
+            "example": 4083,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Number of shares for bid",
+            "example": 18,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidTime": {
+            "description": "Last bid time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 4123,
+            "format": "double",
+            "type": "number"
+          },
+          "futurePercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 4123,
+            "format": "double",
+            "type": "number"
+          },
+          "lastMICId": {
+            "description": "Last MIC Code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "lastPrice": {
+            "example": 4083,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Number of shares traded with last trade",
+            "example": 7,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "example": 4075.5,
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "description": "Mark price",
+            "example": 4083,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -40,
+            "format": "double",
+            "type": "number"
+          },
+          "openInterest": {
+            "description": "Open interest",
+            "example": 2517139,
+            "format": "int32",
+            "type": "integer"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 4114,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Last quote time in milliseconds since Epoch",
+            "example": 1621427004585,
+            "format": "int64",
+            "type": "integer"
+          },
+          "quotedInSession": {
+            "description": "quoted during trading session",
+            "example": false,
+            "type": "boolean"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "settleTime": {
+            "description": "settlement time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tick": {
+            "description": "Tick Price",
+            "example": 0.25,
+            "format": "double",
+            "type": "number"
+          },
+          "tickAmount": {
+            "description": "Tick Amount",
+            "example": 12.5,
+            "format": "double",
+            "type": "number"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteFutureOption": {
+        "description": "Quote data of Option security",
+        "properties": {
+          "askMICId": {
+            "description": "ask MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "askPrice": {
+            "description": "Current Best Ask Price",
+            "example": 124.63,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Number of shares for ask",
+            "example": 700,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidMICId": {
+            "description": "bid MIC code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "bidPrice": {
+            "description": "Current Best Bid Price",
+            "example": 124.6,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Number of shares for bid",
+            "example": 300,
+            "format": "int32",
+            "type": "integer"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "lastMICId": {
+            "description": "Last MIC Code",
+            "example": "XNYS",
+            "type": "string"
+          },
+          "lastPrice": {
+            "example": 122.3,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Number of shares traded with last trade",
+            "example": 100,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "example": 52.74,
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "description": "Mark price",
+            "example": 52.93,
+            "format": "double",
+            "type": "number"
+          },
+          "markChange": {
+            "description": "Mark Price change",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "openInterest": {
+            "description": "Open Interest",
+            "example": 317,
+            "format": "int32",
+            "type": "integer"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Last quote time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "settlemetPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "tick": {
+            "description": "Tick Price",
+            "example": 0,
+            "format": "double",
+            "type": "number"
+          },
+          "tickAmount": {
+            "description": "Tick Amount",
+            "example": 0,
+            "format": "double",
+            "type": "number"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteIndex": {
+        "description": "Quote data of Index security",
+        "properties": {
+          "52WeekHigh": {
+            "description": "Higest price traded in the past 12 months, or 52 weeks",
+            "example": 145.09,
+            "format": "double",
+            "type": "number"
+          },
+          "52WeekLow": {
+            "description": "Lowest price traded in the past 12 months, or 52 weeks",
+            "example": 77.581,
+            "format": "double",
+            "type": "number"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "lastPrice": {
+            "example": 122.3,
+            "format": "double",
+            "type": "number"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "example": 52.74,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteMutualFund": {
+        "description": "Quote data of Mutual Fund security",
+        "properties": {
+          "52WeekHigh": {
+            "description": "Higest price traded in the past 12 months, or 52 weeks",
+            "example": 145.09,
+            "format": "double",
+            "type": "number"
+          },
+          "52WeekLow": {
+            "description": "Lowest price traded in the past 12 months, or 52 weeks",
+            "example": 77.581,
+            "format": "double",
+            "type": "number"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "nAV": {
+            "description": "Net Asset Value",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteOption": {
+        "description": "Quote data of Option security",
+        "properties": {
+          "52WeekHigh": {
+            "description": "Higest price traded in the past 12 months, or 52 weeks",
+            "example": 145.09,
+            "format": "double",
+            "type": "number"
+          },
+          "52WeekLow": {
+            "description": "Lowest price traded in the past 12 months, or 52 weeks",
+            "example": 77.581,
+            "format": "double",
+            "type": "number"
+          },
+          "askPrice": {
+            "description": "Current Best Ask Price",
+            "example": 124.63,
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "description": "Number of shares for ask",
+            "example": 700,
+            "format": "int32",
+            "type": "integer"
+          },
+          "bidPrice": {
+            "description": "Current Best Bid Price",
+            "example": 124.6,
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "description": "Number of shares for bid",
+            "example": 300,
+            "format": "int32",
+            "type": "integer"
+          },
+          "closePrice": {
+            "description": "Previous day's closing price",
+            "example": 126.27,
+            "format": "double",
+            "type": "number"
+          },
+          "delta": {
+            "description": "Delta Value",
+            "example": -0.0407,
+            "format": "double",
+            "type": "number"
+          },
+          "gamma": {
+            "description": "Gamma Value",
+            "example": 0.0001,
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "description": "Day's high trade price",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "impliedYield": {
+            "description": "Implied Yield",
+            "example": -0.0067,
+            "format": "double",
+            "type": "number"
+          },
+          "indAskPrice": {
+            "description": "Indicative Ask Price applicable only for Indicative Option Symbols",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "indBidPrice": {
+            "description": "Indicative Bid Price applicable only for Indicative Option Symbols",
+            "example": 126.99,
+            "format": "double",
+            "type": "number"
+          },
+          "indQuoteTime": {
+            "description": "Indicative Quote Time in milliseconds since Epoch applicable only for Indicative Option Symbols",
+            "example": 126.99,
+            "format": "int64",
+            "type": "integer"
+          },
+          "lastPrice": {
+            "example": 122.3,
+            "format": "double",
+            "type": "number"
+          },
+          "lastSize": {
+            "description": "Number of shares traded with last trade",
+            "example": 100,
+            "format": "int32",
+            "type": "integer"
+          },
+          "lowPrice": {
+            "description": "Day's low trade price",
+            "example": 52.74,
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "description": "Mark price",
+            "example": 52.93,
+            "format": "double",
+            "type": "number"
+          },
+          "markChange": {
+            "description": "Mark Price change",
+            "example": -0.01,
+            "format": "double",
+            "type": "number"
+          },
+          "markPercentChange": {
+            "description": "Mark Price percent change",
+            "example": -0.0189,
+            "format": "double",
+            "type": "number"
+          },
+          "moneyIntrinsicValue": {
+            "description": "Money Intrinsic Value",
+            "example": -947.96,
+            "format": "double",
+            "type": "number"
+          },
+          "netChange": {
+            "description": "Current Last-Prev Close",
+            "example": -0.04,
+            "format": "double",
+            "type": "number"
+          },
+          "netPercentChange": {
+            "description": "Net Percentage Change",
+            "example": -0.0756,
+            "format": "double",
+            "type": "number"
+          },
+          "openInterest": {
+            "description": "Open Interest",
+            "example": 317,
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "description": "Price at market open",
+            "example": 52.8,
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "description": "Last quote time in milliseconds since Epoch",
+            "example": 1621376892336,
+            "format": "int64",
+            "type": "integer"
+          },
+          "rho": {
+            "description": "Rho Value",
+            "example": -0.3732,
+            "format": "double",
+            "type": "number"
+          },
+          "securityStatus": {
+            "description": "Status of security",
+            "example": "Normal",
+            "type": "string"
+          },
+          "theoreticalOptionValue": {
+            "description": "Theoretical option Value",
+            "example": 12.275,
+            "format": "double",
+            "type": "number"
+          },
+          "theta": {
+            "description": "Theta Value",
+            "example": -0.315,
+            "format": "double",
+            "type": "number"
+          },
+          "timeValue": {
+            "description": "Time Value",
+            "example": 12.22,
+            "format": "double",
+            "type": "number"
+          },
+          "totalVolume": {
+            "description": "Aggregated shares traded throughout the day, including pre/post market hours.",
+            "example": 20171188,
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "description": "Last trade time in milliseconds since Epoch",
+            "example": 1621376731304,
+            "format": "int64",
+            "type": "integer"
+          },
+          "underlyingPrice": {
+            "description": "Underlying Price",
+            "example": 3247.96,
+            "format": "double",
+            "type": "number"
+          },
+          "vega": {
+            "description": "Vega Value",
+            "example": 1.4455,
+            "format": "double",
+            "type": "number"
+          },
+          "volatility": {
+            "description": "Option Risk/Volatility Measurement",
+            "example": 0.0094,
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteRequest": {
+        "description": "Request one or more quote data in POST body",
+        "properties": {
+          "cusips": {
+            "description": "List of cusip, max of 500 of symbols+cusip+ssids",
+            "example": [
+              808524680,
+              594918104
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "fields": {
+            "description": "comma separated list of nodes in each quote<br/> possible values are quote,fundamental,reference,extended,regular. Dont send this attribute for full response.",
+            "example": "quote,reference",
+            "type": "string"
+          },
+          "indicative": {
+            "description": "Include indicative symbol quotes for all ETF symbols in request. If ETF symbol ABC is in request and indicative=true API will return quotes for ABC and its corresponding indicative quote for $ABC.IV",
+            "enum": [
+              true,
+              false
+            ],
+            "example": true,
+            "type": "boolean"
+          },
+          "realtime": {
+            "description": "Get realtime quotes and skip entitlement check",
+            "enum": [
+              true,
+              false
+            ],
+            "example": true,
+            "type": "boolean"
+          },
+          "ssids": {
+            "description": "List of Schwab securityid[SSID], max of 500 of symbols+cusip+ssids",
+            "example": [
+              1516105793,
+              34621523
+            ],
+            "items": {
+              "format": "int64",
+              "maximum": 9999999999,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "symbols": {
+            "description": "List of symbols, max of 500 of symbols+cusip+ssids",
+            "example": [
+              "MRAD",
+              "EATOF",
+              "EBIZ",
+              "AAPL",
+              "BAC",
+              "AAAHX",
+              "AAAIX",
+              "$DJI",
+              "$SPX",
+              "MVEN",
+              "SOBS",
+              "TOITF",
+              "CNSWF",
+              "AMZN  230317C01360000",
+              "DJX   231215C00290000",
+              "/ESH23",
+              "./ADUF23C0.55",
+              "AUD/CAD"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "QuoteResponse": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/QuoteResponseObject"
+        },
+        "description": "a (symbol, QuoteResponse) map. `SCHW`is an example key",
+        "type": "object"
+      },
+      "QuoteResponseObject": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/EquityResponse"
+          },
+          {
+            "$ref": "#/components/schemas/OptionResponse"
+          },
+          {
+            "$ref": "#/components/schemas/ForexResponse"
+          },
+          {
+            "$ref": "#/components/schemas/FutureResponse"
+          },
+          {
+            "$ref": "#/components/schemas/FutureOptionResponse"
+          },
+          {
+            "$ref": "#/components/schemas/IndexResponse"
+          },
+          {
+            "$ref": "#/components/schemas/MutualFundResponse"
+          },
+          {
+            "$ref": "#/components/schemas/QuoteError"
+          }
+        ],
+        "type": "object"
+      },
+      "QuoteType": {
+        "description": "NBBO - realtime, NFL - Non-fee liable quote.",
+        "enum": [
+          "NBBO",
+          "NFL",
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "ReferenceEquity": {
+        "description": "Reference data of Equity security",
+        "properties": {
+          "cusip": {
+            "description": "CUSIP of Instrument",
+            "example": "A23456789",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of Instrument",
+            "example": "Apple Inc. - Common Stock",
+            "type": "string"
+          },
+          "exchange": {
+            "description": "Exchange Code",
+            "example": "q",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          },
+          "fsiDesc": {
+            "description": "FSI Desc",
+            "maxLength": 50,
+            "type": "string"
+          },
+          "htbQuantity": {
+            "description": "Hard to borrow quantity.",
+            "example": 100,
+            "format": "int32",
+            "type": "integer"
+          },
+          "htbRate": {
+            "description": "Hard to borrow rate.",
+            "example": 4.5,
+            "format": "double",
+            "type": "number"
+          },
+          "isHardToBorrow": {
+            "description": "is Hard to borrow security.",
+            "example": false,
+            "type": "boolean"
+          },
+          "isShortable": {
+            "description": "is shortable security.",
+            "example": false,
+            "type": "boolean"
+          },
+          "otcMarketTier": {
+            "description": "OTC Market Tier",
+            "maxLength": 10,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceForex": {
+        "description": "Reference data of Forex security",
+        "properties": {
+          "description": {
+            "description": "Description of Instrument",
+            "example": "Euro/USDollar Spot",
+            "type": "string"
+          },
+          "exchange": {
+            "description": "Exchange Code",
+            "example": "q",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          },
+          "isTradable": {
+            "description": "is FOREX tradable",
+            "example": true,
+            "type": "boolean"
+          },
+          "marketMaker": {
+            "description": "Market marker",
+            "type": "string"
+          },
+          "product": {
+            "description": "Product name",
+            "example": null,
+            "type": "string"
+          },
+          "tradingHours": {
+            "description": "Trading hours",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceFuture": {
+        "description": "Reference data of Future security",
+        "properties": {
+          "description": {
+            "description": "Description of Instrument",
+            "example": "E-mini S&P 500 Index Futures,Jun-2021,ETH",
+            "type": "string"
+          },
+          "exchange": {
+            "description": "Exchange Code",
+            "example": "q",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          },
+          "futureActiveSymbol": {
+            "description": "Active symbol",
+            "example": "/ESM21",
+            "type": "string"
+          },
+          "futureExpirationDate": {
+            "description": "Future expiration date in milliseconds since epoch",
+            "example": 1623988800000,
+            "format": "int64",
+            "type": "number"
+          },
+          "futureIsActive": {
+            "description": "Future is active",
+            "example": true,
+            "type": "boolean"
+          },
+          "futureMultiplier": {
+            "description": "Future multiplier",
+            "example": 50,
+            "format": "double",
+            "type": "number"
+          },
+          "futurePriceFormat": {
+            "description": "Price format",
+            "example": "D,D",
+            "type": "string"
+          },
+          "futureSettlementPrice": {
+            "description": "Future Settlement Price",
+            "example": 4123,
+            "format": "double",
+            "type": "number"
+          },
+          "futureTradingHours": {
+            "description": "Trading Hours",
+            "example": "GLBX(de=1640;0=-1700151515301600;1=r-17001515r15301600d-15551640;7=d-16401555)",
+            "type": "string"
+          },
+          "product": {
+            "description": "Futures product symbol",
+            "example": "/ES",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceFutureOption": {
+        "description": "Reference data of Future Option security",
+        "properties": {
+          "contractType": {
+            "$ref": "#/components/schemas/ContractType"
+          },
+          "description": {
+            "description": "Description of Instrument",
+            "example": "AMZN Aug 20 2021 2300 Put",
+            "type": "string"
+          },
+          "exchange": {
+            "description": "Exchange Code",
+            "example": "q",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          },
+          "expirationDate": {
+            "description": "date of expiration in long",
+            "format": "int64",
+            "type": "integer"
+          },
+          "expirationStyle": {
+            "description": "Style of expiration",
+            "type": "string"
+          },
+          "multiplier": {
+            "description": "Option multiplier",
+            "example": 100,
+            "format": "double",
+            "type": "number"
+          },
+          "strikePrice": {
+            "description": "Strike Price",
+            "example": 2300,
+            "format": "double",
+            "type": "number"
+          },
+          "underlying": {
+            "description": "A company, index or fund name",
+            "example": "AMZN Aug 20 2021 2300 Put",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceIndex": {
+        "description": "Reference data of Index security",
+        "properties": {
+          "description": {
+            "description": "Description of Instrument",
+            "example": "DOW JONES 30 INDUSTRIALS",
+            "type": "string"
+          },
+          "exchange": {
+            "description": "Exchange Code",
+            "example": "q",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceMutualFund": {
+        "description": "Reference data of MutualFund security",
+        "properties": {
+          "cusip": {
+            "description": "CUSIP of Instrument",
+            "example": "A23456789",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of Instrument",
+            "example": "Apple Inc. - Common Stock",
+            "type": "string"
+          },
+          "exchange": {
+            "default": "m",
+            "description": "Exchange Code",
+            "type": "string"
+          },
+          "exchangeName": {
+            "default": "MUTUAL_FUND",
+            "description": "Exchange Name",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReferenceOption": {
+        "description": "Reference data of Option security",
+        "properties": {
+          "contractType": {
+            "$ref": "#/components/schemas/ContractType"
+          },
+          "cusip": {
+            "description": "CUSIP of Instrument",
+            "example": "0AMZN.TK12300000",
+            "type": "string"
+          },
+          "daysToExpiration": {
+            "description": "Days to Expiration",
+            "example": 94,
+            "format": "int32",
+            "type": "integer"
+          },
+          "deliverables": {
+            "description": "Unit of trade",
+            "example": "$6024.37 cash in lieu of shares, 212 shares of AZN",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of Instrument",
+            "example": "AMZN Aug 20 2021 2300 Put",
+            "type": "string"
+          },
+          "exchange": {
+            "default": "o",
+            "description": "Exchange Code",
+            "type": "string"
+          },
+          "exchangeName": {
+            "description": "Exchange Name",
+            "type": "string"
+          },
+          "exerciseType": {
+            "$ref": "#/components/schemas/ExerciseType"
+          },
+          "expirationDay": {
+            "description": "Expiration Day",
+            "example": 20,
+            "format": "int32",
+            "maximum": 31,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "expirationMonth": {
+            "description": "Expiration Month",
+            "example": 8,
+            "format": "int32",
+            "maximum": 12,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "expirationType": {
+            "$ref": "#/components/schemas/ExpirationType"
+          },
+          "expirationYear": {
+            "description": "Expiration Year",
+            "example": 2021,
+            "format": "int32",
+            "type": "integer"
+          },
+          "isPennyPilot": {
+            "description": "Is this contract part of the Penny Pilot program",
+            "example": true,
+            "type": "boolean"
+          },
+          "lastTradingDay": {
+            "description": "milliseconds since epoch",
+            "example": 1629504000000,
+            "format": "int64",
+            "type": "integer"
+          },
+          "multiplier": {
+            "description": "Option multiplier",
+            "example": 100,
+            "format": "double",
+            "type": "number"
+          },
+          "settlementType": {
+            "$ref": "#/components/schemas/SettlementType"
+          },
+          "strikePrice": {
+            "description": "Strike Price",
+            "example": 2300,
+            "format": "double",
+            "type": "number"
+          },
+          "underlying": {
+            "description": "A company, index or fund name",
+            "example": "AMZN Aug 20 2021 2300 Put",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RegularMarket": {
+        "description": "Market info of security",
+        "properties": {
+          "regularMarketLastPrice": {
+            "description": "Regular market last price",
+            "example": 124.85,
+            "format": "double",
+            "type": "number"
+          },
+          "regularMarketLastSize": {
+            "description": "Regular market last size",
+            "example": 51771,
+            "format": "int32",
+            "type": "integer"
+          },
+          "regularMarketNetChange": {
+            "description": "Regular market net change",
+            "example": -1.42,
+            "format": "double",
+            "type": "number"
+          },
+          "regularMarketPercentChange": {
+            "description": "Regular market percent change",
+            "example": -1.1246,
+            "format": "double",
+            "type": "number"
+          },
+          "regularMarketTradeTime": {
+            "description": "Regular market trade time in milliseconds since Epoch",
+            "example": 1621368000400,
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Screener": {
+        "description": "Security info of most moved with in an index",
+        "properties": {
+          "change": {
+            "description": "percent or value changed, by default its percent changed",
+            "format": "double",
+            "type": "number"
+          },
+          "description": {
+            "description": "Name of security",
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "up",
+              "down"
+            ],
+            "type": "string"
+          },
+          "last": {
+            "description": "what was last quoted price",
+            "format": "double",
+            "type": "number"
+          },
+          "symbol": {
+            "description": "schwab security symbol",
+            "type": "string"
+          },
+          "totalVolume": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SettlementType": {
+        "description": "option contract settlement type AM or PM",
+        "enum": [
+          "A",
+          "P"
+        ],
+        "type": "string"
+      },
+      "Underlying": {
+        "properties": {
+          "ask": {
+            "format": "double",
+            "type": "number"
+          },
+          "askSize": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "bid": {
+            "format": "double",
+            "type": "number"
+          },
+          "bidSize": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "change": {
+            "format": "double",
+            "type": "number"
+          },
+          "close": {
+            "format": "double",
+            "type": "number"
+          },
+          "delayed": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exchangeName": {
+            "enum": [
+              "IND",
+              "ASE",
+              "NYS",
+              "NAS",
+              "NAP",
+              "PAC",
+              "OPR",
+              "BATS"
+            ],
+            "type": "string"
+          },
+          "fiftyTwoWeekHigh": {
+            "format": "double",
+            "type": "number"
+          },
+          "fiftyTwoWeekLow": {
+            "format": "double",
+            "type": "number"
+          },
+          "highPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "last": {
+            "format": "double",
+            "type": "number"
+          },
+          "lowPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "mark": {
+            "format": "double",
+            "type": "number"
+          },
+          "markChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "markPercentChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "openPrice": {
+            "format": "double",
+            "type": "number"
+          },
+          "percentChange": {
+            "format": "double",
+            "type": "number"
+          },
+          "quoteTime": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "totalVolume": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "tradeTime": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "oauth": {
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.schwabapi.com/v1/oauth/authorize?response_type=code&client_id=fnB6k1X6JSFlQHravRt6T9m86AZlkD04&scope=readonly&redirect_uri=https://developer.schwab.com/oauth2-redirect.html",
+            "scopes": {},
+            "tokenUrl": "https://api.schwabapi.com/v1/oauth/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "email": "TraderAPI@Schwab.com",
+      "name": "Schwab Trader API team"
+    },
+    "description": "Trader API - Market data",
+    "title": "Market Data",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/chains": {
+      "get": {
+        "description": "Get Option Chain including information on options contracts associated with each expiration.",
+        "operationId": "getChain",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryParamSymbol"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamContractType"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamStrikeCount"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamIncludeQuotes"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamStrategy"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamInterval"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamStrikePrice"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamRange"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamFromDate"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamToDate"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamVolatility"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamUnderlyingPrice"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamInterestRate"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamDaysToExpiration"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamExpMonth"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamOptionType"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamEntitlement"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionChain"
+                }
+              }
+            },
+            "description": "The Chain for the symbol was returned successfully.",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/Schwab-Client-CorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get option chain for an optionable Symbol",
+        "tags": [
+          "Option Chains"
+        ]
+      }
+    },
+    "/expirationchain": {
+      "get": {
+        "description": "Get Option Expiration (Series) information for an optionable symbol.  Does not include individual options contracts for the underlying.",
+        "operationId": "getExpirationChain",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryParamSymbol"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GetExpirationChain": {
+                    "$ref": "#/components/examples/GetExpirationChain"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ExpirationChain"
+                }
+              }
+            },
+            "description": "The Expiration Chain for the symbol was returned successfully.",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/Schwab-Client-CorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get option expiration chain for an optionable symbol",
+        "tags": [
+          "Option Expiration Chain"
+        ]
+      }
+    },
+    "/instruments": {
+      "get": {
+        "description": "Get Instruments details by using different projections.  Get more specific fundamental instrument data by using fundamental as the projection.",
+        "operationId": "getInstruments",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryParamSsymbol"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamprojection"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GetInstruments": {
+                    "$ref": "#/components/examples/GetInstruments"
+                  }
+                },
+                "schema": {
+                  "properties": {
+                    "instruments": {
+                      "items": {
+                        "$ref": "#/components/schemas/InstrumentResponse"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "description": "Used to identify an individual request throughout the lifetime of the request and across systems.",
+                "required": true,
+                "schema": {
+                  "example": "0a7f446a-7d74-49c8-a1e5-ca8ed59a3386",
+                  "type": "string"
+                }
+              },
+              "Schwab-Resource-Version": {
+                "description": "Used to identify desired and returned version of an API resource",
+                "required": true,
+                "schema": {
+                  "example": 3,
+                  "format": "int32",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Instruments by symbols and projections.",
+        "tags": [
+          "Instruments"
+        ]
+      }
+    },
+    "/instruments/{cusip_id}": {
+      "get": {
+        "description": "Get basic instrument details by cusip",
+        "operationId": "getInstrumentsByCusip",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PathParamCusip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GetInstrumentByCusip": {
+                    "$ref": "#/components/examples/GetInstrumentByCusip"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InstrumentResponse"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "description": "Used to identify an individual request throughout the lifetime of the request and across systems.",
+                "required": true,
+                "schema": {
+                  "example": "0a7f446a-7d74-49c8-a1e5-ca8ed59a3386",
+                  "type": "string"
+                }
+              },
+              "Schwab-Resource-Version": {
+                "description": "Used to identify desired and returned version of an API resource",
+                "required": true,
+                "schema": {
+                  "example": 3,
+                  "format": "int32",
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Instrument by specific cusip",
+        "tags": [
+          "Instruments"
+        ]
+      }
+    },
+    "/markets": {
+      "get": {
+        "description": "Get Market Hours for dates in the future across different markets.",
+        "operationId": "getMarketHours",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryParamMarkets"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GetMarketHours": {
+                    "$ref": "#/components/examples/GetMarketHours"
+                  }
+                },
+                "schema": {
+                  "additionalProperties": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Hours"
+                    },
+                    "type": "object"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/SchwabClientCorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Market Hours for different markets.",
+        "tags": [
+          "MarketHours"
+        ]
+      }
+    },
+    "/markets/{market_id}": {
+      "get": {
+        "description": "Get Market Hours for dates in the future for a single market.",
+        "operationId": "getMarketHour",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PathParamMarket"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "GetMarketHour": {
+                    "$ref": "#/components/examples/GetMarketHour"
+                  }
+                },
+                "schema": {
+                  "additionalProperties": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/Hours"
+                    },
+                    "type": "object"
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/SchwabClientCorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Market Hours for a single market.",
+        "tags": [
+          "MarketHours"
+        ]
+      }
+    },
+    "/movers/{symbol_id}": {
+      "get": {
+        "description": "Get a list of top 10 securities movement for a specific index.",
+        "operationId": "getMovers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PathParamSymbol"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamSort"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamFrequency"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SearchMoversByIndexSymbol": {
+                    "$ref": "#/components/examples/SearchMoversByIndexSymbol"
+                  }
+                },
+                "schema": {
+                  "properties": {
+                    "screeners": {
+                      "items": {
+                        "$ref": "#/components/schemas/Screener"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Analytics for the symbol was returned successfully.",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/Schwab-Client-CorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Movers for a specific index.",
+        "tags": [
+          "Movers"
+        ]
+      }
+    },
+    "/pricehistory": {
+      "get": {
+        "description": "Get historical Open, High, Low, Close, and Volume for a given frequency (i.e. aggregation).  Frequency available is dependent on periodType selected.  The datetime format is in EPOCH milliseconds.",
+        "operationId": "getPriceHistory",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QueryParamsymbol"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamperiodtype"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamperiod"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamfrequencytype"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamfrequency"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamstartdate"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamenddate"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamneedextendedhoursdata"
+          },
+          {
+            "$ref": "#/components/parameters/QueryParamneedpreviousclose"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SingleSymbolCriteriaSearch": {
+                    "$ref": "#/components/examples/SingleSymbolCriteriaSearch"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CandleList"
+                }
+              }
+            },
+            "description": "Get all candles for given date range"
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get PriceHistory for a single symbol and date ranges.",
+        "tags": [
+          "PriceHistory"
+        ]
+      }
+    },
+    "/quotes": {
+      "get": {
+        "operationId": "getQuotes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/quotes-query-param-symbols"
+          },
+          {
+            "$ref": "#/components/parameters/quotes-query-param-fields"
+          },
+          {
+            "$ref": "#/components/parameters/quotes-query-param-indicative"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MultiCriteriaSearch": {
+                    "$ref": "#/components/examples/MultiCriteriaSearch"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            },
+            "description": "Quote Response",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/Schwab-Client-CorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Quotes by list of symbols.",
+        "tags": [
+          "Quotes"
+        ]
+      }
+    },
+    "/{symbol_id}/quotes": {
+      "get": {
+        "operationId": "getQuote",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/quotes-path-param-symbol"
+          },
+          {
+            "$ref": "#/components/parameters/quotes-query-param-fields"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SingleCriteriaSearch": {
+                    "$ref": "#/components/examples/SingleSymbolCriteriaSearch"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteResponse"
+                }
+              }
+            },
+            "description": "Quote Response",
+            "headers": {
+              "Schwab-Client-CorrelId": {
+                "$ref": "#/components/headers/Schwab-Client-CorrelId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ErrorResponse400"
+          },
+          "401": {
+            "$ref": "#/components/responses/ErrorResponse401"
+          },
+          "404": {
+            "$ref": "#/components/responses/ErrorResponse404"
+          },
+          "500": {
+            "$ref": "#/components/responses/ErrorResponse500"
+          }
+        },
+        "summary": "Get Quote by single symbol.",
+        "tags": [
+          "Quotes"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth": [
+        "read",
+        "write"
+      ]
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.schwabapi.com/marketdata/v1"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Get Quotes Web Service.",
+      "name": "Quotes"
+    },
+    {
+      "description": "Get Option Chains Web Service.",
+      "name": "Option Chains"
+    },
+    {
+      "description": "Get Option Expiration Chain Web Service.",
+      "name": "Option Expiration Chain"
+    },
+    {
+      "description": "Get Price History Web Service.",
+      "name": "PriceHistory"
+    },
+    {
+      "description": "Get Movers Web Service.",
+      "name": "Movers"
+    },
+    {
+      "description": "Get MarketHours Web Service.",
+      "name": "MarketHours"
+    },
+    {
+      "description": "Get Instruments Web Service.",
+      "name": "Instruments"
+    }
+  ]
+}
