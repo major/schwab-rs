@@ -23,7 +23,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use base64::Engine;
 use rand::Rng;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderValue};
-use rustls::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
+use rustls::pki_types::{PrivateKeyDer, PrivatePkcs8KeyDer};
 use rustls::{ServerConfig, ServerConnection, StreamOwned};
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex as AsyncMutex;
@@ -964,11 +964,9 @@ fn callback_tls_config() -> Result<ServerConfig> {
             .map_err(|error| {
                 Error::AuthCallback(format!("failed to generate callback TLS cert: {error}"))
             })?;
-    let cert_der = CertificateDer::from(certificate.serialize_der().map_err(|error| {
-        Error::AuthCallback(format!("failed to serialize callback TLS cert: {error}"))
-    })?);
+    let cert_der = certificate.cert.der().clone();
     let key_der = PrivateKeyDer::Pkcs8(PrivatePkcs8KeyDer::from(
-        certificate.serialize_private_key_der(),
+        certificate.signing_key.serialize_der(),
     ));
     ServerConfig::builder()
         .with_no_client_auth()
