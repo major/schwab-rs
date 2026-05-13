@@ -1,6 +1,6 @@
 .PHONY: audit check clippy doc fmt fmt-fix test
 
-CLIPPY_FLAGS := -D clippy::all -A missing_docs -A clippy::needless_borrow -A clippy::large_enum_variant
+CLIPPY_FLAGS := -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
 RUSTDOCFLAGS := -D rustdoc::broken-intra-doc-links -D rustdoc::private-intra-doc-links
 
 check: fmt clippy test doc
