@@ -1,5 +1,5 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(missing_docs)]
+#![deny(missing_docs)]
 
 //! Rust client library for the Schwab API.
 //!
