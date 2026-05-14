@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use super::Number;
 use super::enums::*;
@@ -700,7 +700,7 @@ pub struct Expiration {
 // ---------------------------------------------------------------------------
 
 /// List of price history candles.
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 #[allow(missing_docs)]
 pub struct CandleList {
@@ -714,7 +714,7 @@ pub struct CandleList {
 }
 
 /// Single price history candle (OHLCV).
-#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 #[allow(missing_docs)]
 pub struct Candle {
