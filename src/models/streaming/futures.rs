@@ -2,15 +2,7 @@ use super::super::Number;
 
 /// Parse a JSON value as a [`Number`].
 fn parse_num(v: &serde_json::Value) -> Option<Number> {
-    cfg_select! {
-        feature = "decimal" => {
-            use rust_decimal::prelude::FromPrimitive;
-            v.as_f64().and_then(rust_decimal::Decimal::from_f64)
-        }
-        _ => {
-            v.as_f64()
-        }
-    }
+    serde_json::from_value::<Number>(v.clone()).ok()
 }
 
 /// Field indices for level-one futures streaming data.

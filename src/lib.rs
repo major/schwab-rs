@@ -44,6 +44,8 @@ mod models;
 mod options;
 mod order_builder;
 mod query;
+// The streaming module name shadows the pub use models::* glob re-export of
+// a private options submodule; the shadow is intentional and harmless.
 #[allow(hidden_glob_reexports)]
 mod streaming;
 mod streaming_api;

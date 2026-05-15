@@ -18,7 +18,7 @@ lib.rs
   mod order_builder     # OrderBuilder (private, re-exported)
   mod query             # internal query string helpers
   mod streaming         # WebSocket protocol, transport, StreamingSession engine
-  mod streaming_api     # Client::stream entry point (planned glue)
+  mod streaming_api     # Client::stream entry point, credentials bootstrap
   mod test_support      # #[cfg(test)] helpers
 ```
 
