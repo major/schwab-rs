@@ -1,5 +1,7 @@
 # schwab-rs
 
+> **IMPORTANT**: After every change, update `AGENTS.md`, `src/AGENTS.md`, `src/models/AGENTS.md`, and `README.md` to reflect the current state of the code. Stale docs mislead reviewers and AI agents. Treat doc updates as part of the change, not a follow-up.
+
 Rust client library for the Charles Schwab brokerage API. Library crate only, no binaries.
 
 ## Build and Test
@@ -14,7 +16,7 @@ make doc            # RUSTDOCFLAGS with deny flags, cargo doc --no-deps
 make audit          # cargo audit
 ```
 
-MSRV: 1.85. Edition: 2024. Always test with both default and `decimal` feature.
+MSRV: 1.88. Edition: 2024. Always test with both default and `decimal` feature.
 
 ## Feature Flags
 
@@ -70,7 +72,7 @@ Runs on Ubuntu, macOS, Windows:
 - `fmt` (nightly rustfmt)
 - `clippy` (stable, 3 OS)
 - `test` (stable, 3 OS)
-- `msrv` (Rust 1.85, Ubuntu)
+- `msrv` (Rust 1.88, Ubuntu)
 - `docs` (stable, Ubuntu)
 - `audit` (daily cron + on Cargo.toml/Cargo.lock changes)
 

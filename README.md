@@ -88,7 +88,7 @@ cargo test --features test_online
 
 ## Minimum supported Rust version
 
-Edition 2024, which requires Rust **1.85** or later.
+Edition 2024, which requires Rust **1.88** or later.
 
 ## License
 
