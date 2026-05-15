@@ -1,6 +1,7 @@
 # schwab-rs
 
-> **IMPORTANT**: After every change, update `AGENTS.md`, `src/AGENTS.md`, `src/models/AGENTS.md`, and `README.md` to reflect the current state of the code. Stale docs mislead reviewers and AI agents. Treat doc updates as part of the change, not a follow-up.
+> [!CAUTION]
+> **After every code change, update `AGENTS.md`, `src/AGENTS.md`, `src/models/AGENTS.md`, and `README.md` before considering the work done.** Stale docs mislead reviewers and AI agents. Treat doc updates as part of the change, not a follow-up. Verify claims (signatures, variant lists, line counts, examples) against the actual code - do not copy from memory or prior versions.
 
 Rust client library for the Charles Schwab brokerage API. Library crate only, no binaries.
 
@@ -14,6 +15,7 @@ make clippy         # clippy twice: default features + --features decimal
 make test           # cargo test twice: default features + --features decimal
 make doc            # RUSTDOCFLAGS with deny flags, cargo doc --no-deps
 make audit          # cargo audit
+make coverage       # cargo llvm-cov test --fail-under-lines 90
 ```
 
 MSRV: 1.95. Edition: 2024. Always test with both default and `decimal` feature.
@@ -46,9 +48,10 @@ src/
 - Public API: `Client` + typed async methods returning `schwab::Result<T>`
 - All public async methods: `&self` receiver, `#[instrument(skip_all)]` tracing attribute
 - Two API bases: `MarketData` (`/marketdata/v1`) and `Trader` (`/trader/v1`) via `ApiBase` enum
-- `Config` builder: `Config::new(bearer_token)` with optional base URL overrides
+- `Config` builder: `Config::new()` with `.bearer_token("...")` and optional `.base_url()`/`.trader_base_url()` overrides
 - All response model fields are `Option<T>` (Schwab API returns partial data)
-- All enums are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
+- All enums in `enums.rs` are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
+- Untagged/tagged dispatch enums (`QuoteResponseObject`, `SecuritiesAccount`, `AccountsInstrument`, `TransactionInstrument`) omit `#[non_exhaustive]` since serde cannot deserialize unknown variants for these
 - Clippy: `-D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant`
 - `#![deny(missing_docs)]` in `lib.rs` - all public items require doc comments (compile error if missing)
 - Doc comments: short one-line summaries, action-verb start ("Get", "Place", "Parse")

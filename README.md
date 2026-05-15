@@ -29,7 +29,6 @@ use schwab::{Client, Config, QuoteOptions};
 #[tokio::main]
 async fn main() -> schwab::Result<()> {
     let config = Config::new()
-        .base_url("https://api.schwabapi.com/marketdata/v1")?
         .bearer_token("your-token");
     let client = Client::new(config);
 

@@ -1,5 +1,8 @@
 # src/ - Library Core
 
+> [!CAUTION]
+> **After every code change, update this file, root `AGENTS.md`, `src/models/AGENTS.md`, and `README.md` before considering the work done.** Verify claims (signatures, variant lists, line counts, examples) against the actual code - do not copy from memory or prior versions.
+
 ## Module Architecture
 
 ```text
@@ -25,23 +28,28 @@ Market data and trader endpoints follow the same pattern:
 
 1. Add an `async fn` on `Client` in the appropriate `*_api.rs` file
 2. Use `&self` receiver with `#[instrument(skip_all)]`
-3. Build the URL with `self.endpoint_url(ApiBase::MarketData or Trader, "path")`
-4. Use `self.send_json(&url)` for GET returning JSON, or `self.send_empty(...)` for POST/PUT/DELETE
+3. Build the URL with `self.endpoint_url(ApiBase::MarketData or Trader, &["path", "segments"])`
+4. Use `self.send_json(Method::GET, url, &query, None)` for GET returning JSON, or `self.send_empty(Method::DELETE, url)` for simple POST/PUT/DELETE
 5. Return `Result<T>` where `T` is a model type from `models/`
 
 Example pattern from existing methods:
 
 ```rust
 #[instrument(skip_all)]
-pub async fn get_quote(&self, symbol: &str) -> Result<QuoteResponseObject> {
-    let url = self.endpoint_url(ApiBase::MarketData, &format!("{symbol}/quotes"));
-    self.send_json(&url).await
+pub async fn get_quotes<S>(&self, symbols: impl IntoIterator<Item = S>) -> Result<Quotes>
+where
+    S: AsRef<str>,
+{
+    let symbols = comma_separated_symbols(symbols)?;
+    let url = self.endpoint_url(ApiBase::MarketData, &["quotes"])?;
+    let query = vec![("symbols", symbols)];
+    self.send_json(Method::GET, url, &query, None).await
 }
 ```
 
-For methods with query parameters, build a `Vec<(&str, String)>` using helpers from `query.rs`, then append with `Url::query_pairs_mut().extend_pairs()`.
+For methods with optional query parameters, build a `Vec<(&str, String)>` using helpers from `query.rs` (`push_optional`, `required_text`, etc.).
 
-For POST/PUT with a JSON body, use `self.send_empty()` or `self.send_empty_with_location()` which accept a `reqwest::RequestBuilder`.
+For POST/PUT with a JSON body, use `self.send_empty_with_location(method, url, &body)` which serializes the body and returns an `OrderResponse`.
 
 6. Add a `# Errors` doc section listing specific `Error` variants returned by the method
 7. Use `crate::Error::VariantName` in rustdoc links (private modules cannot resolve bare `Error`)
@@ -49,31 +57,32 @@ For POST/PUT with a JSON body, use `self.send_empty()` or `self.send_empty_with_
 ## Client Internals (`client.rs`)
 
 - `ApiBase` enum selects between market data and trader base URLs
-- `endpoint_url()` joins the base URL with a relative path
-- `send_json()` - GET request, deserialize response as JSON
-- `send_empty()` - send request, return `()` on success
-- `send_empty_with_location()` - send request, extract and return the `Location` header value
+- `endpoint_url(api_base: ApiBase, path_segments: &[&str])` - builds a URL from the base URL and path segments
+- `send_json(method: Method, url: Url, query: &[(&str, String)], body: Option<Value>)` - send request, deserialize response as JSON
+- `send_empty(method: Method, url: Url)` - send request, return `()` on success
+- `send_empty_with_location(method: Method, url: Url, body: &B)` - send request, return `OrderResponse` wrapping the `Location` header
 - All methods attach bearer token via `Authorization` header
-- HTTP errors map to `Error::HttpStatus { code, body }` with body truncated/redacted in Debug
+- HTTP errors map to `Error::HttpStatus { status, body }` with body truncated/redacted in Debug
 
 ## Config (`config.rs`)
 
-- `Config::new(bearer_token)` sets defaults for both API base URLs
-- `base_url()` and `trader_base_url()` override the defaults
+- `Config::new()` creates a config with default API base URLs
+- `.bearer_token("...")` sets the bearer token via builder method
+- `.base_url()` and `.trader_base_url()` override the defaults
 - `normalize_base_url()` ensures trailing slash removal and valid URL parsing
 - `Debug` impl redacts `bearer_token` field
 
 ## Error Handling (`error.rs`)
 
 - `Error` enum uses `thiserror` derive
-- Variants: `HttpStatus`, `Reqwest`, `SerdeJson`, `UrlParse`, `Header`, `Io`, `Auth`, `Token`, `Tls`, `Redirect`
-- Manual `Debug` impl on `Error`: redacts `body` field in `HttpStatus` to `[REDACTED]`
+- Variants: `EmptyBaseUrl`, `InvalidBaseUrl`, `EmptySymbols`, `MissingRequiredParameter`, `InvalidAuthConfig`, `AuthRequired`, `AuthExpired`, `AuthCallback`, `Io`, `Encode`, `Json`, `HttpStatus`, `Request`, `Decode`
+- Manual `Debug` impl on `Error`: redacts `body` field in `HttpStatus` and `Decode` to `[REDACTED]`
 - `Result<T>` is `std::result::Result<T, Error>`
 - Never expose raw HTTP response bodies in error messages or debug output
 
 ## Auth Module (`auth.rs`)
 
-Largest module (1400+ lines). Handles the full OAuth2 PKCE flow:
+Largest module (~1900 lines). Handles the full OAuth2 PKCE flow:
 
 - `AuthConfig` - credentials and OAuth settings
 - `authorize_url()` - build the Schwab authorization URL with PKCE challenge
@@ -129,4 +138,4 @@ Internal functions for building query parameter vectors:
 
 ## Keeping Documentation Current
 
-When modules, public API methods, or internal patterns change, update this file and the root `AGENTS.md`. Also keep `README.md`, `.coderabbit.yaml`, and `.github/copilot-instructions.md` in sync with the actual code.
+When modules, public API methods, or internal patterns change, update this file, root `AGENTS.md`, `src/models/AGENTS.md`, and `README.md`. Also keep `.coderabbit.yaml` and `.github/copilot-instructions.md` in sync with the actual code.
