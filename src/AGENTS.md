@@ -17,10 +17,12 @@ lib.rs
   mod options           # query param builders (private, re-exported individually)
   mod order_builder     # OrderBuilder (private, re-exported)
   mod query             # internal query string helpers
+  mod streaming         # WebSocket protocol, transport, StreamingSession engine
+  mod streaming_api     # Client::stream entry point (planned glue)
   mod test_support      # #[cfg(test)] helpers
 ```
 
-Root re-exports: `Client`, `Config`, `Error`, `Result`, `models::*`, all option builder types, `OrderBuilder`.
+Root re-exports: `Client`, `Config`, `Error`, `Result`, `models::*`, all option builder types, `OrderBuilder`, `StreamingSession`.
 
 ## Adding API Methods
 
@@ -126,10 +128,24 @@ Internal functions for building query parameter vectors:
 - `comma_separated_symbols()` / `comma_separated_symbols_required()` - join symbol lists
 - `push_optional()` - conditionally add optional params
 
+## Streaming Module (`streaming/`)
+
+- `StreamingSession` is non-generic for callers; `StreamingSession::new<T: WsTransport + 'static>` is crate-internal for mockable construction
+- `WsTransport` has a source-local `MockTransport` in `src/streaming/mod.rs` tests; it scripts `next()` responses with `VecDeque<Result<Option<String>>>` and records `send()` payloads for LOGIN/SUBS assertions
+- `subscribe()` returns a `tokio::sync::broadcast::Receiver<StreamEvent>` with a 1024-event buffer
+- `disconnect()` sends LOGOUT through the background task, closes the transport, and stops the loop
+- Level-one subscription methods cover equities, options, futures, futures options, and forex only
+- The message loop uses a biased `tokio::select!` with command handling before reads so ready SUBS commands are acknowledged before an already-ready close/read branch can move into reconnect handling
+- The session stores one active subscription per service and replays stored SUBS commands after reconnect
+- Reconnect policy: 10 attempts, 1s exponential backoff doubled to a 30s cap, 0-500ms jitter, code 3 LOGIN_DENIED stops reconnecting
+- Message dispatch maps supported level-one service names into the matching `StreamData` variants and skips unknown services with a warning
+- `WsTransport` trait methods return `Send` futures so the session loop can run inside `tokio::spawn`
+
 ## Test Patterns
 
 - Inline `#[cfg(test)] mod tests` blocks in each source file
 - `mockito` for HTTP mocking: create a mock server, set expectations, verify request shape
+- Streaming tests use inline `MockTransport` plus golden fixtures under `tests/fixtures/streaming_*.json`; keep them offline and deterministic
 - Tests verify: HTTP method, path, query params, headers, request body, response deserialization
 - `test_support.rs` provides:
   - `n(value)` - convert numeric literals to `Number` (works for both f64 and Decimal)

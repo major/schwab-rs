@@ -36,9 +36,11 @@ src/
   error.rs            # Error enum (thiserror), redacted Debug
   market_data_api.rs  # 11 market data endpoint methods
   trader_api.rs       # 13 trader endpoint methods
+  streaming_api.rs    # Client::stream entry point (planned glue for streaming sessions)
   options.rs          # query parameter builder types
   order_builder.rs    # equity order construction
   query.rs            # query string helpers
+  streaming/          # WebSocket protocol, transport, StreamingSession engine, inline mock-transport tests
   test_support.rs     # test-only helpers (n(), fixture())
   models/             # see src/models/AGENTS.md
 ```
@@ -46,8 +48,11 @@ src/
 ## Conventions
 
 - Public API: `Client` + typed async methods returning `schwab::Result<T>`
+- Root re-exports include `StreamingSession` plus streaming event, data, and field selector model types through `models::*`
 - All public async methods: `&self` receiver, `#[instrument(skip_all)]` tracing attribute
 - Two API bases: `MarketData` (`/marketdata/v1`) and `Trader` (`/trader/v1`) via `ApiBase` enum
+- Streaming engine: `StreamingSession` owns a background WebSocket task, prioritizes queued outbound commands over reads in the loop, exposes `subscribe()` for broadcast `StreamEvent`s, sends LOGOUT through `disconnect()`, and replays level-one subscriptions after reconnect
+- Streaming reconnect policy: 10 attempts, 1s exponential backoff doubled to a 30s cap, 0-500ms jitter, code 3 LOGIN_DENIED stops reconnecting
 - `Config` builder: `Config::new()` with `.bearer_token("...")` and optional `.base_url()`/`.trader_base_url()` overrides
 - All response model fields are `Option<T>` (Schwab API returns partial data)
 - All enums in `enums.rs` are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`

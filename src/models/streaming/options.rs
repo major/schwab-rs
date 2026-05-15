@@ -137,7 +137,7 @@ impl OptionField {
 
 /// Level-one option quote from the Schwab streaming API.
 ///
-/// Built from a raw JSON object via [`from_value`](LevelOneOption::from_value).
+/// Built from a raw JSON object via the crate-internal `from_value` parser.
 /// Metadata fields use string keys; data fields use numeric index keys.
 #[derive(Clone, Debug, Default, PartialEq)]
 #[allow(missing_docs)]
@@ -236,10 +236,7 @@ impl LevelOneOption {
             .get("assetSubType")
             .and_then(|v| v.as_str())
             .map(String::from);
-        result.cusip = obj
-            .get("cusip")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        result.cusip = obj.get("cusip").and_then(|v| v.as_str()).map(String::from);
 
         // Data fields by numeric index
         for (key, val) in obj {

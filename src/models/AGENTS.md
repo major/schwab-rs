@@ -8,9 +8,19 @@
 - `mod.rs` - `Number` type alias, `Quotes`/`Quote` compatibility aliases, re-exports all submodules
 - `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
+- `streaming/` - streaming `StreamEvent`/`StreamData` types plus level-one equities, options, futures, futures options, and forex field/data models
 - `trader.rs` - accounts, orders, transactions, user preferences
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
+
+## Streaming Models
+
+- `StreamEvent` variants: `Data`, `Response`, `Heartbeat`, `Disconnected`, `Reconnecting`, `Reconnected`
+- `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`
+- Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`
+- Streaming data structs parse numeric string keys with crate-internal `from_value()` helpers instead of serde derives because the WebSocket protocol uses field indexes as JSON keys
+- Streaming numeric fields use `Number`, and all streaming data fields remain `Option<T>` because subscriptions may request partial field sets
+- Streaming fixture files under `tests/fixtures/streaming_*.json` cover LOGIN responses, heartbeat notifications, and level-one equity/option numeric-key payloads; keep fixture numbers compatible with both default `Number` and the `decimal` feature
 
 ## Number Type Alias
 
@@ -93,7 +103,7 @@ Used when the API includes a type discriminator field:
 6. Match the serde rename pattern of neighboring types
 7. Use `Number` for all numeric fields, never `f64` or `Decimal` directly
 8. Add the type to the corresponding OpenAPI spec reference in `docs/` if applicable
-9. Test deserialization with a fixture in `tests/fixtures/`
+9. Test deserialization with a fixture in `tests/fixtures/`; streaming fixtures should include numeric string keys plus metadata such as `key` and `delayed`
 10. Verify compilation with both `cargo test` and `cargo test --features decimal`
 
 ## Keeping Documentation Current

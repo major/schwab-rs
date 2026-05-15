@@ -96,7 +96,7 @@ fn parse_num(v: &serde_json::Value) -> Option<Number> {
 
 /// Level-one futures option data from the Schwab streaming API.
 ///
-/// Built from index-keyed JSON via [`from_value`](LevelOneFuturesOption::from_value)
+/// Built from index-keyed JSON via the crate-internal `from_value` parser
 /// rather than serde `Deserialize`, because the streaming API uses numeric
 /// string keys (e.g. `"1"`, `"2"`) instead of named fields.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -163,10 +163,7 @@ impl LevelOneFuturesOption {
             .get("assetSubType")
             .and_then(|v| v.as_str())
             .map(String::from);
-        result.cusip = obj
-            .get("cusip")
-            .and_then(|v| v.as_str())
-            .map(String::from);
+        result.cusip = obj.get("cusip").and_then(|v| v.as_str()).map(String::from);
 
         // String fields (indices 0, 6, 7, 15, 16, 17, 21, 22, 27, 29, 31)
         result.symbol = obj.get("0").and_then(|v| v.as_str()).map(String::from);

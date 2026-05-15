@@ -11,6 +11,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
+- **Streaming** - WebSocket session engine for level-one equities, options, futures, futures options, and forex with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
 - **Async** - built on `tokio` and `reqwest` with `rustls` for TLS
 
@@ -61,6 +62,14 @@ cargo run --example auth
 The auth example writes a token file that `Provider::from_token_file` can refresh and turn into a ready-to-use `Client`. See [`docs/auth.md`](docs/auth.md), [`examples/auth.rs`](examples/auth.rs), and [`examples/quotes.rs`](examples/quotes.rs) for the full flow.
 
 Do not commit Schwab client secrets, authorization codes, access tokens, refresh tokens, token files, or account data. Prefer environment variables or a secret manager for credentials, and see [`SECURITY.md`](SECURITY.md) for reporting and token-handling guidance.
+
+## Streaming
+
+Streaming support is built around `StreamingSession`, which owns a background WebSocket task and broadcasts typed `StreamEvent` values to any number of receivers. The session supports level-one equities, options, futures, futures options, and forex subscriptions. It sends LOGOUT on `disconnect()`, records active subscriptions, and replays them after reconnecting.
+
+The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps level-one data messages into typed equity, option, futures, futures option, and forex payloads.
+
+Reconnect behavior uses 10 attempts with exponential backoff starting at 1 second, doubling to a 30 second cap, plus 0-500ms jitter. A LOGIN_DENIED response with code 3 stops reconnecting so callers can create a new session with fresh credentials.
 
 ## Feature flags
 

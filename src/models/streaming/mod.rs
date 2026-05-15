@@ -11,11 +11,11 @@ pub mod futures_options;
 /// Level-one option streaming data.
 pub mod options;
 
-pub use equities::LevelOneEquity;
-pub use forex::LevelOneForex;
-pub use futures::LevelOneFutures;
-pub use futures_options::LevelOneFuturesOption;
-pub use options::LevelOneOption;
+pub use equities::{EquityField, LevelOneEquity};
+pub use forex::{ForexField, LevelOneForex};
+pub use futures::{FuturesField, LevelOneFutures};
+pub use futures_options::{FuturesOptionField, LevelOneFuturesOption};
+pub use options::{LevelOneOption, OptionField};
 
 /// Event received from the Schwab streaming WebSocket connection.
 #[non_exhaustive]

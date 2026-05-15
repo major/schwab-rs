@@ -313,7 +313,11 @@ mod tests {
     #[test]
     fn all_fields_sequential_indices() {
         for (i, field) in EquityField::all().iter().enumerate() {
-            assert_eq!(field.index() as usize, i, "field at position {i} has wrong index");
+            assert_eq!(
+                field.index() as usize,
+                i,
+                "field at position {i} has wrong index"
+            );
         }
     }
 

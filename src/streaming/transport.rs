@@ -1,7 +1,8 @@
 //! WebSocket transport abstraction for streaming.
 
 use futures_util::{SinkExt, StreamExt};
-use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
+use std::future::Future;
+use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, connect_async, tungstenite::Message};
 
 /// Abstraction over a WebSocket connection for testing and production.
 ///
@@ -10,13 +11,13 @@ use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, Web
 #[allow(missing_docs)]
 pub(crate) trait WsTransport: Sized + Send {
     /// Establish a new WebSocket connection to `url`.
-    async fn connect(url: &str) -> crate::Result<Self>;
+    fn connect(url: &str) -> impl Future<Output = crate::Result<Self>> + Send;
     /// Send a text message over the WebSocket.
-    async fn send(&mut self, msg: String) -> crate::Result<()>;
+    fn send(&mut self, msg: String) -> impl Future<Output = crate::Result<()>> + Send;
     /// Receive the next text message. Returns `None` when the connection closes.
-    async fn next(&mut self) -> crate::Result<Option<String>>;
+    fn next(&mut self) -> impl Future<Output = crate::Result<Option<String>>> + Send;
     /// Close the WebSocket connection gracefully.
-    async fn close(&mut self) -> crate::Result<()>;
+    fn close(&mut self) -> impl Future<Output = crate::Result<()>> + Send;
 }
 
 /// A real WebSocket transport backed by tokio-tungstenite.
@@ -30,9 +31,7 @@ pub(crate) struct TungsteniteTransport {
 
 impl WsTransport for TungsteniteTransport {
     async fn connect(url: &str) -> crate::Result<Self> {
-        let (ws, _response) = connect_async(url)
-            .await
-            .map_err(crate::Error::WebSocket)?;
+        let (ws, _response) = connect_async(url).await.map_err(crate::Error::WebSocket)?;
         Ok(Self { ws })
     }
 
@@ -55,9 +54,6 @@ impl WsTransport for TungsteniteTransport {
     }
 
     async fn close(&mut self) -> crate::Result<()> {
-        self.ws
-            .close(None)
-            .await
-            .map_err(crate::Error::WebSocket)
+        self.ws.close(None).await.map_err(crate::Error::WebSocket)
     }
 }

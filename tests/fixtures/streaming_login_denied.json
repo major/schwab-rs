@@ -1,0 +1,1 @@
+{"response":[{"service":"ADMIN","command":"LOGIN","requestid":1,"SchwabClientCorrelId":"corr","timestamp":1234567890,"content":{"code":3,"msg":"LOGIN_DENIED"}}]}

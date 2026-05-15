@@ -1,0 +1,1 @@
+{"data":[{"service":"LEVELONE_EQUITIES","timestamp":1234567890,"command":"SUBS","content":[{"key":"AAPL","delayed":false,"0":"AAPL","1":150.25,"2":150.5,"3":150.4,"4":100,"5":200}]}]}

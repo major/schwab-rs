@@ -37,9 +37,15 @@ pub(crate) struct StreamRequestItem {
 pub(crate) struct StreamParameters {
     #[serde(rename = "Authorization", skip_serializing_if = "Option::is_none")]
     pub(crate) authorization: Option<String>,
-    #[serde(rename = "SchwabClientChannel", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "SchwabClientChannel",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub(crate) schwab_client_channel: Option<String>,
-    #[serde(rename = "SchwabClientFunctionId", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "SchwabClientFunctionId",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub(crate) schwab_client_function_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) keys: Option<String>,
@@ -67,9 +73,16 @@ pub(crate) struct StreamMessage {
 pub(crate) struct StreamResponseMessage {
     pub(crate) service: Option<String>,
     pub(crate) command: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_string")]
     pub(crate) requestid: Option<String>,
     #[serde(rename = "SchwabClientCorrelId")]
+    // Keep server metadata in the wire model even though current session events
+    // only expose service, command, request ID, code, and message.
+    #[allow(dead_code)]
     pub(crate) schwab_client_correl_id: Option<String>,
+    // Keep server metadata in the wire model for future diagnostics and parity
+    // with Schwab protocol payloads.
+    #[allow(dead_code)]
     pub(crate) timestamp: Option<i64>,
     pub(crate) content: Option<StreamResponseContent>,
 }
@@ -94,7 +107,12 @@ pub(crate) struct StreamNotifyMessage {
 #[derive(Debug, Deserialize)]
 pub(crate) struct StreamDataMessage {
     pub(crate) service: Option<String>,
+    // Preserve server metadata in the parsed data message even though dispatch
+    // currently routes by service and content only.
+    #[allow(dead_code)]
     pub(crate) timestamp: Option<i64>,
+    // Preserve the original command for protocol parity and future diagnostics.
+    #[allow(dead_code)]
     pub(crate) command: Option<String>,
     pub(crate) content: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
 }
@@ -111,6 +129,19 @@ pub(crate) enum ParsedMessage {
     Heartbeat(i64),
     /// A market data update.
     Data(StreamDataMessage),
+}
+
+fn deserialize_optional_string<'de, D>(
+    deserializer: D,
+) -> std::result::Result<Option<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<serde_json::Value>::deserialize(deserializer)?;
+    Ok(value.map(|value| match value {
+        serde_json::Value::String(text) => text,
+        other => other.to_string(),
+    }))
 }
 
 // ── Message parser ────────────────────────────────────────────
@@ -214,6 +245,9 @@ pub(crate) fn build_subs(
 }
 
 /// Build an ADD request (add symbols to existing subscription).
+// Kept with the other protocol builders so future session controls can use the
+// same tested serialization path as LOGIN, LOGOUT, and SUBS.
+#[allow(dead_code)]
 pub(crate) fn build_add(
     request_id: &str,
     service_name: &str,
@@ -234,6 +268,9 @@ pub(crate) fn build_add(
 }
 
 /// Build an UNSUBS (unsubscribe) request.
+// Kept with the other protocol builders so future session controls can use the
+// same tested serialization path as LOGIN, LOGOUT, and SUBS.
+#[allow(dead_code)]
 pub(crate) fn build_unsubs(
     request_id: &str,
     service_name: &str,
@@ -253,6 +290,9 @@ pub(crate) fn build_unsubs(
 }
 
 /// Build a VIEW request (change subscribed fields without changing symbols).
+// Kept with the other protocol builders so future session controls can use the
+// same tested serialization path as LOGIN, LOGOUT, and SUBS.
+#[allow(dead_code)]
 pub(crate) fn build_view(
     request_id: &str,
     service_name: &str,
@@ -317,6 +357,7 @@ fn build_keyed_command(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::fixture;
 
     #[test]
     fn login_top_level_fields() {
@@ -383,5 +424,84 @@ mod tests {
     fn parse_malformed_returns_error() {
         let result = parse_message("not json");
         assert!(matches!(result, Err(crate::Error::StreamProtocol(_))));
+    }
+
+    #[test]
+    fn parse_login_success_fixture_accepts_numeric_request_id() {
+        let msgs = parse_message(&fixture("streaming_login_success.json")).unwrap();
+
+        let ParsedMessage::Response(response) = &msgs[0] else {
+            panic!("expected response message");
+        };
+
+        assert_eq!(response.service.as_deref(), Some("ADMIN"));
+        assert_eq!(response.command.as_deref(), Some("LOGIN"));
+        assert_eq!(response.requestid.as_deref(), Some("1"));
+        assert_eq!(
+            response.content.as_ref().and_then(|content| content.code),
+            Some(0)
+        );
+    }
+
+    #[test]
+    fn parse_login_denied_fixture() {
+        let msgs = parse_message(&fixture("streaming_login_denied.json")).unwrap();
+
+        let ParsedMessage::Response(response) = &msgs[0] else {
+            panic!("expected response message");
+        };
+
+        assert_eq!(
+            response.content.as_ref().and_then(|content| content.code),
+            Some(3)
+        );
+        assert_eq!(
+            response
+                .content
+                .as_ref()
+                .and_then(|content| content.msg.as_deref()),
+            Some("LOGIN_DENIED")
+        );
+    }
+
+    #[test]
+    fn parse_heartbeat_fixture_timestamp() {
+        let msgs = parse_message(&fixture("streaming_heartbeat.json")).unwrap();
+
+        assert!(matches!(msgs[0], ParsedMessage::Heartbeat(1234567890)));
+    }
+
+    #[test]
+    fn parse_equity_data_fixture_shape() {
+        let msgs = parse_message(&fixture("streaming_equity_data.json")).unwrap();
+
+        let ParsedMessage::Data(data) = &msgs[0] else {
+            panic!("expected data message");
+        };
+        let content = data.content.as_ref().expect("fixture has content");
+
+        assert_eq!(data.service.as_deref(), Some("LEVELONE_EQUITIES"));
+        assert_eq!(
+            content[0].get("key").and_then(|value| value.as_str()),
+            Some("AAPL")
+        );
+        assert!(content[0].contains_key("5"));
+    }
+
+    #[test]
+    fn parse_options_data_fixture_shape() {
+        let msgs = parse_message(&fixture("streaming_options_data.json")).unwrap();
+
+        let ParsedMessage::Data(data) = &msgs[0] else {
+            panic!("expected data message");
+        };
+        let content = data.content.as_ref().expect("fixture has content");
+
+        assert_eq!(data.service.as_deref(), Some("LEVELONE_OPTIONS"));
+        assert_eq!(
+            content[0].get("0").and_then(|value| value.as_str()),
+            Some("AAPL  251219C00200000")
+        );
+        assert!(content[0].contains_key("5"));
     }
 }
