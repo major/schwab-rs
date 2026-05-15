@@ -59,6 +59,10 @@ src/
 - Model types use `#[allow(missing_docs)]` since struct fields and enum variants mirror JSON field names
 - Rustdoc links in private modules must use `crate::Error` paths; `pub mod auth` can use bare `Error`
 - US English spelling enforced
+- Rustdoc examples required on all public structs, enums, functions, and async API methods
+- Async network methods use ` ```no_run ` fences with `# async fn example() -> schwab::Result<()> {` boilerplate
+- Sync builders and pure-logic items use plain ` ``` ` fences with compile-time assertions where possible
+- Examples must compile under both default and `decimal` features (use `"1.0".parse().unwrap()` for `Number` literals)
 
 ## Security (Non-Negotiable)
 

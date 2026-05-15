@@ -15,6 +15,21 @@ impl Client {
     /// # Errors
     ///
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let accounts = client.get_accounts(Some("positions")).await?;
+    /// for account in &accounts {
+    ///     println!("{account:?}");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_accounts(&self, fields: Option<&str>) -> Result<Vec<Account>> {
         let url = self.endpoint_url(ApiBase::Trader, &["accounts"])?;
@@ -28,6 +43,21 @@ impl Client {
     /// # Errors
     ///
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let mappings = client.get_account_numbers().await?;
+    /// for mapping in &mappings {
+    ///     println!("{mapping:?}");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_account_numbers(&self) -> Result<Vec<AccountNumberHash>> {
         let url = self.endpoint_url(ApiBase::Trader, &["accounts", "accountNumbers"])?;
@@ -40,6 +70,19 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let account = client.get_account("account-hash", Some("positions")).await?;
+    /// println!("{account:?}");
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_account(
         &self,
@@ -59,6 +102,24 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, OrderListOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let orders = client
+    ///     .get_orders(
+    ///         "account-hash",
+    ///         OrderListOptions::new("2024-01-01T00:00:00Z", "2024-01-31T00:00:00Z")
+    ///             .status("FILLED"),
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_orders(
         &self,
@@ -77,6 +138,21 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, Instruction, OrderBuilder};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quantity = "10".parse().unwrap();
+    /// let order = OrderBuilder::equity_market("AAPL", Instruction::Buy, quantity);
+    /// let response = client.place_order("account-hash", &order).await?;
+    /// println!("order id: {:?}", response.order_id);
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn place_order<B>(
         &self,
@@ -98,6 +174,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// client.cancel_order("account-hash", 9001).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn cancel_order(&self, account_number: impl AsRef<str>, order_id: i64) -> Result<()> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
@@ -115,6 +203,19 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let order = client.get_order("account-hash", 9001).await?;
+    /// println!("{order:?}");
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_order(&self, account_number: impl AsRef<str>, order_id: i64) -> Result<Order> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
@@ -132,6 +233,21 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, Instruction, OrderBuilder};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quantity = "10".parse().unwrap();
+    /// let price = "150.00".parse().unwrap();
+    /// let order = OrderBuilder::equity_limit("AAPL", Instruction::Buy, quantity, price);
+    /// let response = client.replace_order("account-hash", 9001, &order).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn replace_order<B>(
         &self,
@@ -163,6 +279,20 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, Instruction, OrderBuilder};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quantity = "10".parse().unwrap();
+    /// let order = OrderBuilder::equity_market("AAPL", Instruction::Buy, quantity);
+    /// let preview = client.preview_order("account-hash", &order).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn preview_order<B>(
         &self,
@@ -192,6 +322,27 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, TransactionListOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let transactions = client
+    ///     .get_transactions(
+    ///         "account-hash",
+    ///         TransactionListOptions::new(
+    ///             "2024-01-01T00:00:00Z",
+    ///             "2024-01-31T00:00:00Z",
+    ///             "TRADE",
+    ///         ),
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_transactions(
         &self,
@@ -213,6 +364,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `account_number` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let transactions = client.get_transaction_by_id("account-hash", 123).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_transaction_by_id(
         &self,
@@ -233,6 +396,23 @@ impl Client {
     /// # Errors
     ///
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, OrderListOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let orders = client
+    ///     .get_all_orders(OrderListOptions::new(
+    ///         "2024-01-01T00:00:00Z",
+    ///         "2024-01-31T00:00:00Z",
+    ///     ))
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_all_orders(&self, options: OrderListOptions) -> Result<Vec<Order>> {
         let url = self.endpoint_url(ApiBase::Trader, &["orders"])?;
@@ -245,6 +425,18 @@ impl Client {
     /// # Errors
     ///
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let prefs = client.get_user_preference().await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_user_preference(&self) -> Result<Vec<UserPreference>> {
         let url = self.endpoint_url(ApiBase::Trader, &["userPreference"])?;

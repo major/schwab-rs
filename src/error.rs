@@ -2,6 +2,34 @@
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Errors returned by the Schwab client.
+///
+/// # Examples
+///
+/// Match on specific error variants to handle different failure modes:
+///
+/// ```no_run
+/// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+/// use schwab::{Client, Config, Error};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// match client.get_quotes(["AAPL"]).await {
+///     Ok(quotes) => println!("got {} quotes", quotes.len()),
+///     Err(Error::HttpStatus { status: 401, .. }) => eprintln!("token expired"),
+///     Err(Error::HttpStatus { status, .. }) => eprintln!("HTTP {status}"),
+///     Err(e) => eprintln!("other error: {e}"),
+/// }
+/// # Ok(())
+/// # }
+/// ```
+///
+/// Validate configuration before making requests:
+///
+/// ```
+/// use schwab::{Config, Error};
+///
+/// let result = Config::new().base_url("not a url");
+/// assert!(matches!(result, Err(Error::InvalidBaseUrl { .. })));
+/// ```
 #[derive(thiserror::Error)]
 pub enum Error {
     /// The configured base URL was empty or only whitespace.

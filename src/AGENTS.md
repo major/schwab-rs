@@ -53,6 +53,7 @@ For POST/PUT with a JSON body, use `self.send_empty_with_location(method, url, &
 
 6. Add a `# Errors` doc section listing specific `Error` variants returned by the method
 7. Use `crate::Error::VariantName` in rustdoc links (private modules cannot resolve bare `Error`)
+8. Add a `# Examples` section with a `no_run` block showing typical usage (use `# async fn example() -> schwab::Result<()> {` boilerplate)
 
 ## Client Internals (`client.rs`)
 

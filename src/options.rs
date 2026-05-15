@@ -4,6 +4,21 @@ use crate::Result;
 use crate::query::{push_optional, required_text};
 
 /// Optional query parameters for [`crate::Client::get_quotes_with_options`].
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, QuoteOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = QuoteOptions::new()
+///     .fields("quote,reference")
+///     .indicative(true);
+/// let quotes = client.get_quotes_with_options(["AAPL"], options).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct QuoteOptions {
     pub(crate) fields: Option<String>,
@@ -33,6 +48,22 @@ impl QuoteOptions {
 }
 
 /// Optional query parameters for `GET /chains`.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, OptionChainOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = OptionChainOptions::new("AAPL")
+///     .parameter("contractType", "CALL")
+///     .integer_parameter("strikeCount", 5)
+///     .include_underlying_quote(true);
+/// let chain = client.get_option_chain(options).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OptionChainOptions {
     pub(crate) symbol: String,
@@ -91,6 +122,21 @@ impl OptionChainOptions {
 }
 
 /// Optional query parameters for `GET /movers/{symbol_id}`.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, MoverOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = MoverOptions::new()
+///     .sort("VOLUME")
+///     .frequency(5);
+/// let movers = client.get_movers("$DJI", options).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct MoverOptions {
     sort: Option<String>,
@@ -129,6 +175,22 @@ impl MoverOptions {
 }
 
 /// Optional query parameters for `GET /pricehistory`.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, PriceHistoryOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = PriceHistoryOptions::new()
+///     .parameter("periodType", "day")
+///     .integer_parameter("period", 5)
+///     .bool_parameter("needExtendedHoursData", false);
+/// let candles = client.get_price_history("AAPL", options).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct PriceHistoryOptions {
     query: Vec<(&'static str, String)>,
@@ -171,6 +233,21 @@ impl PriceHistoryOptions {
 }
 
 /// Required and optional query parameters shared by Trader order-list endpoints.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, OrderListOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = OrderListOptions::new("2024-01-01T00:00:00Z", "2024-01-31T00:00:00Z")
+///     .max_results(10)
+///     .status("FILLED");
+/// let orders = client.get_orders("account-hash", options).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OrderListOptions {
     from_entered_time: String,
@@ -221,6 +298,26 @@ impl OrderListOptions {
 }
 
 /// Required and optional query parameters for Trader transaction-list endpoints.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config, TransactionListOptions};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let options = TransactionListOptions::new(
+///     "2024-01-01T00:00:00Z",
+///     "2024-01-31T00:00:00Z",
+///     "TRADE",
+/// )
+/// .symbol("AAPL");
+/// let transactions = client
+///     .get_transactions("account-hash", options)
+///     .await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TransactionListOptions {
     start_date: String,

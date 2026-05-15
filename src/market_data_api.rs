@@ -22,6 +22,21 @@ impl Client {
     ///
     /// Returns [`crate::Error::EmptySymbols`] if all provided symbols are empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quotes = client.get_quotes(["AAPL", "MSFT"]).await?;
+    /// for (symbol, quote) in &quotes {
+    ///     println!("{symbol}: {quote:?}");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_quotes<S>(&self, symbols: impl IntoIterator<Item = S>) -> Result<Quotes>
     where
@@ -37,6 +52,23 @@ impl Client {
     ///
     /// Returns [`crate::Error::EmptySymbols`] if all provided symbols are empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, QuoteOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quotes = client
+    ///     .get_quotes_with_options(
+    ///         ["AAPL"],
+    ///         QuoteOptions::new().fields("quote,reference").indicative(true),
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_quotes_with_options<S>(
         &self,
@@ -62,6 +94,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol_id` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let quotes = client.get_quote("AAPL", Some("quote,reference")).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_quote(
         &self,
@@ -81,6 +125,24 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if the symbol is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, OptionChainOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let chain = client
+    ///     .get_option_chain(
+    ///         OptionChainOptions::new("AAPL")
+    ///             .parameter("contractType", "CALL")
+    ///             .integer_parameter("strikeCount", 5),
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_option_chain(&self, options: OptionChainOptions) -> Result<OptionChain> {
         required_text("symbol", &options.symbol)?;
@@ -95,6 +157,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let expirations = client.get_expiration_chain("AAPL").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_expiration_chain(&self, symbol: impl AsRef<str>) -> Result<ExpirationChain> {
         let symbol = required_text("symbol", symbol.as_ref())?;
@@ -109,6 +183,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` or `projection` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let results = client.get_instruments("AAPL", "symbol-search").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_instruments(
         &self,
@@ -136,6 +222,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `cusip_id` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let instrument = client.get_instrument_by_cusip("037833100").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_instrument_by_cusip(
         &self,
@@ -152,6 +250,20 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if all market values are empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let hours = client
+    ///     .get_market_hours(["equity", "option"], Some("2024-01-02"))
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_market_hours<S>(
         &self,
@@ -174,6 +286,18 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `market_id` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let hours = client.get_market_hour("equity", Some("2024-01-02")).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_market_hour(
         &self,
@@ -193,6 +317,20 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol_id` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, MoverOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let movers = client
+    ///     .get_movers("$DJI", MoverOptions::new().sort("VOLUME").frequency(5))
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_movers(
         &self,
@@ -211,6 +349,25 @@ impl Client {
     ///
     /// Returns [`crate::Error::MissingRequiredParameter`] if `symbol` is empty.
     /// Returns an [`Error`](crate::Error) if the request fails or the response cannot be decoded.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, PriceHistoryOptions};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("my-token"));
+    /// let candles = client
+    ///     .get_price_history(
+    ///         "AAPL",
+    ///         PriceHistoryOptions::new()
+    ///             .parameter("periodType", "day")
+    ///             .integer_parameter("period", 5),
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[instrument(skip_all)]
     pub async fn get_price_history(
         &self,

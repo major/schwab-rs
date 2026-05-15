@@ -41,6 +41,22 @@ const CALLBACK_READ_LIMIT: usize = 8192;
 const OAUTH_ERROR_BODY_LIMIT: usize = 1024 * 1024;
 
 /// Schwab OAuth configuration used by the browser login flow.
+///
+/// # Examples
+///
+/// ```
+/// use schwab::auth::AuthConfig;
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )
+/// .unwrap();
+///
+/// assert_eq!(config.client_id(), "my-app-key");
+/// assert_eq!(config.callback_url(), "https://127.0.0.1:8182/callback");
+/// ```
 #[derive(Clone, Eq, PartialEq)]
 pub struct AuthConfig {
     client_id: String,
@@ -226,6 +242,15 @@ pub trait TokenStore: Send + Sync {
 }
 
 /// JSON token store backed by a file with owner-only permissions on Unix.
+///
+/// # Examples
+///
+/// ```no_run
+/// use schwab::auth::FileTokenStore;
+///
+/// let store = FileTokenStore::new("~/.config/schwab/token.json");
+/// assert_eq!(store.path().to_str().unwrap(), "~/.config/schwab/token.json");
+/// ```
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FileTokenStore {
     path: PathBuf,
@@ -278,6 +303,14 @@ impl TokenStore for FileTokenStore {
 }
 
 /// In-memory token store useful for tests and short-lived tools.
+///
+/// # Examples
+///
+/// ```
+/// use schwab::auth::MemoryTokenStore;
+///
+/// let store = MemoryTokenStore::new();
+/// ```
 #[derive(Debug, Default)]
 pub struct MemoryTokenStore {
     token_file: Mutex<Option<TokenFile>>,
@@ -311,6 +344,28 @@ impl TokenStore for MemoryTokenStore {
 }
 
 /// Refresh-capable OAuth token provider.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::auth::{AuthConfig, FileTokenStore, Provider};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )?;
+/// let provider = Provider::from_token_file(config, "schwab-token.json")?;
+///
+/// // Get a valid access token, refreshing automatically if needed.
+/// let token = provider.token().await?;
+///
+/// // Build a ready-to-use API client from the current token.
+/// let client = provider.client().await?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct Provider {
     config: AuthConfig,
     store: Arc<dyn TokenStore>,
@@ -443,6 +498,23 @@ impl Provider {
 
 /// Builds a Schwab authorization URL and CSRF state for the browser flow.
 ///
+/// # Examples
+///
+/// ```
+/// use schwab::auth::{self, AuthConfig};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )
+/// .unwrap();
+/// let context = auth::authorize_url(&config).unwrap();
+///
+/// assert!(context.authorization_url.contains("response_type=code"));
+/// assert!(context.authorization_url.contains("client_id=my-app-key"));
+/// ```
+///
 /// # Errors
 ///
 /// Returns [`crate::Error::InvalidAuthConfig`] if the auth configuration is invalid.
@@ -467,6 +539,23 @@ fn authorize_url_with_state(config: &AuthConfig, state: &str) -> Result<AuthCont
 }
 
 /// Exchanges an authorization code for an initial token file.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::auth::{self, AuthConfig};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )?;
+/// let token_file = auth::exchange_code(&config, "authorization-code").await?;
+/// println!("token expires at: {:?}", token_file.token.expires_at);
+/// # Ok(())
+/// # }
+/// ```
 ///
 /// # Errors
 ///
@@ -512,6 +601,23 @@ async fn exchange_code_with_client(
 /// Returns an error if the URL is malformed, carries an OAuth error, is
 /// missing the `code` or `state` parameters, or the `state` does not match
 /// the [`AuthContext`] (CSRF check).
+///
+/// # Examples
+///
+/// ```
+/// use schwab::auth::{self, AuthContext};
+///
+/// let context = AuthContext {
+///     callback_url: "https://127.0.0.1:8182/callback".to_string(),
+///     authorization_url: String::new(),
+///     state: "my-state".to_string(),
+/// };
+/// let redirect = "https://127.0.0.1:8182/callback?code=AUTH_CODE&state=my-state";
+/// let result = auth::parse_redirect_url(&context, redirect).unwrap();
+///
+/// assert_eq!(result.code, "AUTH_CODE");
+/// assert_eq!(result.state, "my-state");
+/// ```
 pub fn parse_redirect_url(
     auth_context: &AuthContext,
     redirect_url: &str,
@@ -607,6 +713,25 @@ where
 
 /// Refreshes a token file while preserving the original creation timestamp.
 ///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::auth::{self, AuthConfig, FileTokenStore, TokenStore};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )?;
+/// let store = FileTokenStore::new("token.json");
+/// let token_file = store.load()?;
+/// let refreshed = auth::refresh_token_file(&config, &token_file).await?;
+/// store.save(&refreshed)?;
+/// # Ok(())
+/// # }
+/// ```
+///
 /// # Errors
 ///
 /// Returns [`crate::Error::AuthExpired`] if the refresh token is missing or has expired.
@@ -684,6 +809,26 @@ async fn token_request(
 
 /// Starts the full login flow and calls `url_handler` with the authorization URL.
 ///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::auth::{self, AuthConfig, FileTokenStore};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )?;
+/// let provider = auth::login(config, FileTokenStore::new("token.json"), |url| {
+///     println!("Open this URL in your browser: {url}");
+///     Ok(())
+/// })
+/// .await?;
+/// # Ok(())
+/// # }
+/// ```
+///
 /// # Errors
 ///
 /// Returns an [`Error`] if the callback listener fails to start, `url_handler`
@@ -700,6 +845,24 @@ where
 }
 
 /// Starts the callback listener and returns a one-shot login session.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::auth::{self, AuthConfig, FileTokenStore};
+///
+/// let config = AuthConfig::new(
+///     "my-app-key",
+///     "my-app-secret",
+///     "https://127.0.0.1:8182/callback",
+/// )?;
+/// let session = auth::start_login(config, FileTokenStore::new("token.json"))?;
+/// println!("Open: {}", session.auth_context().authorization_url);
+/// let provider = session.wait().await?;
+/// # Ok(())
+/// # }
+/// ```
 ///
 /// # Errors
 ///

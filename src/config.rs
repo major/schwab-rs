@@ -4,6 +4,28 @@ const DEFAULT_MARKET_DATA_BASE_URL: &str = "https://api.schwabapi.com/marketdata
 const DEFAULT_TRADER_BASE_URL: &str = "https://api.schwabapi.com/trader/v1";
 
 /// Configuration used to create a [`crate::Client`].
+///
+/// # Examples
+///
+/// Use default Schwab production URLs with a bearer token:
+///
+/// ```
+/// use schwab::Config;
+///
+/// let config = Config::new()
+///     .bearer_token("my-access-token");
+/// ```
+///
+/// Override the market data base URL (useful for testing):
+///
+/// ```
+/// use schwab::Config;
+///
+/// let config = Config::new()
+///     .base_url("http://localhost:8080/marketdata/v1")
+///     .unwrap()
+///     .bearer_token("my-access-token");
+/// ```
 #[derive(Clone, Eq, PartialEq)]
 pub struct Config {
     pub(crate) market_data_base_url: String,
@@ -48,6 +70,16 @@ impl Config {
     ///
     /// Returns [`crate::Error::EmptyBaseUrl`] if the URL is empty or
     /// [`crate::Error::InvalidBaseUrl`] if it cannot be parsed.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use schwab::Config;
+    ///
+    /// let config = Config::new()
+    ///     .base_url("http://localhost:8080/marketdata/v1")
+    ///     .unwrap();
+    /// ```
     pub fn base_url(mut self, base_url: impl Into<String>) -> Result<Self> {
         self.market_data_base_url = normalize_base_url(base_url)?;
         Ok(self)
@@ -59,6 +91,16 @@ impl Config {
     ///
     /// Returns [`crate::Error::EmptyBaseUrl`] if the URL is empty or
     /// [`crate::Error::InvalidBaseUrl`] if it cannot be parsed.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use schwab::Config;
+    ///
+    /// let config = Config::new()
+    ///     .trader_base_url("http://localhost:8080/trader/v1")
+    ///     .unwrap();
+    /// ```
     pub fn trader_base_url(mut self, base_url: impl Into<String>) -> Result<Self> {
         self.trader_base_url = normalize_base_url(base_url)?;
         Ok(self)

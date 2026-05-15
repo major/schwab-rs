@@ -4,6 +4,30 @@ use serde::{Serialize, de::DeserializeOwned};
 use crate::{Config, Error, OrderResponse, Result};
 
 /// Schwab API client.
+///
+/// # Examples
+///
+/// Create a client with default Schwab production URLs:
+///
+/// ```
+/// use schwab::{Client, Config};
+///
+/// let config = Config::new()
+///     .bearer_token("my-access-token");
+/// let client = Client::new(config);
+/// ```
+///
+/// Fetch quotes (requires a valid bearer token):
+///
+/// ```no_run
+/// # async fn example() -> schwab::Result<()> {
+/// use schwab::{Client, Config};
+///
+/// let client = Client::new(Config::new().bearer_token("my-token"));
+/// let quotes = client.get_quotes(["AAPL", "MSFT"]).await?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone)]
 pub struct Client {
     pub(crate) config: Config,
