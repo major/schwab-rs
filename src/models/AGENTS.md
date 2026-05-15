@@ -8,7 +8,7 @@
 - `mod.rs` - `Number` type alias, `Quotes`/`Quote` compatibility aliases, re-exports all submodules
 - `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
-- `streaming/` - streaming `StreamEvent`/`StreamData` types plus level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option field/data models
+- `streaming/` - streaming `StreamEvent`/`StreamData` types plus level-one equities, options, futures, futures options, forex, chart equity, chart futures, level-two book, screener equity, and screener option field/data models
 - `trader.rs` - accounts, orders, transactions, user preferences
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
@@ -16,13 +16,14 @@ Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` 
 ## Streaming Models
 
 - `StreamEvent` variants: `Data`, `Response`, `Heartbeat`, `Disconnected`, `Reconnecting`, `Reconnected`
-- `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`, `ChartEquities`, `ChartFutures`, `ScreenerEquities`, `ScreenerOptions`
-- Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`, `ChartEquityField`, `ChartFuturesField`, `ScreenerEquityField`, `ScreenerOptionField`
+- `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`, `ChartEquities`, `ChartFutures`, `NyseBooks`, `NasdaqBooks`, `OptionsBooks`, `ScreenerEquities`, `ScreenerOptions`
+- Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`, `ChartEquityField`, `ChartFuturesField`, `BookField`, `ScreenerEquityField`, `ScreenerOptionField`
+- `Book`, `BookPriceLevel`, and `BookMarketMaker` model the shared nested payload shape used by `NYSE_BOOK`, `NASDAQ_BOOK`, and `OPTIONS_BOOK`; book price levels and market makers may arrive as array rows or numeric-keyed objects
 - `ScreenerItem` struct is defined in `screener_equity.rs` and shared with `screener_option.rs`; both screener data types use `Option<Vec<ScreenerItem>>` for the nested items array (field index 4)
 - Streaming data structs parse numeric string keys with crate-internal `from_value()` helpers instead of serde derives because the WebSocket protocol uses field indexes as JSON keys
 - `from_value()` helpers initialize named metadata in struct literals first, then fill numeric index fields, which keeps partial subscription parsing readable and satisfies `clippy::field_reassign_with_default`
 - Streaming numeric fields use `Number`, and all streaming data fields remain `Option<T>` because subscriptions may request partial field sets
-- Streaming fixture files under `tests/fixtures/streaming_*.json` cover LOGIN responses, heartbeat notifications, level-one equity/option numeric-key payloads, chart OHLCV data, and screener data with nested items arrays; keep fixture numbers compatible with both default `Number` and the `decimal` feature
+- Streaming fixture files under `tests/fixtures/streaming_*.json` cover LOGIN responses, heartbeat notifications, level-one equity/option numeric-key payloads, chart OHLCV data, book data with nested price levels and market makers, and screener data with nested items arrays; keep fixture numbers compatible with both default `Number` and the `decimal` feature
 
 ## Number Type Alias
 

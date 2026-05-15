@@ -11,7 +11,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
-- **Streaming** - WebSocket session engine for level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
+- **Streaming** - WebSocket session engine for level-one equities, options, futures, futures options, forex, chart equity, chart futures, NYSE/NASDAQ/options books, screener equity, and screener option with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
 - **Async** - built on `tokio` and `reqwest` with `rustls` for TLS
 
@@ -65,9 +65,9 @@ Do not commit Schwab client secrets, authorization codes, access tokens, refresh
 
 ## Streaming
 
-Streaming support is built around `StreamingSession`, which owns a background WebSocket task and broadcasts typed `StreamEvent` values to any number of receivers. The session supports level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option subscriptions. It sends LOGOUT on `disconnect()`, records active subscriptions, and replays them after reconnecting.
+Streaming support is built around `StreamingSession`, which owns a background WebSocket task and broadcasts typed `StreamEvent` values to any number of receivers. The session supports level-one equities, options, futures, futures options, forex, chart equity, chart futures, NYSE book, NASDAQ book, options book, screener equity, and screener option subscriptions. It sends LOGOUT on `disconnect()`, records active subscriptions, and replays them after reconnecting.
 
-The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps data messages into typed level-one, chart, and screener payloads.
+The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps data messages into typed level-one, chart, book, and screener payloads.
 
 WebSocket transport failures surface as `Error::WebSocket`, while HTTP response bodies remain redacted in debug output.
 
@@ -101,6 +101,32 @@ while let Ok(event) = rx.recv().await {
     }
 }
 session.disconnect().await?;
+# Ok(())
+# }
+```
+
+Book streams use the shared `BookField` selector and return `Book` snapshots through service-specific `StreamData` variants:
+
+```rust,no_run
+use schwab::{BookField, Client, Config, StreamData, StreamEvent};
+
+# async fn example() -> schwab::Result<()> {
+let client = Client::new(Config::new().bearer_token("your-token"));
+let session = client.stream().await?;
+let mut rx = session.subscribe();
+
+session.subscribe_nasdaq_book(
+    &["AAPL", "MSFT"],
+    &[BookField::Symbol, BookField::BidSideLevels, BookField::AskSideLevels],
+).await?;
+
+while let Ok(event) = rx.recv().await {
+    if let StreamEvent::Data(StreamData::NasdaqBooks(books)) = event {
+        for book in books {
+            println!("{:?}", book.bid_side_levels);
+        }
+    }
+}
 # Ok(())
 # }
 ```
