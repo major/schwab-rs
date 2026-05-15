@@ -5,9 +5,11 @@ use std::sync::Arc;
 use tokio::sync::{Mutex, broadcast, mpsc, oneshot};
 
 use crate::models::streaming::{
-    LevelOneEquity, LevelOneForex, LevelOneFutures, LevelOneFuturesOption, LevelOneOption,
-    StreamData, StreamEvent, StreamResponse, equities::EquityField, forex::ForexField,
-    futures::FuturesField, futures_options::FuturesOptionField, options::OptionField,
+    ChartEquity, ChartFutures, LevelOneEquity, LevelOneForex, LevelOneFutures,
+    LevelOneFuturesOption, LevelOneOption, StreamData, StreamEvent, StreamResponse,
+    chart_equity::ChartEquityField, chart_futures::ChartFuturesField, equities::EquityField,
+    forex::ForexField, futures::FuturesField, futures_options::FuturesOptionField,
+    options::OptionField,
 };
 use crate::stream_session::protocol::ParsedMessage;
 use crate::stream_session::transport::WsTransport;
@@ -342,6 +344,78 @@ impl StreamingSession {
             .await
     }
 
+    /// Subscribe to equity chart data for the given symbols.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `symbols` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, ChartEquityField};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session.subscribe_chart_equity(
+    ///     &["AAPL", "MSFT"],
+    ///     &[ChartEquityField::OpenPrice, ChartEquityField::ClosePrice],
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_chart_equity(
+        &self,
+        symbols: &[&str],
+        fields: &[ChartEquityField],
+    ) -> crate::Result<()> {
+        let field_indices = fields
+            .iter()
+            .map(ChartEquityField::index)
+            .collect::<Vec<_>>();
+        self.subscribe_service("7", "CHART_EQUITY", symbols, field_indices)
+            .await
+    }
+
+    /// Subscribe to futures chart data for the given symbols.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `symbols` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{Client, Config, ChartFuturesField};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session.subscribe_chart_futures(
+    ///     &["/ESM25"],
+    ///     &[ChartFuturesField::OpenPrice, ChartFuturesField::ClosePrice],
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_chart_futures(
+        &self,
+        symbols: &[&str],
+        fields: &[ChartFuturesField],
+    ) -> crate::Result<()> {
+        let field_indices = fields
+            .iter()
+            .map(ChartFuturesField::index)
+            .collect::<Vec<_>>();
+        self.subscribe_service("8", "CHART_FUTURES", symbols, field_indices)
+            .await
+    }
+
     async fn subscribe_service(
         &self,
         request_id: &str,
@@ -654,6 +728,14 @@ fn parse_data_message(data_message: protocol::StreamDataMessage) -> Option<Strea
             &content,
             LevelOneForex::from_value,
         ))),
+        "CHART_EQUITY" => Some(StreamData::ChartEquities(parse_items(
+            &content,
+            ChartEquity::from_value,
+        ))),
+        "CHART_FUTURES" => Some(StreamData::ChartFutures(parse_items(
+            &content,
+            ChartFutures::from_value,
+        ))),
         other => {
             tracing::warn!("unknown streaming service: {other}");
             None
@@ -783,7 +865,9 @@ mod tests {
 
     use super::*;
     use crate::{
-        models::streaming::options::OptionField,
+        models::streaming::{
+            chart_equity::ChartEquityField, chart_futures::ChartFuturesField, options::OptionField,
+        },
         test_support::{fixture, n},
     };
 
@@ -1034,5 +1118,131 @@ mod tests {
         assert_eq!(item["service"], "LEVELONE_OPTIONS");
         assert_eq!(item["command"], "SUBS");
         assert_eq!(item["parameters"]["fields"], "0,2");
+    }
+
+    #[tokio::test]
+    async fn session_receives_chart_equity_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_chart_equity_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::ChartEquities(charts)) = next_event(&mut events).await
+        else {
+            panic!("expected chart equity data event");
+        };
+
+        assert_eq!(charts.len(), 1);
+        assert_eq!(charts[0].key.as_deref(), Some("AAPL"));
+        assert_eq!(charts[0].open_price, Some(n(150.25)));
+        assert_eq!(charts[0].volume, Some(1000000));
+        assert_eq!(charts[0].chart_time, Some(1234567890000));
+    }
+
+    #[tokio::test]
+    async fn session_receives_chart_futures_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_chart_futures_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::ChartFutures(charts)) = next_event(&mut events).await
+        else {
+            panic!("expected chart futures data event");
+        };
+
+        assert_eq!(charts.len(), 1);
+        assert_eq!(charts[0].key.as_deref(), Some("/ESM25"));
+        assert_eq!(charts[0].open_price, Some(n(5500.25)));
+        assert_eq!(charts[0].volume, Some(50000));
+        assert_eq!(charts[0].chart_time, Some(1234567890000));
+    }
+
+    #[test]
+    fn parse_chart_equity_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_chart_equity_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::ChartEquities(charts)) = parse_data_message(data) else {
+            panic!("expected parsed chart equities");
+        };
+
+        assert_eq!(charts[0].high_price, Some(n(151.0)));
+        assert_eq!(charts[0].sequence, Some(123));
+    }
+
+    #[test]
+    fn parse_chart_futures_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_chart_futures_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::ChartFutures(charts)) = parse_data_message(data) else {
+            panic!("expected parsed chart futures");
+        };
+
+        assert_eq!(charts[0].high_price, Some(n(5510.0)));
+        assert_eq!(charts[0].close_price, Some(n(5505.75)));
+    }
+
+    #[tokio::test]
+    async fn session_subscribe_chart_equity_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_chart_equity(
+                &["AAPL"],
+                &[ChartEquityField::OpenPrice, ChartEquityField::ClosePrice],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "CHART_EQUITY");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["fields"], "1,4");
+    }
+
+    #[tokio::test]
+    async fn session_subscribe_chart_futures_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_chart_futures(
+                &["/ESM25"],
+                &[ChartFuturesField::OpenPrice, ChartFuturesField::ClosePrice],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "CHART_FUTURES");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["fields"], "2,5");
     }
 }

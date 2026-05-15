@@ -1,5 +1,9 @@
 //! Streaming event types for the Schwab WebSocket API.
 
+/// Equity chart streaming data.
+pub mod chart_equity;
+/// Futures chart streaming data.
+pub mod chart_futures;
 /// Level-one equity streaming data.
 pub mod equities;
 /// Level-one forex streaming data.
@@ -11,6 +15,8 @@ pub mod futures_options;
 /// Level-one option streaming data.
 pub mod options;
 
+pub use chart_equity::{ChartEquity, ChartEquityField};
+pub use chart_futures::{ChartFutures, ChartFuturesField};
 pub use equities::{EquityField, LevelOneEquity};
 pub use forex::{ForexField, LevelOneForex};
 pub use futures::{FuturesField, LevelOneFutures};
@@ -68,6 +74,8 @@ pub enum StreamData {
     LevelOneFutures(Vec<LevelOneFutures>),
     LevelOneFuturesOptions(Vec<LevelOneFuturesOption>),
     LevelOneForex(Vec<LevelOneForex>),
+    ChartEquities(Vec<ChartEquity>),
+    ChartFutures(Vec<ChartFutures>),
 }
 
 /// Acknowledgement returned by the Schwab streaming server for a command request.

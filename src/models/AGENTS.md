@@ -8,7 +8,7 @@
 - `mod.rs` - `Number` type alias, `Quotes`/`Quote` compatibility aliases, re-exports all submodules
 - `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
-- `streaming/` - streaming `StreamEvent`/`StreamData` types plus level-one equities, options, futures, futures options, and forex field/data models
+- `streaming/` - streaming `StreamEvent`/`StreamData` types plus level-one equities, options, futures, futures options, forex, chart equity, and chart futures field/data models
 - `trader.rs` - accounts, orders, transactions, user preferences
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
@@ -16,8 +16,8 @@ Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` 
 ## Streaming Models
 
 - `StreamEvent` variants: `Data`, `Response`, `Heartbeat`, `Disconnected`, `Reconnecting`, `Reconnected`
-- `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`
-- Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`
+- `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`, `ChartEquities`, `ChartFutures`
+- Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`, `ChartEquityField`, `ChartFuturesField`
 - Streaming data structs parse numeric string keys with crate-internal `from_value()` helpers instead of serde derives because the WebSocket protocol uses field indexes as JSON keys
 - `from_value()` helpers initialize named metadata in struct literals first, then fill numeric index fields, which keeps partial subscription parsing readable and satisfies `clippy::field_reassign_with_default`
 - Streaming numeric fields use `Number`, and all streaming data fields remain `Option<T>` because subscriptions may request partial field sets
