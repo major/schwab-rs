@@ -1,9 +1,12 @@
 # src/models/ - API Response Types
 
+> [!CAUTION]
+> **After every code change, update this file, root `AGENTS.md`, `src/AGENTS.md`, and `README.md` before considering the work done.** Verify claims (signatures, variant lists, line counts, examples) against the actual code - do not copy from memory or prior versions.
+
 ## Module Structure
 
 - `mod.rs` - `Number` type alias, `Quotes`/`Quote` compatibility aliases, re-exports all submodules
-- `enums.rs` - ~50 enums shared across market data and trader APIs
+- `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
 - `trader.rs` - accounts, orders, transactions, user preferences
 
@@ -30,9 +33,9 @@ All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. 
 
 Schwab's API returns partial data. Every response struct field must be `Option<T>`. No exceptions.
 
-### All enums are `#[non_exhaustive]`
+### Enums in `enums.rs` are `#[non_exhaustive]`
 
-Schwab may add new variants at any time. Every enum gets `#[non_exhaustive]` so downstream code is forced to handle unknown variants.
+Schwab may add new variants at any time. Every enum in `enums.rs` gets `#[non_exhaustive]` so downstream code is forced to handle unknown variants. Untagged/tagged dispatch enums (`QuoteResponseObject`, `SecuritiesAccount`, `AccountsInstrument`, `TransactionInstrument`) omit `#[non_exhaustive]` since serde cannot deserialize unknown variants for these.
 
 ### Derive conventions
 
