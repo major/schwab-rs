@@ -182,14 +182,17 @@ mod tests {
     use super::*;
     use crate::test_support::n;
 
-    #[cfg(not(feature = "decimal"))]
-    fn expected_number(value: f64) -> serde_json::Value {
-        serde_json::json!(value)
-    }
-
-    #[cfg(feature = "decimal")]
-    fn expected_number(value: f64) -> serde_json::Value {
-        serde_json::json!(n(value).to_string())
+    cfg_select! {
+        feature = "decimal" => {
+            fn expected_number(value: f64) -> serde_json::Value {
+                serde_json::json!(n(value).to_string())
+            }
+        }
+        _ => {
+            fn expected_number(value: f64) -> serde_json::Value {
+                serde_json::json!(value)
+            }
+        }
     }
 
     /// Market order serializes with required fields and no price.

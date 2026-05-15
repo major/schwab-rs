@@ -1,20 +1,27 @@
 use crate::models::Number;
 
-/// Convert an `f64` literal to [`Number`] for use in test assertions.
-///
-/// When the `decimal` feature is off this is a no-op; when it is on the value
-/// is converted via `Decimal::from_f64`, which mirrors the `serde-with-float`
-/// deserialization path so assertions stay consistent.
-#[cfg(not(feature = "decimal"))]
-pub(crate) fn n(v: f64) -> Number {
-    v
-}
-
-/// Convert an `f64` literal to [`Number`] for use in test assertions.
-#[cfg(feature = "decimal")]
-pub(crate) fn n(v: f64) -> Number {
-    use rust_decimal::prelude::FromPrimitive;
-    rust_decimal::Decimal::from_f64(v).expect("f64 -> Decimal conversion failed in test")
+cfg_select! {
+    feature = "decimal" => {
+        /// Convert an `f64` literal to [`Number`] for use in test assertions.
+        ///
+        /// When the `decimal` feature is on the value is converted via
+        /// `Decimal::from_f64`, which mirrors the `serde-with-float`
+        /// deserialization path so assertions stay consistent.
+        pub(crate) fn n(v: f64) -> Number {
+            use rust_decimal::prelude::FromPrimitive;
+            rust_decimal::Decimal::from_f64(v).expect("f64 -> Decimal conversion failed in test")
+        }
+    }
+    _ => {
+        /// Convert an `f64` literal to [`Number`] for use in test assertions.
+        ///
+        /// When the `decimal` feature is off this is a no-op; when it is on the
+        /// value is converted via `Decimal::from_f64`, which mirrors the
+        /// `serde-with-float` deserialization path so assertions stay consistent.
+        pub(crate) fn n(v: f64) -> Number {
+            v
+        }
+    }
 }
 
 /// Load a golden JSON fixture file from `tests/fixtures/`.

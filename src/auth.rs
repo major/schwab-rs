@@ -718,7 +718,7 @@ where
         auth_context,
         callback_server,
         http: reqwest::Client::new(),
-        timeout: Some(Duration::from_secs(300)),
+        timeout: Some(Duration::from_mins(5)),
     })
 }
 

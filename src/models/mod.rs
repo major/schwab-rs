@@ -9,19 +9,23 @@ pub use enums::*;
 pub use market_data::*;
 pub use trader::*;
 
-/// Numeric type for financial values.
-///
-/// Defaults to [`f64`]. Enable the `decimal` crate feature to switch to
-/// `rust_decimal::Decimal`, which avoids floating-point rounding in
-/// financial calculations.
-#[cfg(not(feature = "decimal"))]
-pub type Number = f64;
-
-/// Numeric type for financial values backed by [`rust_decimal::Decimal`].
-///
-/// Activated by the `decimal` crate feature.
-#[cfg(feature = "decimal")]
-pub type Number = rust_decimal::Decimal;
+cfg_select! {
+    feature = "decimal" => {
+        /// Numeric type for financial values backed by [`rust_decimal::Decimal`].
+        ///
+        /// Activated by the `decimal` crate feature to avoid floating-point
+        /// rounding in financial calculations.
+        pub type Number = rust_decimal::Decimal;
+    }
+    _ => {
+        /// Numeric type for financial values.
+        ///
+        /// Defaults to [`f64`]. Enable the `decimal` crate feature to switch to
+        /// `rust_decimal::Decimal`, which avoids floating-point rounding in
+        /// financial calculations.
+        pub type Number = f64;
+    }
+}
 
 /// Compatibility alias: use `market_data::QuoteResponse` for new code.
 pub type Quotes = market_data::QuoteResponse;

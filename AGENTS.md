@@ -16,7 +16,7 @@ make doc            # RUSTDOCFLAGS with deny flags, cargo doc --no-deps
 make audit          # cargo audit
 ```
 
-MSRV: 1.88. Edition: 2024. Always test with both default and `decimal` feature.
+MSRV: 1.95. Edition: 2024. Always test with both default and `decimal` feature.
 
 ## Feature Flags
 
@@ -72,7 +72,7 @@ Runs on Ubuntu, macOS, Windows:
 - `fmt` (nightly rustfmt)
 - `clippy` (stable, 3 OS)
 - `test` (stable, 3 OS)
-- `msrv` (Rust 1.88, Ubuntu)
+- `msrv` (Rust 1.95, Ubuntu)
 - `docs` (stable, Ubuntu)
 - `audit` (daily cron + on Cargo.toml/Cargo.lock changes)
 

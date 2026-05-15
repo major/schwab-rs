@@ -12,11 +12,14 @@ Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` 
 ## Number Type Alias
 
 ```rust
-#[cfg(not(feature = "decimal"))]
-pub type Number = f64;
-
-#[cfg(feature = "decimal")]
-pub type Number = rust_decimal::Decimal;
+cfg_select! {
+    feature = "decimal" => {
+        pub type Number = rust_decimal::Decimal;
+    }
+    _ => {
+        pub type Number = f64;
+    }
+}
 ```
 
 All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. This ensures the `decimal` feature flag works transparently. Both variants must compile and pass tests.
