@@ -223,20 +223,22 @@ impl LevelOneOption {
     /// Returns `None` if `value` is not a JSON object.
     pub(crate) fn from_value(value: &serde_json::Value) -> Option<Self> {
         let obj = value.as_object()?;
-        let mut result = Self::default();
-
-        // Metadata
-        result.key = obj.get("key").and_then(|v| v.as_str()).map(String::from);
-        result.delayed = obj.get("delayed").and_then(|v| v.as_bool());
-        result.asset_main_type = obj
-            .get("assetMainType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        result.asset_sub_type = obj
-            .get("assetSubType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        result.cusip = obj.get("cusip").and_then(|v| v.as_str()).map(String::from);
+        // Metadata is initialized up front so clippy can see the defaulted
+        // struct is not immediately reassigned field-by-field.
+        let mut result = Self {
+            key: obj.get("key").and_then(|v| v.as_str()).map(String::from),
+            delayed: obj.get("delayed").and_then(|v| v.as_bool()),
+            asset_main_type: obj
+                .get("assetMainType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            asset_sub_type: obj
+                .get("assetSubType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            cusip: obj.get("cusip").and_then(|v| v.as_str()).map(String::from),
+            ..Self::default()
+        };
 
         // Data fields by numeric index
         for (key, val) in obj {

@@ -150,60 +150,51 @@ impl LevelOneFuturesOption {
     /// Returns `None` if `value` is not a JSON object.
     pub(crate) fn from_value(value: &serde_json::Value) -> Option<Self> {
         let obj = value.as_object()?;
-        let mut result = Self::default();
-
-        // Metadata fields
-        result.key = obj.get("key").and_then(|v| v.as_str()).map(String::from);
-        result.delayed = obj.get("delayed").and_then(|v| v.as_bool());
-        result.asset_main_type = obj
-            .get("assetMainType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        result.asset_sub_type = obj
-            .get("assetSubType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        result.cusip = obj.get("cusip").and_then(|v| v.as_str()).map(String::from);
-
-        // String fields (indices 0, 6, 7, 15, 16, 17, 21, 22, 27, 29, 31)
-        result.symbol = obj.get("0").and_then(|v| v.as_str()).map(String::from);
-        result.bid_id = obj.get("6").and_then(|v| v.as_str()).map(String::from);
-        result.ask_id = obj.get("7").and_then(|v| v.as_str()).map(String::from);
-        result.exchange_id = obj.get("15").and_then(|v| v.as_str()).map(String::from);
-        result.description = obj.get("16").and_then(|v| v.as_str()).map(String::from);
-        result.last_id = obj.get("17").and_then(|v| v.as_str()).map(String::from);
-        result.exchange_name = obj.get("21").and_then(|v| v.as_str()).map(String::from);
-        result.security_status = obj.get("22").and_then(|v| v.as_str()).map(String::from);
-        result.product = obj.get("27").and_then(|v| v.as_str()).map(String::from);
-        result.expiration_style = obj.get("29").and_then(|v| v.as_str()).map(String::from);
-        result.contract_type = obj.get("31").and_then(|v| v.as_str()).map(String::from);
-
-        // i64 fields (indices 4, 5, 8, 9, 10, 11, 23)
-        result.bid_size = obj.get("4").and_then(|v| v.as_i64());
-        result.ask_size = obj.get("5").and_then(|v| v.as_i64());
-        result.total_volume = obj.get("8").and_then(|v| v.as_i64());
-        result.last_size = obj.get("9").and_then(|v| v.as_i64());
-        result.quote_time = obj.get("10").and_then(|v| v.as_i64());
-        result.trade_time = obj.get("11").and_then(|v| v.as_i64());
-        result.open_interest = obj.get("23").and_then(|v| v.as_i64());
-
-        // Number fields (indices 1, 2, 3, 12, 13, 14, 18, 19, 20, 24, 25, 26, 28, 30)
-        result.bid_price = obj.get("1").and_then(parse_num);
-        result.ask_price = obj.get("2").and_then(parse_num);
-        result.last_price = obj.get("3").and_then(parse_num);
-        result.high_price = obj.get("12").and_then(parse_num);
-        result.low_price = obj.get("13").and_then(parse_num);
-        result.close_price = obj.get("14").and_then(parse_num);
-        result.open_price = obj.get("18").and_then(parse_num);
-        result.net_change = obj.get("19").and_then(parse_num);
-        result.future_percent_change = obj.get("20").and_then(parse_num);
-        result.mark = obj.get("24").and_then(parse_num);
-        result.tick = obj.get("25").and_then(parse_num);
-        result.tick_amount = obj.get("26").and_then(parse_num);
-        result.expiration_date = obj.get("28").and_then(parse_num);
-        result.strike_price = obj.get("30").and_then(parse_num);
-
-        Some(result)
+        Some(Self {
+            key: obj.get("key").and_then(|v| v.as_str()).map(String::from),
+            delayed: obj.get("delayed").and_then(|v| v.as_bool()),
+            asset_main_type: obj
+                .get("assetMainType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            asset_sub_type: obj
+                .get("assetSubType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            cusip: obj.get("cusip").and_then(|v| v.as_str()).map(String::from),
+            symbol: obj.get("0").and_then(|v| v.as_str()).map(String::from),
+            bid_price: obj.get("1").and_then(parse_num),
+            ask_price: obj.get("2").and_then(parse_num),
+            last_price: obj.get("3").and_then(parse_num),
+            bid_size: obj.get("4").and_then(|v| v.as_i64()),
+            ask_size: obj.get("5").and_then(|v| v.as_i64()),
+            bid_id: obj.get("6").and_then(|v| v.as_str()).map(String::from),
+            ask_id: obj.get("7").and_then(|v| v.as_str()).map(String::from),
+            total_volume: obj.get("8").and_then(|v| v.as_i64()),
+            last_size: obj.get("9").and_then(|v| v.as_i64()),
+            quote_time: obj.get("10").and_then(|v| v.as_i64()),
+            trade_time: obj.get("11").and_then(|v| v.as_i64()),
+            high_price: obj.get("12").and_then(parse_num),
+            low_price: obj.get("13").and_then(parse_num),
+            close_price: obj.get("14").and_then(parse_num),
+            exchange_id: obj.get("15").and_then(|v| v.as_str()).map(String::from),
+            description: obj.get("16").and_then(|v| v.as_str()).map(String::from),
+            last_id: obj.get("17").and_then(|v| v.as_str()).map(String::from),
+            open_price: obj.get("18").and_then(parse_num),
+            net_change: obj.get("19").and_then(parse_num),
+            future_percent_change: obj.get("20").and_then(parse_num),
+            exchange_name: obj.get("21").and_then(|v| v.as_str()).map(String::from),
+            security_status: obj.get("22").and_then(|v| v.as_str()).map(String::from),
+            open_interest: obj.get("23").and_then(|v| v.as_i64()),
+            mark: obj.get("24").and_then(parse_num),
+            tick: obj.get("25").and_then(parse_num),
+            tick_amount: obj.get("26").and_then(parse_num),
+            product: obj.get("27").and_then(|v| v.as_str()).map(String::from),
+            expiration_date: obj.get("28").and_then(parse_num),
+            expiration_style: obj.get("29").and_then(|v| v.as_str()).map(String::from),
+            strike_price: obj.get("30").and_then(parse_num),
+            contract_type: obj.get("31").and_then(|v| v.as_str()).map(String::from),
+        })
     }
 }
 

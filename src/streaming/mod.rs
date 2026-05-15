@@ -448,17 +448,12 @@ fn dispatch_message(text: &str, event_tx: &broadcast::Sender<StreamEvent>) -> Di
                     Some(3) => {
                         action = DispatchAction::Stop("LOGIN_DENIED (code=3)".to_string());
                     }
-                    Some(12) => {
-                        if action == DispatchAction::Continue {
-                            action =
-                                DispatchAction::Reconnect("CLOSE_CONNECTION (code=12)".to_string());
-                        }
+                    Some(12) if action == DispatchAction::Continue => {
+                        action =
+                            DispatchAction::Reconnect("CLOSE_CONNECTION (code=12)".to_string());
                     }
-                    Some(30) => {
-                        if action == DispatchAction::Continue {
-                            action =
-                                DispatchAction::Reconnect("STOP_STREAMING (code=30)".to_string());
-                        }
+                    Some(30) if action == DispatchAction::Continue => {
+                        action = DispatchAction::Reconnect("STOP_STREAMING (code=30)".to_string());
                     }
                     _ => {}
                 }
@@ -607,14 +602,14 @@ fn check_login_response(text: &str) -> LoginResult {
     };
 
     for message in messages {
-        if let ParsedMessage::Response(response) = message {
-            if let Some(content) = response.content {
-                let code = content.code.unwrap_or(0);
-                if code == 0 {
-                    return LoginResult::Ok;
-                }
-                return LoginResult::Denied(code, content.msg.unwrap_or_default());
+        if let ParsedMessage::Response(response) = message
+            && let Some(content) = response.content
+        {
+            let code = content.code.unwrap_or(0);
+            if code == 0 {
+                return LoginResult::Ok;
             }
+            return LoginResult::Denied(code, content.msg.unwrap_or_default());
         }
     }
 

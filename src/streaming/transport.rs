@@ -31,7 +31,9 @@ pub(crate) struct TungsteniteTransport {
 
 impl WsTransport for TungsteniteTransport {
     async fn connect(url: &str) -> crate::Result<Self> {
-        let (ws, _response) = connect_async(url).await.map_err(crate::Error::WebSocket)?;
+        let (ws, _response) = connect_async(url)
+            .await
+            .map_err(|error| crate::Error::WebSocket(Box::new(error)))?;
         Ok(Self { ws })
     }
 
@@ -39,7 +41,7 @@ impl WsTransport for TungsteniteTransport {
         self.ws
             .send(Message::Text(msg.into()))
             .await
-            .map_err(crate::Error::WebSocket)
+            .map_err(|error| crate::Error::WebSocket(Box::new(error)))
     }
 
     async fn next(&mut self) -> crate::Result<Option<String>> {
@@ -48,12 +50,15 @@ impl WsTransport for TungsteniteTransport {
                 Some(Ok(Message::Text(text))) => return Ok(Some(text.to_string())),
                 Some(Ok(Message::Close(_))) | None => return Ok(None),
                 Some(Ok(_)) => continue, // Ignore Ping, Pong, Binary
-                Some(Err(e)) => return Err(crate::Error::WebSocket(e)),
+                Some(Err(error)) => return Err(crate::Error::WebSocket(Box::new(error))),
             }
         }
     }
 
     async fn close(&mut self) -> crate::Result<()> {
-        self.ws.close(None).await.map_err(crate::Error::WebSocket)
+        self.ws
+            .close(None)
+            .await
+            .map_err(|error| crate::Error::WebSocket(Box::new(error)))
     }
 }

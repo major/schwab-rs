@@ -69,6 +69,8 @@ Streaming support is built around `StreamingSession`, which owns a background We
 
 The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps level-one data messages into typed equity, option, futures, futures option, and forex payloads.
 
+WebSocket transport failures surface as `Error::WebSocket`, while HTTP response bodies remain redacted in debug output.
+
 Reconnect behavior uses 10 attempts with exponential backoff starting at 1 second, doubling to a 30 second cap, plus 0-500ms jitter. A LOGIN_DENIED response with code 3 stops reconnecting so callers can create a new session with fresh credentials.
 
 Note: v1 does not refresh the bearer token after reconnect. If the token expires during a long-running session, create a new session with a fresh token.

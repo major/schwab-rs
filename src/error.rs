@@ -100,7 +100,7 @@ pub enum Error {
     },
     /// A WebSocket error occurred during streaming.
     #[error("WebSocket error: {0}")]
-    WebSocket(#[source] tokio_tungstenite::tungstenite::Error),
+    WebSocket(#[source] Box<tokio_tungstenite::tungstenite::Error>),
     /// The streaming server rejected the login request.
     #[error("streaming login denied (code {code}): {message}")]
     StreamLogin {

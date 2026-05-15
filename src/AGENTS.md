@@ -79,7 +79,8 @@ For POST/PUT with a JSON body, use `self.send_empty_with_location(method, url, &
 
 - `Error` enum uses `thiserror` derive
 - Variants: `EmptyBaseUrl`, `InvalidBaseUrl`, `EmptySymbols`, `MissingRequiredParameter`, `InvalidAuthConfig`, `AuthRequired`, `AuthExpired`, `AuthCallback`, `Io`, `Encode`, `Json`, `HttpStatus`, `Request`, `Decode`, `WebSocket`, `StreamLogin`, `StreamProtocol`
-- Manual `Debug` impl on `Error`: redacts `body` field in `HttpStatus` and `Decode` to `[REDACTED]`
+- `WebSocket` boxes the tungstenite source error so crate-wide `Result<T>` does not trip `clippy::result_large_err`
+- Manual `Debug` impl on `Error`: redacts `body` field in `HttpStatus` and `Decode` to `<redacted>`
 - `Result<T>` is `std::result::Result<T, Error>`
 - Never expose raw HTTP response bodies in error messages or debug output
 

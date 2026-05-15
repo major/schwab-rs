@@ -212,20 +212,22 @@ impl LevelOneEquity {
     /// Returns `None` if `value` is not a JSON object.
     pub(crate) fn from_value(value: &serde_json::Value) -> Option<Self> {
         let map = value.as_object()?;
-        let mut s = Self::default();
-
-        // Named metadata fields
-        s.key = map.get("key").and_then(|v| v.as_str()).map(String::from);
-        s.delayed = map.get("delayed").and_then(|v| v.as_bool());
-        s.asset_main_type = map
-            .get("assetMainType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        s.asset_sub_type = map
-            .get("assetSubType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        s.cusip = map.get("cusip").and_then(|v| v.as_str()).map(String::from);
+        // Named metadata fields are initialized up front so clippy can see the
+        // defaulted struct is not immediately reassigned field-by-field.
+        let mut s = Self {
+            key: map.get("key").and_then(|v| v.as_str()).map(String::from),
+            delayed: map.get("delayed").and_then(|v| v.as_bool()),
+            asset_main_type: map
+                .get("assetMainType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            asset_sub_type: map
+                .get("assetSubType")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+            cusip: map.get("cusip").and_then(|v| v.as_str()).map(String::from),
+            ..Self::default()
+        };
 
         // Numeric-keyed data fields
         for (key, val) in map {

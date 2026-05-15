@@ -19,6 +19,7 @@ Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` 
 - `StreamData` variants: `LevelOneEquities`, `LevelOneOptions`, `LevelOneFutures`, `LevelOneFuturesOptions`, `LevelOneForex`
 - Field selector enums live beside their data structs and are re-exported from `models::streaming`: `EquityField`, `OptionField`, `FuturesField`, `FuturesOptionField`, `ForexField`
 - Streaming data structs parse numeric string keys with crate-internal `from_value()` helpers instead of serde derives because the WebSocket protocol uses field indexes as JSON keys
+- `from_value()` helpers initialize named metadata in struct literals first, then fill numeric index fields, which keeps partial subscription parsing readable and satisfies `clippy::field_reassign_with_default`
 - Streaming numeric fields use `Number`, and all streaming data fields remain `Option<T>` because subscriptions may request partial field sets
 - Streaming fixture files under `tests/fixtures/streaming_*.json` cover LOGIN responses, heartbeat notifications, and level-one equity/option numeric-key payloads; keep fixture numbers compatible with both default `Number` and the `decimal` feature
 
