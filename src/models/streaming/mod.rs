@@ -1,5 +1,7 @@
 //! Streaming event types for the Schwab WebSocket API.
 
+/// Level-two book streaming data.
+pub mod book;
 /// Equity chart streaming data.
 pub mod chart_equity;
 /// Futures chart streaming data.
@@ -19,6 +21,7 @@ pub mod screener_equity;
 /// Option screener streaming data.
 pub mod screener_option;
 
+pub use book::{Book, BookField, BookMarketMaker, BookPriceLevel};
 pub use chart_equity::{ChartEquity, ChartEquityField};
 pub use chart_futures::{ChartFutures, ChartFuturesField};
 pub use equities::{EquityField, LevelOneEquity};
@@ -82,6 +85,9 @@ pub enum StreamData {
     LevelOneForex(Vec<LevelOneForex>),
     ChartEquities(Vec<ChartEquity>),
     ChartFutures(Vec<ChartFutures>),
+    NyseBooks(Vec<Book>),
+    NasdaqBooks(Vec<Book>),
+    OptionsBooks(Vec<Book>),
     ScreenerEquities(Vec<ScreenerEquity>),
     ScreenerOptions(Vec<ScreenerOption>),
 }

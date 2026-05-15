@@ -5,11 +5,11 @@ use std::sync::Arc;
 use tokio::sync::{Mutex, broadcast, mpsc, oneshot};
 
 use crate::models::streaming::{
-    ChartEquity, ChartFutures, LevelOneEquity, LevelOneForex, LevelOneFutures,
+    Book, ChartEquity, ChartFutures, LevelOneEquity, LevelOneForex, LevelOneFutures,
     LevelOneFuturesOption, LevelOneOption, ScreenerEquity, ScreenerOption, StreamData, StreamEvent,
-    StreamResponse, chart_equity::ChartEquityField, chart_futures::ChartFuturesField,
-    equities::EquityField, forex::ForexField, futures::FuturesField,
-    futures_options::FuturesOptionField, options::OptionField,
+    StreamResponse, book::BookField, chart_equity::ChartEquityField,
+    chart_futures::ChartFuturesField, equities::EquityField, forex::ForexField,
+    futures::FuturesField, futures_options::FuturesOptionField, options::OptionField,
     screener_equity::ScreenerEquityField, screener_option::ScreenerOptionField,
 };
 use crate::stream_session::protocol::ParsedMessage;
@@ -25,7 +25,7 @@ enum SessionCommand {
     Send { text: String, ack: CommandAck },
 }
 
-/// Streaming WebSocket session for Schwab level-one market data.
+/// Streaming WebSocket session for Schwab real-time market data.
 ///
 /// Create a session through `Client::stream()` once that entry point is
 /// available. Each session owns a background WebSocket task, broadcasts parsed
@@ -497,6 +497,105 @@ impl StreamingSession {
             .await
     }
 
+    /// Subscribe to NYSE level-two book data for the given symbols.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `symbols` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{BookField, Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session.subscribe_nyse_book(
+    ///     &["AAPL", "IBM"],
+    ///     &[BookField::Symbol, BookField::BidSideLevels, BookField::AskSideLevels],
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_nyse_book(
+        &self,
+        symbols: &[&str],
+        fields: &[BookField],
+    ) -> crate::Result<()> {
+        let field_indices = fields.iter().map(BookField::index).collect::<Vec<_>>();
+        self.subscribe_service("11", "NYSE_BOOK", symbols, field_indices)
+            .await
+    }
+
+    /// Subscribe to NASDAQ level-two book data for the given symbols.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `symbols` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{BookField, Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session.subscribe_nasdaq_book(
+    ///     &["AAPL", "MSFT"],
+    ///     &[BookField::Symbol, BookField::BidSideLevels, BookField::AskSideLevels],
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_nasdaq_book(
+        &self,
+        symbols: &[&str],
+        fields: &[BookField],
+    ) -> crate::Result<()> {
+        let field_indices = fields.iter().map(BookField::index).collect::<Vec<_>>();
+        self.subscribe_service("12", "NASDAQ_BOOK", symbols, field_indices)
+            .await
+    }
+
+    /// Subscribe to option level-two book data for the given option symbols.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `symbols` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{BookField, Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session.subscribe_options_book(
+    ///     &["AAPL  251219C00200000"],
+    ///     &[BookField::Symbol, BookField::BidSideLevels, BookField::AskSideLevels],
+    /// ).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_options_book(
+        &self,
+        symbols: &[&str],
+        fields: &[BookField],
+    ) -> crate::Result<()> {
+        let field_indices = fields.iter().map(BookField::index).collect::<Vec<_>>();
+        self.subscribe_service("13", "OPTIONS_BOOK", symbols, field_indices)
+            .await
+    }
+
     async fn subscribe_service(
         &self,
         request_id: &str,
@@ -817,6 +916,18 @@ fn parse_data_message(data_message: protocol::StreamDataMessage) -> Option<Strea
             &content,
             ChartFutures::from_value,
         ))),
+        "NYSE_BOOK" => Some(StreamData::NyseBooks(parse_items(
+            &content,
+            Book::from_value,
+        ))),
+        "NASDAQ_BOOK" => Some(StreamData::NasdaqBooks(parse_items(
+            &content,
+            Book::from_value,
+        ))),
+        "OPTIONS_BOOK" => Some(StreamData::OptionsBooks(parse_items(
+            &content,
+            Book::from_value,
+        ))),
         "SCREENER_EQUITY" => Some(StreamData::ScreenerEquities(parse_items(
             &content,
             ScreenerEquity::from_value,
@@ -955,8 +1066,9 @@ mod tests {
     use super::*;
     use crate::{
         models::streaming::{
-            chart_equity::ChartEquityField, chart_futures::ChartFuturesField, options::OptionField,
-            screener_equity::ScreenerEquityField, screener_option::ScreenerOptionField,
+            book::BookField, chart_equity::ChartEquityField, chart_futures::ChartFuturesField,
+            options::OptionField, screener_equity::ScreenerEquityField,
+            screener_option::ScreenerOptionField,
         },
         test_support::{fixture, n},
     };
@@ -1211,6 +1323,93 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn session_subscribe_nyse_book_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_nyse_book(
+                &["AAPL"],
+                &[
+                    BookField::Symbol,
+                    BookField::BidSideLevels,
+                    BookField::AskSideLevels,
+                ],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "NYSE_BOOK");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["keys"], "AAPL");
+        assert_eq!(item["parameters"]["fields"], "0,2,3");
+    }
+
+    #[tokio::test]
+    async fn session_subscribe_nasdaq_book_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_nasdaq_book(
+                &["MSFT"],
+                &[
+                    BookField::Symbol,
+                    BookField::BidSideLevels,
+                    BookField::AskSideLevels,
+                ],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "NASDAQ_BOOK");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["keys"], "MSFT");
+        assert_eq!(item["parameters"]["fields"], "0,2,3");
+    }
+
+    #[tokio::test]
+    async fn session_subscribe_options_book_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_options_book(
+                &["AAPL  251219C00200000"],
+                &[
+                    BookField::Symbol,
+                    BookField::BidSideLevels,
+                    BookField::AskSideLevels,
+                ],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "OPTIONS_BOOK");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["keys"], "AAPL  251219C00200000");
+        assert_eq!(item["parameters"]["fields"], "0,2,3");
+    }
+
+    #[tokio::test]
     async fn session_receives_chart_equity_data() {
         let transport = MockTransport::new(vec![
             Ok(Some(fixture("streaming_login_success.json"))),
@@ -1365,6 +1564,100 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn session_receives_nyse_book_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_nyse_book_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::NyseBooks(books)) = next_event(&mut events).await else {
+            panic!("expected NYSE book data event");
+        };
+
+        assert_eq!(books.len(), 1);
+        assert_eq!(books[0].key.as_deref(), Some("AAPL"));
+        assert_eq!(books[0].symbol.as_deref(), Some("AAPL"));
+        assert_eq!(books[0].market_snapshot_time, Some(1234567890000));
+        let bid_levels = books[0]
+            .bid_side_levels
+            .as_ref()
+            .expect("should have bid levels");
+        let makers = bid_levels[0]
+            .market_makers
+            .as_ref()
+            .expect("should have market makers");
+        assert_eq!(bid_levels[0].price, Some(n(150.25)));
+        assert_eq!(bid_levels[0].aggregate_size, Some(300));
+        assert_eq!(makers[0].market_maker_id.as_deref(), Some("NYSE"));
+    }
+
+    #[tokio::test]
+    async fn session_receives_nasdaq_book_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_nasdaq_book_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::NasdaqBooks(books)) = next_event(&mut events).await
+        else {
+            panic!("expected NASDAQ book data event");
+        };
+
+        assert_eq!(books.len(), 1);
+        assert_eq!(books[0].symbol.as_deref(), Some("MSFT"));
+        let ask_levels = books[0]
+            .ask_side_levels
+            .as_ref()
+            .expect("should have ask levels");
+        let makers = ask_levels[0]
+            .market_makers
+            .as_ref()
+            .expect("should have market makers");
+        assert_eq!(ask_levels[0].price, Some(n(420.15)));
+        assert_eq!(ask_levels[0].aggregate_size, Some(400));
+        assert_eq!(makers[0].market_maker_id.as_deref(), Some("BATS"));
+    }
+
+    #[tokio::test]
+    async fn session_receives_options_book_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_options_book_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::OptionsBooks(books)) = next_event(&mut events).await
+        else {
+            panic!("expected options book data event");
+        };
+
+        assert_eq!(books.len(), 1);
+        assert_eq!(books[0].symbol.as_deref(), Some("AAPL  251219C00200000"));
+        let bid_levels = books[0]
+            .bid_side_levels
+            .as_ref()
+            .expect("should have bid levels");
+        let makers = bid_levels[0]
+            .market_makers
+            .as_ref()
+            .expect("should have market makers");
+        assert_eq!(bid_levels[0].price, Some(n(5.5)));
+        assert_eq!(bid_levels[0].market_maker_count, Some(1));
+        assert_eq!(makers[0].market_maker_id.as_deref(), Some("CBOE"));
+    }
+
+    #[tokio::test]
     async fn session_receives_screener_option_data() {
         let transport = MockTransport::new(vec![
             Ok(Some(fixture("streaming_login_success.json"))),
@@ -1405,6 +1698,73 @@ mod tests {
         let items = screeners[0].items.as_ref().expect("should have items");
         assert_eq!(items[0].net_change, Some(n(3.75)));
         assert_eq!(items[0].trades, Some(150000));
+    }
+
+    #[test]
+    fn parse_nyse_book_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_nyse_book_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::NyseBooks(books)) = parse_data_message(data) else {
+            panic!("expected parsed NYSE books");
+        };
+
+        let bid_levels = books[0]
+            .bid_side_levels
+            .as_ref()
+            .expect("should have bid levels");
+        let makers = bid_levels[0]
+            .market_makers
+            .as_ref()
+            .expect("should have market makers");
+        assert_eq!(books[0].market_snapshot_time, Some(1234567890000));
+        assert_eq!(bid_levels[0].price, Some(n(150.25)));
+        assert_eq!(makers[1].market_maker_id.as_deref(), Some("ARCA"));
+    }
+
+    #[test]
+    fn parse_nasdaq_book_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_nasdaq_book_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::NasdaqBooks(books)) = parse_data_message(data) else {
+            panic!("expected parsed NASDAQ books");
+        };
+
+        let ask_levels = books[0]
+            .ask_side_levels
+            .as_ref()
+            .expect("should have ask levels");
+        assert_eq!(books[0].symbol.as_deref(), Some("MSFT"));
+        assert_eq!(ask_levels[0].price, Some(n(420.15)));
+        assert_eq!(ask_levels[0].aggregate_size, Some(400));
+    }
+
+    #[test]
+    fn parse_options_book_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_options_book_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::OptionsBooks(books)) = parse_data_message(data) else {
+            panic!("expected parsed options books");
+        };
+
+        let bid_levels = books[0]
+            .bid_side_levels
+            .as_ref()
+            .expect("should have bid levels");
+        assert_eq!(books[0].symbol.as_deref(), Some("AAPL  251219C00200000"));
+        assert_eq!(bid_levels[0].price, Some(n(5.5)));
+        assert_eq!(bid_levels[0].aggregate_size, Some(25));
     }
 
     #[test]
