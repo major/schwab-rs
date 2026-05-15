@@ -45,6 +45,9 @@ mod options;
 mod order_builder;
 mod query;
 mod trader_api;
+#[allow(hidden_glob_reexports)]
+mod streaming;
+mod streaming_api;
 
 pub use client::Client;
 pub use config::Config;

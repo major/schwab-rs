@@ -2,11 +2,14 @@
 pub mod enums;
 /// Market data response types for quotes, option chains, candles, and instruments.
 pub mod market_data;
+/// Streaming event types for the Schwab WebSocket API.
+pub mod streaming;
 /// Trader response types for accounts, orders, transactions, and user preferences.
 pub mod trader;
 
 pub use enums::*;
 pub use market_data::*;
+pub use streaming::*;
 pub use trader::*;
 
 cfg_select! {

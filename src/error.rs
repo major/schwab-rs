@@ -98,6 +98,20 @@ pub enum Error {
         /// The raw response body that could not be deserialized.
         body: String,
     },
+    /// A WebSocket error occurred during streaming.
+    #[error("WebSocket error: {0}")]
+    WebSocket(#[source] tokio_tungstenite::tungstenite::Error),
+    /// The streaming server rejected the login request.
+    #[error("streaming login denied (code {code}): {message}")]
+    StreamLogin {
+        /// The response code from the server.
+        code: u32,
+        /// The error message from the server.
+        message: String,
+    },
+    /// A streaming protocol error occurred.
+    #[error("streaming protocol error: {0}")]
+    StreamProtocol(String),
 }
 
 // Manual Debug impl to redact the HttpStatus body, which may contain
@@ -140,6 +154,16 @@ impl std::fmt::Debug for Error {
                 .debug_struct("Decode")
                 .field("source", source)
                 .field("body", &"<redacted>")
+                .finish(),
+            Self::WebSocket(error) => formatter.debug_tuple("WebSocket").field(error).finish(),
+            Self::StreamLogin { code, message } => formatter
+                .debug_struct("StreamLogin")
+                .field("code", code)
+                .field("message", message)
+                .finish(),
+            Self::StreamProtocol(message) => formatter
+                .debug_tuple("StreamProtocol")
+                .field(message)
                 .finish(),
         }
     }
