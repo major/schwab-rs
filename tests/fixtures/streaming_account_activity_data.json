@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "service": "ACCT_ACTIVITY",
+      "timestamp": 1234,
+      "command": "SUBS",
+      "content": [
+        {
+          "seq": 42,
+          "key": "Account Activity",
+          "1": "123456789",
+          "2": "OrderEntryRequest",
+          "3": "{\"orderId\":12345,\"status\":\"ACCEPTED\"}"
+        }
+      ]
+    }
+  ]
+}

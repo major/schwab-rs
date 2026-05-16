@@ -5,11 +5,11 @@ use std::sync::Arc;
 use tokio::sync::{Mutex, broadcast, mpsc, oneshot};
 
 use crate::models::streaming::{
-    ChartEquity, ChartFutures, LevelOneEquity, LevelOneForex, LevelOneFutures,
+    AccountActivity, ChartEquity, ChartFutures, LevelOneEquity, LevelOneForex, LevelOneFutures,
     LevelOneFuturesOption, LevelOneOption, ScreenerEquity, ScreenerOption, StreamData, StreamEvent,
-    StreamResponse, chart_equity::ChartEquityField, chart_futures::ChartFuturesField,
-    equities::EquityField, forex::ForexField, futures::FuturesField,
-    futures_options::FuturesOptionField, options::OptionField,
+    StreamResponse, acct_activity::AccountActivityField, chart_equity::ChartEquityField,
+    chart_futures::ChartFuturesField, equities::EquityField, forex::ForexField,
+    futures::FuturesField, futures_options::FuturesOptionField, options::OptionField,
     screener_equity::ScreenerEquityField, screener_option::ScreenerOptionField,
 };
 use crate::stream_session::protocol::ParsedMessage;
@@ -25,7 +25,7 @@ enum SessionCommand {
     Send { text: String, ack: CommandAck },
 }
 
-/// Streaming WebSocket session for Schwab level-one market data.
+/// Streaming WebSocket session for Schwab streaming data.
 ///
 /// Create a session through `Client::stream()` once that entry point is
 /// available. Each session owns a background WebSocket task, broadcasts parsed
@@ -141,6 +141,48 @@ impl StreamingSession {
     #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<StreamEvent> {
         self.event_tx.subscribe()
+    }
+
+    /// Subscribe to account activity data for the given keys.
+    ///
+    /// The Schwab streaming documentation uses a client-provided key such as
+    /// `Account Activity` and notes that only the first key is used when
+    /// multiple keys are provided.
+    ///
+    /// # Errors
+    /// Returns [`crate::Error::EmptySymbols`] if `keys` is empty.
+    /// Returns [`crate::Error::StreamProtocol`] if no fields are provided, the
+    /// command cannot be serialized, or the session command loop is stopped.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// # async fn example() -> schwab::Result<()> {
+    /// use schwab::{AccountActivityField, Client, Config};
+    ///
+    /// let client = Client::new(Config::new().bearer_token("your-token"));
+    /// let session = client.stream().await?;
+    /// session
+    ///     .subscribe_account_activity(
+    ///         &["Account Activity"],
+    ///         &[AccountActivityField::All],
+    ///     )
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    #[tracing::instrument(skip_all)]
+    pub async fn subscribe_account_activity(
+        &self,
+        keys: &[&str],
+        fields: &[AccountActivityField],
+    ) -> crate::Result<()> {
+        let field_indices = fields
+            .iter()
+            .map(AccountActivityField::index)
+            .collect::<Vec<_>>();
+        self.subscribe_service("11", "ACCT_ACTIVITY", keys, field_indices)
+            .await
     }
 
     /// Disconnect from the streaming service.
@@ -789,6 +831,13 @@ fn parse_data_message(data_message: protocol::StreamDataMessage) -> Option<Strea
     let content = data_message.content?;
 
     match service {
+        // Schwab's account activity docs use both service names: request
+        // examples use ACCT_ACTIVITY, while one response table says
+        // ACCOUNT_ACTIVITY. Accept both so live payloads follow either form.
+        "ACCT_ACTIVITY" | "ACCOUNT_ACTIVITY" => Some(StreamData::AccountActivity(parse_items(
+            &content,
+            AccountActivity::from_value,
+        ))),
         "LEVELONE_EQUITIES" => Some(StreamData::LevelOneEquities(parse_items(
             &content,
             LevelOneEquity::from_value,
@@ -955,7 +1004,8 @@ mod tests {
     use super::*;
     use crate::{
         models::streaming::{
-            chart_equity::ChartEquityField, chart_futures::ChartFuturesField, options::OptionField,
+            acct_activity::AccountActivityField, chart_equity::ChartEquityField,
+            chart_futures::ChartFuturesField, options::OptionField,
             screener_equity::ScreenerEquityField, screener_option::ScreenerOptionField,
         },
         test_support::{fixture, n},
@@ -1072,6 +1122,31 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn session_subscribe_account_activity_sends_subs_command() {
+        let transport = MockTransport::new(vec![Ok(Some(fixture("streaming_login_success.json")))]);
+        let sent = transport.sent_handle();
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+
+        session
+            .subscribe_account_activity(
+                &["Account Activity"],
+                &[AccountActivityField::All, AccountActivityField::MessageData],
+            )
+            .await
+            .unwrap();
+        let sent = sent.lock().await;
+        let subscribe: serde_json::Value = serde_json::from_str(&sent[1]).unwrap();
+        let item = &subscribe["requests"][0];
+
+        assert_eq!(item["service"], "ACCT_ACTIVITY");
+        assert_eq!(item["command"], "SUBS");
+        assert_eq!(item["parameters"]["keys"], "Account Activity");
+        assert_eq!(item["parameters"]["fields"], "0,3");
+    }
+
+    #[tokio::test]
     async fn session_receives_heartbeat() {
         let transport = MockTransport::new(vec![
             Ok(Some(fixture("streaming_login_success.json"))),
@@ -1138,6 +1213,37 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn session_receives_account_activity_data() {
+        let transport = MockTransport::new(vec![
+            Ok(Some(fixture("streaming_login_success.json"))),
+            Ok(Some(fixture("streaming_account_activity_data.json"))),
+        ]);
+        let session = StreamingSession::new(transport, credentials())
+            .await
+            .unwrap();
+        let mut events = session.subscribe();
+
+        let StreamEvent::Data(StreamData::AccountActivity(activities)) =
+            next_event(&mut events).await
+        else {
+            panic!("expected account activity data event");
+        };
+
+        assert_eq!(activities.len(), 1);
+        assert_eq!(activities[0].seq, Some(42));
+        assert_eq!(activities[0].key.as_deref(), Some("Account Activity"));
+        assert_eq!(activities[0].account.as_deref(), Some("123456789"));
+        assert_eq!(
+            activities[0].message_type.as_deref(),
+            Some("OrderEntryRequest")
+        );
+        assert_eq!(
+            activities[0].message_data.as_deref(),
+            Some("{\"orderId\":12345,\"status\":\"ACCEPTED\"}")
+        );
+    }
+
+    #[tokio::test]
     async fn session_disconnect_on_transport_close() {
         let transport = MockTransport::new(vec![
             Ok(Some(fixture("streaming_login_success.json"))),
@@ -1184,6 +1290,26 @@ mod tests {
 
         assert_eq!(options[0].ask_price, Some(n(5.7)));
         assert_eq!(options[0].high_price, Some(n(6.1)));
+    }
+
+    #[test]
+    fn parse_account_activity_data_message_maps_fields() {
+        let mut messages =
+            protocol::parse_message(&fixture("streaming_account_activity_data.json")).unwrap();
+        let ParsedMessage::Data(data) = messages.pop().unwrap() else {
+            panic!("expected data message");
+        };
+
+        let Some(StreamData::AccountActivity(activities)) = parse_data_message(data) else {
+            panic!("expected parsed account activity");
+        };
+
+        assert_eq!(activities[0].seq, Some(42));
+        assert_eq!(activities[0].account.as_deref(), Some("123456789"));
+        assert_eq!(
+            activities[0].message_type.as_deref(),
+            Some("OrderEntryRequest")
+        );
     }
 
     #[tokio::test]

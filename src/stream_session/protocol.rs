@@ -522,4 +522,25 @@ mod tests {
         );
         assert!(content[0].contains_key("5"));
     }
+
+    #[test]
+    fn parse_account_activity_data_fixture_shape() {
+        let msgs = parse_message(&fixture("streaming_account_activity_data.json")).unwrap();
+
+        let ParsedMessage::Data(data) = &msgs[0] else {
+            panic!("expected data message");
+        };
+        let content = data.content.as_ref().expect("fixture has content");
+
+        assert_eq!(data.service.as_deref(), Some("ACCT_ACTIVITY"));
+        assert_eq!(
+            content[0].get("seq").and_then(|value| value.as_i64()),
+            Some(42)
+        );
+        assert_eq!(
+            content[0].get("key").and_then(|value| value.as_str()),
+            Some("Account Activity")
+        );
+        assert!(content[0].contains_key("3"));
+    }
 }

@@ -7,7 +7,7 @@ use crate::stream_session::{SessionCredentials, StreamingSession};
 use crate::{Client, Error};
 
 impl Client {
-    /// Open a WebSocket streaming session for real-time level-one market data.
+    /// Open a WebSocket streaming session for real-time Schwab streaming data.
     ///
     /// Fetches the user preference to obtain streamer connection details,
     /// establishes a WebSocket connection, logs in, and returns a

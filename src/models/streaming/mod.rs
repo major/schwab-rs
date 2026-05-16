@@ -1,5 +1,7 @@
 //! Streaming event types for the Schwab WebSocket API.
 
+/// Account activity streaming data.
+pub mod acct_activity;
 /// Equity chart streaming data.
 pub mod chart_equity;
 /// Futures chart streaming data.
@@ -19,6 +21,7 @@ pub mod screener_equity;
 /// Option screener streaming data.
 pub mod screener_option;
 
+pub use acct_activity::{AccountActivity, AccountActivityField};
 pub use chart_equity::{ChartEquity, ChartEquityField};
 pub use chart_futures::{ChartFutures, ChartFuturesField};
 pub use equities::{EquityField, LevelOneEquity};
@@ -56,7 +59,7 @@ pub enum StreamEvent {
     Reconnected,
 }
 
-/// Market data payload delivered within a [`StreamEvent::Data`] event.
+/// Streaming payload delivered within a [`StreamEvent::Data`] event.
 ///
 /// # Examples
 ///
@@ -75,6 +78,7 @@ pub enum StreamEvent {
 #[derive(Clone, Debug, PartialEq)]
 #[allow(missing_docs)]
 pub enum StreamData {
+    AccountActivity(Vec<AccountActivity>),
     LevelOneEquities(Vec<LevelOneEquity>),
     LevelOneOptions(Vec<LevelOneOption>),
     LevelOneFutures(Vec<LevelOneFutures>),

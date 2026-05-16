@@ -11,7 +11,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
-- **Streaming** - WebSocket session engine for level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
+- **Streaming** - WebSocket session engine for account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
 - **Async** - built on `tokio` and `reqwest` with `rustls` for TLS
 
@@ -65,9 +65,9 @@ Do not commit Schwab client secrets, authorization codes, access tokens, refresh
 
 ## Streaming
 
-Streaming support is built around `StreamingSession`, which owns a background WebSocket task and broadcasts typed `StreamEvent` values to any number of receivers. The session supports level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option subscriptions. It sends LOGOUT on `disconnect()`, records active subscriptions, and replays them after reconnecting.
+Streaming support is built around `StreamingSession`, which owns a background WebSocket task and broadcasts typed `StreamEvent` values to any number of receivers. The session supports account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option subscriptions. It sends LOGOUT on `disconnect()`, records active subscriptions, and replays them after reconnecting.
 
-The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps data messages into typed level-one, chart, and screener payloads.
+The streaming protocol parser accepts command response IDs as either JSON strings or numbers and maps data messages into typed account activity, level-one, chart, and screener payloads.
 
 WebSocket transport failures surface as `Error::WebSocket`, while HTTP response bodies remain redacted in debug output.
 
