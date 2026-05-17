@@ -91,7 +91,7 @@ Runs on Ubuntu, macOS, Windows:
 
 Release: `release-plz` runs automatically on every push to `main` via `.github/workflows/cd.yml`. A single job handles both release PRs and publishing in one step.
 
-The workflow uses `RELEASE_PLZ_TOKEN` for GitHub operations (checkout, PR creation, tagging) and `CARGO_REGISTRY_TOKEN` for crates.io publishing. Both are repository secrets.
+This repository exclusively uses crates.io Trusted Publishing with GitHub Actions OIDC (`id-token: write`) for all crate publishing. Never add `CARGO_REGISTRY_TOKEN` or any other long-lived registry token. The Trusted Publisher on crates.io is configured with workflow filename `cd.yml`. The workflow uses `RELEASE_PLZ_TOKEN` for GitHub operations (checkout, PR creation, tagging).
 
 Changelog generation uses git-cliff via `cliff.toml` with Conventional Commits grouping (features, bug fixes, docs, performance, refactor, styling, testing, miscellaneous, security, reverts). The template produces version comparison links and commit SHA links.
 
