@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2](https://github.com/major/schwab-rs/compare/0.2.1..0.2.2) - 2026-05-18
+
+### Bug Fixes
+
+- Tolerate unknown order statuses - ([e1cfc6e](https://github.com/major/schwab-rs/commit/e1cfc6e553d5588b19c416901e4830a9f04f880d))
+
+### Miscellaneous Tasks
+
+- Switch from dtolnay/rust-toolchain to actions-rust-lang/setup-rust-toolchain - ([d0a836e](https://github.com/major/schwab-rs/commit/d0a836e79dd32ad57d39653340f6cf887c038c0a))
+
+
 ## [0.2.1](https://github.com/major/schwab-rs/compare/0.2.0..0.2.1) - 2026-05-17
 
 
