@@ -11,6 +11,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
+- **Typed order statuses** - known lifecycle states such as `WORKING`, `FILLED`, `CANCELED`, and `REJECTED` deserialize to typed variants, with an `Unknown` fallback for future Schwab values
 - **Streaming** - WebSocket session engine for account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
 - **Async** - built on `tokio` and `reqwest` with `rustls` for TLS

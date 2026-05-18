@@ -779,6 +779,7 @@ pub enum OrderStatus {
     AwaitingReleaseTime,
     PendingAcknowledgement,
     PendingRecall,
+    #[serde(other)]
     Unknown,
 }
 

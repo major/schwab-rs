@@ -57,6 +57,7 @@ src/
 - `Config` builder: `Config::new()` with `.bearer_token("...")` and optional `.base_url()`/`.trader_base_url()` overrides
 - All response model fields are `Option<T>` (Schwab API returns partial data)
 - All enums in `enums.rs` are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
+- `OrderStatus::Unknown` uses `#[serde(other)]` so undocumented order lifecycle statuses do not break order-list deserialization
 - Untagged/tagged dispatch enums (`QuoteResponseObject`, `SecuritiesAccount`, `AccountsInstrument`, `TransactionInstrument`) omit `#[non_exhaustive]` since serde cannot deserialize unknown variants for these
 - Clippy: `-D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant`
 - `#![deny(missing_docs)]` in `lib.rs` - all public items require doc comments (compile error if missing)

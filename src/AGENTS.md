@@ -110,6 +110,8 @@ Builder types for query parameter construction. Each has a `new()` constructor a
 
 All builders produce a `Vec<(&str, String)>` consumed by query string assembly.
 
+Trader order responses use `OrderStatus::Unknown` as the serde fallback for undocumented order lifecycle values, while known statuses such as `WORKING`, `CANCELED`, and `REJECTED` deserialize to typed variants.
+
 ## Order Builder (`order_builder.rs`)
 
 `OrderBuilder` constructs equity order JSON payloads. Factory methods:

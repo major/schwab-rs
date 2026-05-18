@@ -1270,6 +1270,27 @@ mod tests {
         assert!(order.child_order_strategies.is_none());
     }
 
+    /// Order status accepts known canceled/rejected states and future unknown variants.
+    #[test]
+    fn deserialize_order_status_variants() {
+        assert_eq!(
+            serde_json::from_str::<OrderStatus>(r#""WORKING""#).unwrap(),
+            OrderStatus::Working
+        );
+        assert_eq!(
+            serde_json::from_str::<OrderStatus>(r#""CANCELED""#).unwrap(),
+            OrderStatus::Canceled
+        );
+        assert_eq!(
+            serde_json::from_str::<OrderStatus>(r#""REJECTED""#).unwrap(),
+            OrderStatus::Rejected
+        );
+        assert_eq!(
+            serde_json::from_str::<OrderStatus>(r#""NOT_DOCUMENTED_YET""#).unwrap(),
+            OrderStatus::Unknown
+        );
+    }
+
     /// Transaction with a TransferItem containing a typed TransactionInstrument.
     /// Verifies the full nesting: Transaction -> TransferItem -> TransactionInstrument.
     #[test]

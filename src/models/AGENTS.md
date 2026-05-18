@@ -56,6 +56,7 @@ Schwab may add new variants at any time. Every enum in `enums.rs` gets `#[non_ex
 - Enums: `Clone, Debug, Deserialize, Serialize, PartialEq, Eq` (when all variants are unit-like)
 - Add `Serialize` to enums that appear in request payloads or query parameters
 - Use `Eq` only when all fields support it (no `Number`/`f64` fields)
+- `OrderStatus::Unknown` is the serde fallback for undocumented Schwab order status strings; keep known order lifecycle statuses as explicit variants when Schwab documents or returns them.
 
 ## Serde Patterns
 
