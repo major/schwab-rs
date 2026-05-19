@@ -11,6 +11,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
+- **Order builder** - typed equity helpers, single-leg option helpers, OCO, and first-triggers-second order composition
 - **Typed order statuses** - known lifecycle states such as `WORKING`, `FILLED`, `CANCELED`, and `REJECTED` deserialize to typed variants, with an `Unknown` fallback for future Schwab values
 - **Streaming** - WebSocket session engine for account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
@@ -63,6 +64,67 @@ cargo run --example auth
 The auth example writes a token file that `Provider::from_token_file` can refresh and turn into a ready-to-use `Client`. See [`docs/auth.md`](docs/auth.md), [`examples/auth.rs`](examples/auth.rs), and [`examples/quotes.rs`](examples/quotes.rs) for the full flow.
 
 Do not commit Schwab client secrets, authorization codes, access tokens, refresh tokens, token files, or account data. Prefer environment variables or a secret manager for credentials, and see [`SECURITY.md`](SECURITY.md) for reporting and token-handling guidance.
+
+## Order builder
+
+`OrderBuilder` creates serializable order payloads for `place_order`, `replace_order`, and `preview_order`. The common equity constructors choose the buy/sell instruction for you, and the option constructors choose buy-to-open, sell-to-open, buy-to-close, or sell-to-close for single-leg option orders. Lower-level `equity_*` and `option_*` constructors remain available when you need to pass an explicit instruction. Each public helper's rustdoc documents its arguments, default fields, serialized payload effects, and an example so downstream CLIs can generate command help from the API docs.
+
+```rust,no_run
+use schwab::{Client, Config, Duration, OrderBuilder};
+
+# async fn example() -> schwab::Result<()> {
+let client = Client::new(Config::new().bearer_token("your-token"));
+let quantity = "10".parse().unwrap();
+let price = "150.00".parse().unwrap();
+
+let order = OrderBuilder::limit_buy("AAPL", quantity, price)
+    .duration(Duration::GoodTillCancel);
+
+let response = client.place_order("account-hash", &order).await?;
+println!("order id: {:?}", response.order_id);
+# Ok(())
+# }
+```
+
+Single-leg option helpers use the Schwab option symbol you pass and set `assetType` to `OPTION`:
+
+```rust
+use schwab::{Number, OrderBuilder};
+
+let quantity: Number = "1".parse().unwrap();
+let price: Number = "2.50".parse().unwrap();
+
+let open = OrderBuilder::option_buy_to_open_market("AAPL  260116C00150000", quantity);
+let close = OrderBuilder::option_sell_to_close_limit("AAPL  260116C00150000", quantity, price);
+```
+
+Compose orders before submission when the Schwab payload needs nested strategies. Use `one_cancels_other` for an OCO exit order, or `first_triggers_second` when the second order should stay pending until the first fills:
+
+```rust
+use schwab::{Number, OrderBuilder};
+
+let quantity: Number = "1".parse().unwrap();
+let limit_price: Number = "140.00".parse().unwrap();
+let stop_price: Number = "120.00".parse().unwrap();
+
+let oco = OrderBuilder::one_cancels_other(
+    OrderBuilder::limit_sell("AAPL", quantity, limit_price),
+    OrderBuilder::stop_sell("AAPL", quantity, stop_price),
+);
+
+let buy_with_stop_loss = OrderBuilder::first_triggers_second(
+    OrderBuilder::market_buy("AAPL", quantity),
+    OrderBuilder::stop_sell("AAPL", quantity, stop_price),
+);
+
+let bracket = OrderBuilder::first_triggers_second(
+    OrderBuilder::market_buy("AAPL", quantity),
+    OrderBuilder::one_cancels_other(
+        OrderBuilder::limit_sell("AAPL", quantity, limit_price),
+        OrderBuilder::stop_sell("AAPL", quantity, stop_price),
+    ),
+);
+```
 
 ## Streaming
 

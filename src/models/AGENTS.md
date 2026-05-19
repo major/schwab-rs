@@ -9,7 +9,7 @@
 - `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
 - `streaming/` - streaming `StreamEvent`/`StreamData` types plus account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option field/data models
-- `trader.rs` - accounts, orders, transactions, user preferences
+- `trader.rs` - accounts, recursive order request/response models, preview results, transactions, user preferences
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
 
@@ -38,7 +38,7 @@ cfg_select! {
 }
 ```
 
-All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. This ensures the `decimal` feature flag works transparently. Both variants must compile and pass tests.
+All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. This ensures the `decimal` feature flag works transparently. Both variants must compile and pass tests. `OrderBuilder` uses `Number` for equity share quantities, option contract quantities, limit prices, and stop prices, including nested trigger/OCO bracket examples; its rustdoc examples parse numeric literals from strings so they compile under both default and `decimal` features.
 
 ## Type Design Rules
 
@@ -89,7 +89,7 @@ Used when the API includes a type discriminator field:
 
 ### Recursive types
 
-`Order` contains `Vec<Option<Order>>` for child orders. `TransactionInstrument` uses `Box<Option<...>>` to break infinite size. Use `Box` when a type would otherwise be infinitely sized.
+`OrderRequest` and `Order` contain `Option<Vec<...>>` child-order collections for nested OCO/TRIGGER strategies. `TransactionInstrument` uses `Box<Option<...>>` to break infinite size. Use `Box` when a type would otherwise be infinitely sized.
 
 ## Doc Comment Conventions
 

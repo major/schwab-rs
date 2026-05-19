@@ -114,14 +114,18 @@ Trader order responses use `OrderStatus::Unknown` as the serde fallback for undo
 
 ## Order Builder (`order_builder.rs`)
 
-`OrderBuilder` constructs equity order JSON payloads. Factory methods:
+`OrderBuilder` constructs serializable equity and single-leg option order payloads for `place_order`, `replace_order`, and `preview_order`. Factory methods:
 
 - `market_buy()`, `market_sell()` - market orders
 - `limit_buy()`, `limit_sell()` - limit orders
 - `stop_buy()`, `stop_sell()` - stop orders
 - `stop_limit_buy()`, `stop_limit_sell()` - stop-limit orders
+- `equity_market()`, `equity_limit()`, `equity_stop()`, `equity_stop_limit()` - lower-level constructors for explicit `Instruction` values such as short sales
+- `option_buy_to_open_market()`, `option_buy_to_open_limit()`, `option_sell_to_open_market()`, `option_sell_to_open_limit()`, `option_buy_to_close_market()`, `option_buy_to_close_limit()`, `option_sell_to_close_market()`, `option_sell_to_close_limit()` - single-leg option helpers for common open/close flows
+- `option_market()`, `option_limit()` - lower-level constructors for explicit option `Instruction` values
+- `one_cancels_other()`, `first_triggers_second()` - compose nested `childOrderStrategies` before submission
 
-Produces a `serde_json::Value` via `build()`. Does NOT silently add fields or mutate the payload beyond what the caller specified.
+The builder itself implements `Serialize`; pass `&order` directly to trader methods. Single-order constructors set `NORMAL` session, `DAY` duration, and `SINGLE` strategy by default. Equity helpers set `assetType=EQUITY`; option helpers set `assetType=OPTION` and trust the caller-provided Schwab option symbol without parsing or rewriting it. OCO parent payloads omit order type, session, duration, and legs so they do not invent simple-order fields. TRIGGER examples use `first_triggers_second()` for supported parent/child flows such as buying shares first and sending a stop-loss sell only after the buy fills; bracket examples use an entry order as TRIGGER parent with an OCO child containing profit-taking limit and stop-loss sell orders. Multi-leg option spread examples are intentionally excluded until the builder models spread fields. Every public method has structured rustdoc sections covering arguments, defaults, payload effects, cautions for lower-level constructors, and examples so downstream CLIs can use rustdoc as command-help source material. Does NOT silently add fields or mutate the payload beyond what the caller specified.
 
 ## Query Helpers (`query.rs`)
 

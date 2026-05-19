@@ -38,7 +38,7 @@ src/
   trader_api.rs       # 13 trader endpoint methods
   streaming_api.rs    # Client::stream entry point (planned glue for streaming sessions)
   options.rs          # query parameter builder types
-  order_builder.rs    # equity order construction
+  order_builder.rs    # equity and single-leg option order construction
   query.rs            # query string helpers
   stream_session/     # WebSocket protocol, transport, StreamingSession engine, inline mock-transport tests
   test_support.rs     # test-only helpers (n(), fixture())
@@ -55,6 +55,7 @@ src/
 - `Error::WebSocket` stores the tungstenite error in a `Box` so the crate-wide `Result<T>` stays small enough for `clippy::result_large_err`
 - Streaming reconnect policy: 10 attempts, 1s exponential backoff doubled to a 30s cap, 0-500ms jitter, code 3 LOGIN_DENIED stops reconnecting
 - `Config` builder: `Config::new()` with `.bearer_token("...")` and optional `.base_url()`/`.trader_base_url()` overrides
+- `OrderBuilder` constructs serializable equity and single-leg option order payloads with common buy/sell and option open/close helpers, lower-level `equity_*`/`option_*` constructors for explicit `Instruction` values, fluent `session`/`duration`/`order_strategy_type` setters, and nested OCO/TRIGGER composition helpers, including bracket examples shaped as entry order TRIGGER plus child OCO exit orders. Every public `OrderBuilder` method has structured rustdoc sections for arguments, defaults, payload effects, cautions when applicable, and examples so downstream CLIs can generate help text from docs.
 - All response model fields are `Option<T>` (Schwab API returns partial data)
 - All enums in `enums.rs` are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
 - `OrderStatus::Unknown` uses `#[serde(other)]` so undocumented order lifecycle statuses do not break order-list deserialization
