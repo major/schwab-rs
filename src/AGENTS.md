@@ -15,7 +15,7 @@ lib.rs
   mod trader_api        # impl Client: 13 trader methods
   mod models            # response/request types (private, re-exported via models::*)
   mod options           # query param builders (private, re-exported individually)
-  mod order_builder     # OrderBuilder (private, re-exported)
+  mod order_builder     # OrderBuilder construction and conversion (private, re-exported)
   mod query             # internal query string helpers
   mod stream_session    # WebSocket protocol, transport, StreamingSession engine
   mod streaming_api     # Client::stream entry point, credentials bootstrap
@@ -78,7 +78,7 @@ For POST/PUT with a JSON body, use `self.send_empty_with_location(method, url, &
 ## Error Handling (`error.rs`)
 
 - `Error` enum uses `thiserror` derive
-- Variants: `EmptyBaseUrl`, `InvalidBaseUrl`, `EmptySymbols`, `MissingRequiredParameter`, `InvalidAuthConfig`, `AuthRequired`, `AuthExpired`, `AuthCallback`, `Io`, `Encode`, `Json`, `HttpStatus`, `Request`, `Decode`, `WebSocket`, `StreamLogin`, `StreamProtocol`
+- Variants: `EmptyBaseUrl`, `InvalidBaseUrl`, `EmptySymbols`, `MissingRequiredParameter`, `OrderConversion`, `InvalidAuthConfig`, `AuthRequired`, `AuthExpired`, `AuthCallback`, `Io`, `Encode`, `Json`, `HttpStatus`, `Request`, `Decode`, `WebSocket`, `StreamLogin`, `StreamProtocol`
 - `WebSocket` boxes the tungstenite source error so crate-wide `Result<T>` does not trip `clippy::result_large_err`
 - Manual `Debug` impl on `Error`: redacts `body` field in `HttpStatus` and `Decode` to `<redacted>`
 - `Result<T>` is `std::result::Result<T, Error>`
@@ -126,6 +126,8 @@ Trader order responses use `OrderStatus::Unknown` as the serde fallback for undo
 - `one_cancels_other()`, `first_triggers_second()` - compose nested `childOrderStrategies` before submission
 
 The builder itself implements `Serialize`; pass `&order` directly to trader methods. Single-order constructors set `NORMAL` session, `DAY` duration, and `SINGLE` strategy by default. Equity helpers set `assetType=EQUITY`; option helpers set `assetType=OPTION` and trust the caller-provided Schwab option symbol without parsing or rewriting it. OCO parent payloads omit order type, session, duration, and legs so they do not invent simple-order fields. TRIGGER examples use `first_triggers_second()` for supported parent/child flows such as buying shares first and sending a stop-loss sell only after the buy fills; bracket examples use an entry order as TRIGGER parent with an OCO child containing profit-taking limit and stop-loss sell orders. Multi-leg option spread examples are intentionally excluded until the builder models spread fields. Every public method has structured rustdoc sections covering arguments, defaults, payload effects, cautions for lower-level constructors, and examples so downstream CLIs can use rustdoc as command-help source material. Does NOT silently add fields or mutate the payload beyond what the caller specified.
+
+`OrderBuilder::try_from_order(&Order)`, `TryFrom<&Order>`, and `TryFrom<Order>` convert historical `Order` response models back into submit-ready builder payloads for supported `SINGLE`, `TRIGGER`, and `OCO` strategies. Conversion keeps request-relevant fields, recursively converts child strategies, supports equity and option legs, omits response metadata such as order IDs and status, validates common top-level `quantity` against supported single-leg payloads, validates order-type-specific required prices, and returns `Error::OrderConversion` instead of guessing when required submit fields are missing or order/leg shapes are unsupported.
 
 ## Query Helpers (`query.rs`)
 

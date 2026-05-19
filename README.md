@@ -12,6 +12,7 @@ Wraps the Schwab Market Data and Trader REST APIs with typed methods and models 
 - **Market Data** - quotes, option chains, expiration chains, instruments, market hours, movers, price history
 - **Trader** - accounts, orders (place/replace/cancel/preview), transactions, user preferences
 - **Order builder** - typed equity helpers, single-leg option helpers, OCO, and first-triggers-second order composition
+- **Repeat orders** - convert supported historical `Order` responses into `OrderBuilder` payloads for reuse
 - **Typed order statuses** - known lifecycle states such as `WORKING`, `FILLED`, `CANCELED`, and `REJECTED` deserialize to typed variants, with an `Unknown` fallback for future Schwab values
 - **Streaming** - WebSocket session engine for account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option with broadcast events and automatic reconnect
 - **OAuth2 auth** - PKCE authorization code flow, file-backed token storage, automatic refresh via `Provider`
@@ -125,6 +126,26 @@ let bracket = OrderBuilder::first_triggers_second(
     ),
 );
 ```
+
+`OrderBuilder` can also rebuild supported historical orders returned by the Trader API. Conversion keeps request fields, validates common response-level `quantity` against supported single-leg payloads, omits response metadata such as order IDs and status, and fails with `Error::OrderConversion` when an order is partial or uses unsupported order or leg shapes.
+
+```rust,no_run
+use schwab::{Client, Config, OrderBuilder, OrderListOptions};
+
+# async fn example() -> schwab::Result<()> {
+let client = Client::new(Config::new().bearer_token("your-token"));
+let options = OrderListOptions::new("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+let orders = client.get_orders("123456789", options).await?;
+
+if let Some(order) = orders.first() {
+    let repeat = OrderBuilder::try_from_order(order)?;
+    client.place_order("123456789", &repeat).await?;
+}
+# Ok(())
+# }
+```
+
+Supported repeat-order strategies are `SINGLE`, `TRIGGER`, and `OCO` with equity or option legs.
 
 ## Streaming
 

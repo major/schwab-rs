@@ -9,7 +9,7 @@
 - `enums.rs` - ~70 enums shared across market data and trader APIs
 - `market_data.rs` - quote responses, option chains, candles, instruments, market hours, screeners
 - `streaming/` - streaming `StreamEvent`/`StreamData` types plus account activity, level-one equities, options, futures, futures options, forex, chart equity, chart futures, screener equity, and screener option field/data models
-- `trader.rs` - accounts, recursive order request/response models, preview results, transactions, user preferences
+- `trader.rs` - accounts, recursive order request/response models, preview results, transactions, user preferences; `Order` response values are also the source type for `OrderBuilder::try_from_order(&Order)` repeat-order conversion, including validation of common response-level `quantity` against supported single-leg payloads
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
 
@@ -57,6 +57,7 @@ Schwab may add new variants at any time. Every enum in `enums.rs` gets `#[non_ex
 - Add `Serialize` to enums that appear in request payloads or query parameters
 - Use `Eq` only when all fields support it (no `Number`/`f64` fields)
 - `OrderStatus::Unknown` is the serde fallback for undocumented Schwab order status strings; keep known order lifecycle statuses as explicit variants when Schwab documents or returns them.
+- `OrderType::Unknown` is response-only and must not be converted into `OrderTypeRequest`; repeat-order conversion returns `Error::OrderConversion` for it.
 
 ## Serde Patterns
 
@@ -80,6 +81,8 @@ Used when the API returns different shapes without a discriminator field:
 - `TransactionInstrument` - dispatches by instrument shape, uses `Box<Option<T>>` for recursive types
 
 Untagged enums try variants in declaration order. Put the most specific (most fields) variants first.
+
+`AccountsInstrument` can deserialize a minimal equity-shaped payload into the option variant because both variants have many optional fields and option appears first. Code that needs a submit asset type, such as order-to-builder conversion, must trust `OrderLegCollection::order_leg_type` or the nested instrument `asset_type` field instead of the enum variant alone.
 
 ### Tagged enums (discriminated unions)
 
