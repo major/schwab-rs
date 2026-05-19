@@ -49,6 +49,9 @@ pub enum Error {
     /// A required OpenAPI path, query, or body parameter was empty.
     #[error("required parameter {0} cannot be empty")]
     MissingRequiredParameter(&'static str),
+    /// A historical order could not be converted into an order builder.
+    #[error("cannot convert order to builder: {0}")]
+    OrderConversion(String),
     /// The configured Schwab OAuth setting is invalid.
     #[error("invalid auth config {field}: {message}")]
     InvalidAuthConfig {
@@ -129,6 +132,10 @@ impl std::fmt::Debug for Error {
             Self::MissingRequiredParameter(parameter) => formatter
                 .debug_tuple("MissingRequiredParameter")
                 .field(parameter)
+                .finish(),
+            Self::OrderConversion(message) => formatter
+                .debug_tuple("OrderConversion")
+                .field(message)
                 .finish(),
             Self::InvalidAuthConfig { field, message } => formatter
                 .debug_struct("InvalidAuthConfig")
@@ -233,6 +240,7 @@ mod tests {
             },
             Error::EmptySymbols,
             Error::MissingRequiredParameter("cusip"),
+            Error::OrderConversion("missing orderType".into()),
             Error::InvalidAuthConfig {
                 field: "client_id",
                 message: "empty".into(),
@@ -260,19 +268,20 @@ mod tests {
         assert!(debug_strings[1].contains("InvalidBaseUrl"));
         assert_eq!(debug_strings[2], "EmptySymbols");
         assert!(debug_strings[3].contains("MissingRequiredParameter"));
-        assert!(debug_strings[4].contains("InvalidAuthConfig"));
-        assert_eq!(debug_strings[5], "AuthRequired");
-        assert_eq!(debug_strings[6], "AuthExpired");
-        assert!(debug_strings[7].contains("AuthCallback"));
-        assert!(debug_strings[8].contains("Io"));
-        assert!(debug_strings[9].contains("Encode"));
-        assert!(debug_strings[10].contains("Json"));
+        assert!(debug_strings[4].contains("OrderConversion"));
+        assert!(debug_strings[5].contains("InvalidAuthConfig"));
+        assert_eq!(debug_strings[6], "AuthRequired");
+        assert_eq!(debug_strings[7], "AuthExpired");
+        assert!(debug_strings[8].contains("AuthCallback"));
+        assert!(debug_strings[9].contains("Io"));
+        assert!(debug_strings[10].contains("Encode"));
+        assert!(debug_strings[11].contains("Json"));
         // HttpStatus body is redacted
-        assert!(debug_strings[11].contains("<redacted>"));
-        assert!(!debug_strings[11].contains("secret data"));
-        // Decode body is redacted
         assert!(debug_strings[12].contains("<redacted>"));
-        assert!(!debug_strings[12].contains("raw payload"));
+        assert!(!debug_strings[12].contains("secret data"));
+        // Decode body is redacted
+        assert!(debug_strings[13].contains("<redacted>"));
+        assert!(!debug_strings[13].contains("raw payload"));
 
         // Also verify Display for remaining untested variants
         assert_eq!(

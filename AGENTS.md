@@ -38,7 +38,7 @@ src/
   trader_api.rs       # 13 trader endpoint methods
   streaming_api.rs    # Client::stream entry point (planned glue for streaming sessions)
   options.rs          # query parameter builder types
-  order_builder.rs    # equity and single-leg option order construction
+  order_builder.rs    # equity and single-leg option order construction plus order-to-builder conversion
   query.rs            # query string helpers
   stream_session/     # WebSocket protocol, transport, StreamingSession engine, inline mock-transport tests
   test_support.rs     # test-only helpers (n(), fixture())
@@ -59,6 +59,7 @@ src/
 - All response model fields are `Option<T>` (Schwab API returns partial data)
 - All enums in `enums.rs` are `#[non_exhaustive]` with `#[serde(rename_all = "...")]`
 - `OrderStatus::Unknown` uses `#[serde(other)]` so undocumented order lifecycle statuses do not break order-list deserialization
+- `OrderBuilder::try_from_order(&Order)` and `TryFrom<Order>` rebuild submit-ready payloads from historical `Order` values for supported `SINGLE`, `TRIGGER`, and `OCO` strategies; conversion drops response metadata, validates common top-level `quantity` against the single submitted leg when present, and returns `Error::OrderConversion` for missing required submit fields or unsupported order/leg shapes
 - Untagged/tagged dispatch enums (`QuoteResponseObject`, `SecuritiesAccount`, `AccountsInstrument`, `TransactionInstrument`) omit `#[non_exhaustive]` since serde cannot deserialize unknown variants for these
 - Clippy: `-D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant`
 - `#![deny(missing_docs)]` in `lib.rs` - all public items require doc comments (compile error if missing)
