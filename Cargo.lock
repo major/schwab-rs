@@ -1611,7 +1611,7 @@ dependencies = [
 
 [[package]]
 name = "schwab"
-version = "0.2.3"
+version = "0.3.0"
 dependencies = [
  "assert-json-diff",
  "base64",
