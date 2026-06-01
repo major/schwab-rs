@@ -1,3 +1,5 @@
+//! Authentication command handlers for login, token exchange, refresh, and status.
+
 use std::fs::File;
 use std::io::{Read, Write};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpListener, TcpStream};

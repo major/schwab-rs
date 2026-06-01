@@ -48,6 +48,7 @@ src/
   test_support.rs     # test-only helpers (n(), fixture())
   bin/schwab-agent/   # agent-oriented JSON CLI, config, auth, market, account, order, option, TA, analyze commands
   models/             # see src/models/AGENTS.md
+SKILL.md              # repository-level pointer to the schwab-agent LLM command guide
 ```
 
 ## Conventions

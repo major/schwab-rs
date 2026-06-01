@@ -1,3 +1,5 @@
+//! Stable machine-readable output helpers for CLI failures.
+
 use crate::error::AppError;
 
 /// Stable error payload for machine-readable failures.

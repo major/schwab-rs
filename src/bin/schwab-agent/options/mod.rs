@@ -1,3 +1,5 @@
+//! Option data subcommands for expirations, chains, contracts, and screening.
+
 pub mod chain;
 pub mod contract;
 pub mod expirations;

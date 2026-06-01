@@ -1,3 +1,5 @@
+//! Command-line argument definitions for the `schwab-agent` JSON CLI.
+
 use clap::{ArgGroup, Args, Parser, Subcommand};
 
 /// Agent-oriented JSON CLI porcelain for Charles Schwab workflows.

@@ -84,6 +84,8 @@ cargo install schwab --bin schwab-agent --locked
 
 `schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on failure. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
 
+For the full LLM-facing command contract, workflows, and safety rules, see [`SKILL.md`](SKILL.md), which points to the detailed binary guide under `src/bin/schwab-agent/`.
+
 ```bash
 schwab-agent auth login-url
 schwab-agent auth exchange --redirect-url "CALLBACK_URL_WITH_CODE"

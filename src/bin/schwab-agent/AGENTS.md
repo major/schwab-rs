@@ -68,6 +68,7 @@ src/bin/schwab-agent/
   analyze/
     mod.rs           - Multi-symbol analyze command with partial-failure support
     tests.rs         - Analyze module tests
+SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` points here for discoverability
 ```
 
 ## Command Groups

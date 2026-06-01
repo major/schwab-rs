@@ -1,3 +1,5 @@
+//! Technical analysis subcommands, indicators, and output types.
+
 pub mod candles;
 pub mod custom;
 pub mod dashboard;

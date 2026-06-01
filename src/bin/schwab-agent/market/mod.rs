@@ -1,3 +1,5 @@
+//! Market data command handlers for quotes and price history.
+
 use schwab::{PriceHistoryOptions, QuoteOptions, QuoteResponseObject};
 use serde::Serialize;
 use serde_json::{Value, to_value};

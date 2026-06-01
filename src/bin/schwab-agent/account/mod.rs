@@ -1,3 +1,5 @@
+//! Account discovery, balance summary, position, and selector resolution handlers.
+
 use serde::Serialize;
 use serde_json::{Value, to_value};
 
