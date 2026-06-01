@@ -18,13 +18,18 @@ fmt-fix:
 clippy:
 	cargo clippy --all-targets -- $(CLIPPY_FLAGS)
 	cargo clippy --all-targets --features decimal -- $(CLIPPY_FLAGS)
+	cargo clippy --lib --no-default-features -- $(CLIPPY_FLAGS)
+	cargo clippy --lib --no-default-features --features decimal -- $(CLIPPY_FLAGS)
 
 test:
 	cargo test
 	cargo test --features decimal
+	cargo test --lib --no-default-features
+	cargo test --lib --no-default-features --features decimal
 
 doc:
 	RUSTDOCFLAGS="$(RUSTDOCFLAGS)" cargo doc --no-deps
+	RUSTDOCFLAGS="$(RUSTDOCFLAGS)" cargo doc --lib --no-default-features --no-deps
 
 coverage:
 	RUSTFLAGS="$(COVERAGE_RUSTFLAGS)" cargo +nightly llvm-cov test --fail-under-lines 90

@@ -42,6 +42,8 @@ jobs:
         run: |
           cargo clippy --all-targets -- -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
           cargo clippy --all-targets --features decimal -- -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
+          cargo clippy --lib --no-default-features -- -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
+          cargo clippy --lib --no-default-features --features decimal -- -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
 
   test:
     name: Test (${{ matrix.os }})
@@ -59,6 +61,8 @@ jobs:
         run: |
           cargo test
           cargo test --features decimal
+          cargo test --lib --no-default-features
+          cargo test --lib --no-default-features --features decimal
 
   msrv:
     name: MSRV
@@ -69,7 +73,10 @@ jobs:
         with:
           toolchain: "1.96"
           rustflags: ""
-      - run: cargo test --locked
+      - name: Run MSRV tests
+        run: |
+          cargo test --locked
+          cargo test --locked --lib --no-default-features
 
   coverage:
     name: Coverage
@@ -122,6 +129,9 @@ jobs:
         with:
           toolchain: stable
           rustflags: ""
-      - run: cargo doc --no-deps
+      - name: Build docs
+        run: |
+          cargo doc --no-deps
+          cargo doc --lib --no-default-features --no-deps
         env:
           RUSTDOCFLAGS: -D rustdoc::broken-intra-doc-links -D rustdoc::private-intra-doc-links

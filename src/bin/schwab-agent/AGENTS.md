@@ -13,6 +13,7 @@ The root library is a low-level API crate with typed request builders, transport
 - Package: `schwab`, binary: `schwab-agent`
 - Edition 2024, MSRV 1.96
 - Install published binary with `cargo install schwab --bin schwab-agent --locked`
+- Default feature: `cli` enables this binary and CLI-only dependencies. The library still builds with `default-features = false` without compiling `schwab-agent`.
 - Feature flag: `decimal` swaps the shared `Number` alias to `rust_decimal::Decimal`
 
 ## Source Layout
@@ -199,17 +200,17 @@ Use `make check` for the full suite. Individual targets:
 ```bash
 make fmt          # cargo fmt --all --check
 make fmt-fix      # cargo fmt --all
-make clippy       # Runs twice: default + --features decimal
+make clippy       # Runs default, decimal, library no-default, library no-default+decimal
                   # Flags: -D clippy::all -A clippy::needless_borrow -A clippy::large_enum_variant
-make test         # Runs twice: default + --features decimal
-make doc          # Checks for broken intra-doc links
+make test         # Runs default, decimal, library no-default, library no-default+decimal
+make doc          # Checks default docs and library no-default docs for broken intra-doc links
 make coverage     # nightly cargo llvm-cov test --fail-under-lines 90 with coverage_nightly cfg
 make patch-coverage # lcov + diff-cover, 100% changed-line threshold against main
 make audit        # cargo audit
 make check        # fmt + clippy + test + doc (aggregate)
 ```
 
-Always run both default and `decimal` feature configurations. CI does the same.
+Always run default, `decimal`, library no-default, and library no-default `decimal` feature configurations. CI does the same without enabling `test_online`.
 
 ## Conventions
 

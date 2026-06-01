@@ -13,13 +13,14 @@ categories = ["api-bindings", "finance"]
 [[bin]]
 name = "schwab-agent"
 path = "src/bin/schwab-agent/main.rs"
+required-features = ["cli"]
 
 [dependencies]
 base64 = "0.22.1"
-clap = { version = "4.6.1", features = ["derive", "env"] }
-dirs = "6.0.0"
+clap = { version = "4.6.1", features = ["derive", "env"], optional = true }
+dirs = { version = "6.0.0", optional = true }
 futures-util = "0.3"
-open = "5.3.5"
+open = { version = "5.3.5", optional = true }
 rand = "0.10.1"
 rcgen = "0.14.8"
 reqwest = { version = "0.13.3", default-features = false, features = ["form", "json", "query", "rustls"] }
@@ -27,7 +28,7 @@ rustls = { version = "0.23.40", default-features = false, features = ["ring", "s
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149", features = ["preserve_order"] }
 serde_with = "3.20.0"
-sha2 = "0.11"
+sha2 = { version = "0.11", optional = true }
 thiserror = "2.0.18"
 time = { version = "0.3.47", features = ["formatting", "parsing"] }
 tracing = "0.1"
@@ -37,6 +38,8 @@ rust_decimal = { version = "1.42", features = ["serde-with-float"], optional = t
 tokio-tungstenite = { version = "0.29", features = ["rustls-tls-native-roots"] }
 
 [features]
+default = ["cli"]
+cli = ["dep:clap", "dep:dirs", "dep:open", "dep:sha2"]
 decimal = ["dep:rust_decimal"]
 test_online = []
 
