@@ -18,7 +18,19 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("auth"))
         .stdout(predicate::str::contains("market"))
         .stdout(predicate::str::contains("order"))
+        .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
+}
+
+#[test]
+fn completions_outputs_shell_script() {
+    agent()
+        .args(["completions", "bash"])
+        .assert()
+        .success()
+        .stderr(predicate::str::is_empty())
+        .stdout(predicate::str::contains("_schwab-agent"))
+        .stdout(predicate::str::contains("complete"));
 }
 
 #[test]

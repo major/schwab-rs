@@ -1,6 +1,6 @@
 # schwab-agent CLI
 
-Structured JSON CLI for Charles Schwab API. All output is raw JSON data payloads. Set env vars or config once, then most commands need zero flags.
+Structured JSON CLI for Charles Schwab API. All command output is raw JSON data payloads except `completions`, which prints a shell completion script. Set env vars or config once, then most commands need zero flags.
 
 > **Disclaimer:** This project is unofficial and is not affiliated with, endorsed by, or connected to Charles Schwab, TD Ameritrade, or thinkorswim in any way.
 
@@ -19,6 +19,8 @@ Credentials can also live in `~/.config/schwab-agent/config.json`. Environment v
 ## Release Notes
 
 The binary is published from the `schwab` crate as `schwab-agent`. Install it with `cargo install schwab --bin schwab-agent --locked`. Releases are automated on push to main: release-plz creates release PRs and tags from Conventional Commits, then cargo-dist builds cross-platform binaries, creates GitHub Releases, and publishes `schwab` to crates.io through Trusted Publishing.
+
+Generate shell completions with `schwab-agent completions <shell>`, where `<shell>` is one of `bash`, `elvish`, `fish`, `powershell`, or `zsh`. This command writes the raw completion script to stdout instead of JSON so shells can source it directly; write failures emit a short stderr diagnostic and exit non-zero.
 
 ## Mutable Operation Guard
 

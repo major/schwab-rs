@@ -1,6 +1,7 @@
 //! Command-line argument definitions for the `schwab-agent` JSON CLI.
 
 use clap::{ArgGroup, Args, Parser, Subcommand};
+use clap_complete::Shell;
 
 /// Agent-oriented JSON CLI porcelain for Charles Schwab workflows.
 #[derive(Debug, Parser)]
@@ -36,6 +37,7 @@ impl Cli {
             Command::Market(MarketCommand::History(_)) => "market.history",
             Command::Market(MarketCommand::Quote(_)) => "market.quote",
             Command::Order(_) => "order",
+            Command::Completions(_) => "completions",
             Command::Ta(TaCommand::Dashboard(_)) => "ta.dashboard",
             Command::Ta(TaCommand::ExpectedMove(_)) => "ta.expected-move",
             Command::Account(_) => "account",
@@ -60,6 +62,8 @@ pub enum Command {
     /// Unified order construction, preview, placement, and lifecycle workflows.
     #[command(subcommand)]
     Order(OrderCommand),
+    /// Generate shell completion scripts.
+    Completions(CompletionsArgs),
     /// Technical analysis indicator workflows.
     #[command(subcommand)]
     Ta(TaCommand),
@@ -81,6 +85,14 @@ pub enum Command {
         Return the selected account summary plus compact position objects instead of only resolving the hash.\n\n\
         Position objects include symbol, description, asset_type, long_quantity, short_quantity, average_price, market_value, current_day_profit_loss, and current_day_profit_loss_percentage when Schwab provides them.")]
     Account(AccountArgs),
+}
+
+/// Arguments for shell completion generation.
+#[derive(Debug, Args)]
+pub struct CompletionsArgs {
+    /// Shell to generate completions for.
+    #[arg(value_enum)]
+    pub shell: Shell,
 }
 
 /// Technical analysis commands.
@@ -909,6 +921,12 @@ mod tests {
     fn command_name_ta_expected_move() {
         let cli = Cli::parse_from(["schwab-agent", "ta", "expected-move", "AAPL"]);
         assert_eq!(cli.command_name(), "ta.expected-move");
+    }
+
+    #[test]
+    fn command_name_completions() {
+        let cli = Cli::parse_from(["schwab-agent", "completions", "bash"]);
+        assert_eq!(cli.command_name(), "completions");
     }
 
     #[test]

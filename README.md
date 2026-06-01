@@ -82,7 +82,7 @@ Install the bundled JSON CLI from the published crate:
 cargo install schwab --bin schwab-agent --locked
 ```
 
-`schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on failure. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
+`schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on failure. The `completions` command is the only raw stdout exception because shells need a completion script; write failures emit a short stderr diagnostic and exit non-zero. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
 
 For the full LLM-facing command contract, workflows, and safety rules, see [`SKILL.md`](SKILL.md), which points to the detailed binary guide under `src/bin/schwab-agent/`.
 
@@ -100,6 +100,7 @@ schwab-agent option expirations AAPL
 schwab-agent option chain AAPL --type call --dte 30 --fields strike,delta,bid,ask,volume,oi
 schwab-agent option screen AAPL --type call --min-bid 1.00 --max-spread-pct 10
 schwab-agent ta dashboard SPY
+schwab-agent completions bash > schwab-agent.bash
 ```
 
 Option screen numeric filters reject non-finite values such as `NaN` and infinity before making API calls, and screen output serializes numeric values through the crate's active `Number` type so default and `decimal` builds stay consistent.
@@ -238,6 +239,7 @@ session.disconnect().await?;
 
 | Feature | Default | Purpose |
 |---|---:|---|
+| `cli` | Yes | Enables the bundled `schwab-agent` binary and CLI-only dependencies, including clap parsing, shell completions, browser opening, config directory lookup, and preview digests. |
 | `decimal` | No | Enables `rust_decimal` support for models where decimal precision is preferable to floating-point values. |
 | `test_online` | No | Enables live integration tests that call the Schwab API. Use only with explicit credentials and never in untrusted CI. |
 
@@ -267,7 +269,7 @@ make machete
 
 `make check` runs formatting, clippy, tests, and rustdoc checks. Clippy and tests run with default features, with `--features decimal`, with `--lib --no-default-features`, and with `--lib --no-default-features --features decimal` so the `Number` alias stays valid and library consumers can build without CLI dependencies.
 
-Offline tests include compiled-binary smoke checks for `schwab-agent` help output, clap usage errors, structured JSON error output, and dry-run order payloads. Live Schwab API tests remain gated behind `test_online`.
+Offline tests include compiled-binary smoke checks for `schwab-agent` help output, shell completions, clap usage errors, structured JSON error output, and dry-run order payloads. Live Schwab API tests remain gated behind `test_online`.
 
 `make coverage` runs offline tests through nightly `cargo llvm-cov` with the `coverage_nightly` cfg enabled and enforces 90% line coverage. It does not enable `test_online`, because live Schwab API tests require explicit credentials and must never run in CI.
 

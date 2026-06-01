@@ -25,7 +25,7 @@ MSRV: 1.96. Edition: 2024. Always test with both default and `decimal` feature.
 
 ## Feature Flags
 
-- `cli`: default feature that enables the `schwab-agent` binary and CLI-only dependencies (`clap`, `dirs`, `open`, `sha2`). Library consumers can use `default-features = false` to avoid CLI dependencies.
+- `cli`: default feature that enables the `schwab-agent` binary and CLI-only dependencies (`clap`, `clap_complete`, `dirs`, `open`, `sha2`). Library consumers can use `default-features = false` to avoid CLI dependencies.
 - `decimal`: swaps `Number` type alias from `f64` to `rust_decimal::Decimal`. All numeric model fields use `Number`, so both variants must compile and pass tests.
 - `test_online`: gates live integration tests against the real Schwab API. Never run in CI.
 
@@ -55,6 +55,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 
 - Public API: `Client` + typed async methods returning `schwab::Result<T>`
 - Binary target: `schwab-agent` at `src/bin/schwab-agent/main.rs`, gated by the default `cli` feature; CLI modules remain binary-private and may use documented CLI config, environment variables, JSON output, and process exit behavior without changing the library contract
+- `schwab-agent completions <shell>` is the sole raw stdout exception to the JSON output contract because shells need an unwrapped completion script; completion generation write failures report a short stderr diagnostic and exit non-zero
 - `schwab-agent` ignores empty `SCHWAB_TOKEN_PATH` values, keeps the compatibility token default under `schwab-agent-rs/token.json`, and resolves the base from `XDG_CONFIG_HOME` before the platform config directory
 - `schwab-agent option screen` rejects non-finite numeric filter inputs before API calls, enforces normalized contract-type filters in output rows, and serializes numeric output through the active `Number` representation so default and `decimal` builds stay consistent
 - Root re-exports include `StreamingSession` plus streaming event, data, and field selector model types through `models::*`
@@ -81,7 +82,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - Async network methods use ` ```no_run ` fences with `# async fn example() -> schwab::Result<()> {` boilerplate
 - Sync builders and pure-logic items use plain ` ``` ` fences with compile-time assertions where possible
 - Examples must compile under both default and `decimal` features (use `"1.0".parse().unwrap()` for `Number` literals)
-- `tests/cli_smoke.rs` uses `assert_cmd` and `predicates` for offline compiled-binary checks of help output, clap usage errors, structured JSON errors, and dry-run order JSON.
+- `tests/cli_smoke.rs` uses `assert_cmd` and `predicates` for offline compiled-binary checks of help output, shell completions, clap usage errors, structured JSON errors, and dry-run order JSON.
 - Pattern assertions in tests use Rust 1.96's standard `assert_matches!` macro instead of `assert!(matches!(...))`
 
 ## Security (Non-Negotiable)

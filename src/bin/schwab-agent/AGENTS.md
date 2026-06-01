@@ -22,6 +22,7 @@ The root library is a low-level API crate with typed request builders, transport
 src/bin/schwab-agent/
   main.rs          - Binary entry point, module tree, run_from_env(), CLI dispatch, JSON output
   cli.rs           - clap derive CLI definition with subcommands and global args
+  completions.rs   - Shell completion script generation for the clap command tree
   output.rs        - ErrorBody struct for structured error JSON output
   shared.rs        - Shared types: SessionChoice, DurationChoice, to_number() helper
   config.rs        - Agent config: load shared config, mutable-operation guard
@@ -80,6 +81,7 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 - **option** - Option chain data (expirations, chain, screen, contract)
 - **ta** - Technical analysis (dashboard, expected-move)
 - **analyze** - Multi-symbol analysis with partial-failure support
+- **completions** - Raw shell completion scripts for bash, elvish, fish, PowerShell, and zsh
 
 ### Auth Callback Listener
 
@@ -170,7 +172,7 @@ Token path env var: `SCHWAB_TOKEN_PATH`. Empty values are ignored. Default: `$XD
 
 ## Output Format
 
-Commands output raw JSON data payloads directly (no wrapper). Errors output an `ErrorBody` JSON object with `code`, `message`, `category`, `retryable`, and `hint` fields.
+Commands output raw JSON data payloads directly (no wrapper). Errors output an `ErrorBody` JSON object with `code`, `message`, `category`, `retryable`, and `hint` fields. `completions` is the only raw stdout exception because shell completion scripts must not be JSON-wrapped; completion generation write failures emit a short stderr diagnostic and exit non-zero.
 
 ### Error Codes and Exit Codes
 
@@ -183,6 +185,7 @@ Commands output raw JSON data payloads directly (no wrapper). Errors output an `
 ## Key Dependencies
 
 - `clap` (derive) - CLI parsing
+- `clap_complete` - Shell completion script generation
 - `schwab` - Schwab API client
 - `reqwest` - Direct HTTP requests for raw API workarounds
 - `serde` / `serde_json` - Serialization
@@ -218,7 +221,7 @@ Always run default, `decimal`, library no-default, and library no-default `decim
 ### Code Style
 
 - Every module uses `#[cfg(test)] mod tests;` - separate test files for auth, error, market, account; inline tests for lib, cli, output, preview, order/mod, order/equity, order/option, order/replace, order/workflow, verify, lifecycle, raw
-- `tests/cli_smoke.rs` uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, clap usage errors, structured JSON error output, and dry-run order JSON checks
+- `tests/cli_smoke.rs` uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, shell completions, clap usage errors, structured JSON error output, and dry-run order JSON checks
 - Docstrings on all public items and many private items
 - `#[must_use]` on pure functions
 - `serde_with::skip_serializing_none` for clean JSON output

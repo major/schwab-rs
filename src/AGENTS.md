@@ -5,7 +5,7 @@
 
 ## Module Architecture
 
-The public library remains rooted in `src/lib.rs`. The `schwab-agent` CLI is a separate binary target under `src/bin/schwab-agent/`, gated by the default `cli` feature so library consumers can build with `default-features = false`; it can use CLI config files, environment variables, structured JSON output, process exit codes, owner-only saved preview files, compatibility token paths, and CLI-specific validation such as rejecting non-finite option screen filters and enforcing normalized contract-type filters, but those behaviors must not leak into public library modules.
+The public library remains rooted in `src/lib.rs`. The `schwab-agent` CLI is a separate binary target under `src/bin/schwab-agent/`, gated by the default `cli` feature so library consumers can build with `default-features = false`; it can use CLI config files, environment variables, structured JSON output, process exit codes, owner-only saved preview files, compatibility token paths, shell completion generation with stderr diagnostics for write failures, and CLI-specific validation such as rejecting non-finite option screen filters and enforcing normalized contract-type filters, but those behaviors must not leak into public library modules.
 
 ```text
 lib.rs
@@ -165,7 +165,7 @@ Internal functions for building query parameter vectors:
 ## Test Patterns
 
 - Inline `#[cfg(test)] mod tests` blocks in each source file
-- Compiled-binary smoke tests live in `tests/cli_smoke.rs` and use `assert_cmd` plus `predicates` for offline help, clap error, structured error JSON, and dry-run order checks
+- Compiled-binary smoke tests live in `tests/cli_smoke.rs` and use `assert_cmd` plus `predicates` for offline help, shell completion, clap error, structured error JSON, and dry-run order checks
 - `mockito` for HTTP mocking: create a mock server, set expectations, verify request shape
 - Streaming tests use inline `MockTransport` plus golden fixtures under `tests/fixtures/streaming_*.json`; keep them offline and deterministic
 - Tests verify: HTTP method, path, query params, headers, request body, response deserialization
