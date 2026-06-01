@@ -48,13 +48,13 @@ schwab-agent market quote AAPL MSFT GOOG    # multiple quotes
 schwab-agent market quote AAPL --fields sym,last,pct,vol
 schwab-agent market quote AAPL --all-fields
 schwab-agent market history SPY             # price history (defaults are fine)
-schwab-agent market history SPY --fields ts,close,vol
+schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol
 schwab-agent market history SPY --all-fields
 ```
 
 Quote output defaults to token-efficient rows: `columns`, `rows`, and `rowCount`. Default columns are `req`, `sym`, `bid`, `ask`, `last`, `mark`, `chg`, `pct`, `vol`, and `err` so per-symbol quote errors stay visible in compact output. Use `--fields` for specific output columns, using compact names or full aliases such as `requested_symbol`, `symbol`, `net_change`, `net_percent_change`, `volume`, and `error`. Use `--all-fields` for full detailed quote objects. Use `--api-fields quote,reference` only to limit Schwab API field groups.
 
-History output also defaults to token-efficient rows with `symbol`, `columns`, `rows`, and `rowCount`. Default candle columns are `ts`, `open`, `high`, `low`, `close`, and `vol`, which are enough for most trading decisions and TA handoffs. Use `--fields` for specific candle columns, using compact names or aliases such as `timestamp`, `datetime`, `datetimeISO8601`, `iso`, `o`, `h`, `l`, `c`, and `volume`. Use `--all-fields` for the full Schwab price history object, including previous-close metadata and raw candle objects.
+History output also defaults to token-efficient rows with `symbol`, `columns`, `rows`, and `rowCount`. Default candle columns are `ts`, `open`, `high`, `low`, `close`, and `vol`, which are enough for most trading decisions and TA handoffs. Use `--fields` for specific candle columns, using compact names or aliases such as `timestamp`, `datetime`, `datetimeISO8601`, `iso`, `o`, `h`, `l`, `c`, and `volume`. Use `--all-fields` for the full Schwab price history object, including previous-close metadata and raw candle objects. `--from` and `--to` accept `YYYY-MM-DD`, RFC3339, or epoch milliseconds; date-only values are inclusive UTC calendar days, and invalid values fail with `market.validation_failed` before auth or API calls.
 
 Optional history flags: `--period-type`, `--period`, `--frequency-type`, `--frequency`, `--from`, `--to`, `--extended-hours`.
 

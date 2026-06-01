@@ -425,13 +425,19 @@ pub struct HistoryArgs {
     #[arg(long)]
     pub frequency: Option<i64>,
 
-    /// Start date in milliseconds since epoch.
-    #[arg(long)]
-    pub from: Option<i64>,
+    /// Start date as YYYY-MM-DD, RFC3339, or epoch milliseconds.
+    #[arg(
+        long,
+        long_help = "Start date as YYYY-MM-DD, RFC3339, or epoch milliseconds. Examples: 2026-01-01, 2026-01-01T09:30:00Z, 1767225600000."
+    )]
+    pub from: Option<String>,
 
-    /// End date in milliseconds since epoch.
-    #[arg(long)]
-    pub to: Option<i64>,
+    /// End date as YYYY-MM-DD, RFC3339, or epoch milliseconds.
+    #[arg(
+        long,
+        long_help = "End date as YYYY-MM-DD, RFC3339, or epoch milliseconds. Examples: 2026-01-31, 2026-01-31T16:00:00Z, 1769817600000."
+    )]
+    pub to: Option<String>,
 
     /// Include extended-hours data.
     #[arg(long)]

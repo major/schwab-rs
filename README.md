@@ -93,7 +93,7 @@ schwab-agent auth refresh
 
 schwab-agent market quote AAPL MSFT --fields sym,last,pct,vol
 schwab-agent market quote AAPL --all-fields
-schwab-agent market history SPY --fields ts,close,vol
+schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol
 
 schwab-agent account --positions
 schwab-agent option expirations AAPL
@@ -103,7 +103,7 @@ schwab-agent ta dashboard SPY
 schwab-agent completions bash > schwab-agent.bash
 ```
 
-Option screen numeric filters reject non-finite values such as `NaN` and infinity before making API calls, and screen output serializes numeric values through the crate's active `Number` type so default and `decimal` builds stay consistent.
+`market history --from` and `--to` accept `YYYY-MM-DD`, RFC3339, or epoch milliseconds. Date-only values use inclusive UTC calendar-day boundaries. Option screen numeric filters reject non-finite values such as `NaN` and infinity before making API calls, and screen output serializes numeric values through the crate's active `Number` type so default and `decimal` builds stay consistent.
 
 Mutable order commands are disabled unless `~/.config/schwab-agent/config.json` contains `"i-also-like-to-live-dangerously": true`. The recommended agent workflow is preview-first: save an order preview to get a digest, then submit the saved payload by digest after review. Saved previews use owner-only file permissions, but they are tamper-evident rather than encrypted. Mutable actions resolve account nicknames to canonical Schwab hashes and perform best-effort post-action order verification.
 

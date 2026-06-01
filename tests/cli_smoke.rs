@@ -112,3 +112,67 @@ fn dry_run_equity_order_outputs_order_json_without_auth() {
         "EQUITY"
     );
 }
+
+#[test]
+fn market_history_help_shows_accepted_date_formats() {
+    agent()
+        .args(["market", "history", "--help"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("YYYY-MM-DD"))
+        .stdout(predicate::str::contains("RFC3339"))
+        .stdout(predicate::str::contains("epoch milliseconds"))
+        .stdout(predicate::str::contains("2026-01-01"))
+        .stdout(predicate::str::contains("2026-01-01T09:30:00Z"))
+        .stdout(predicate::str::contains("1767225600000"));
+}
+
+#[test]
+fn market_history_invalid_date_reports_structured_error_without_auth() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let token_path = tempdir.path().join("unused-token.json");
+
+    let output = agent()
+        .env("SCHWAB_TOKEN_PATH", &token_path)
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args(["market", "history", "SPY", "--from", "not-a-date"])
+        .output()
+        .expect("command runs");
+
+    assert_eq!(output.status.code(), Some(10));
+    assert!(output.stderr.is_empty());
+
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["code"], "market.validation_failed");
+    assert_eq!(body["category"], "market");
+    assert!(body["message"].as_str().is_some_and(|message| {
+        message.contains("not-a-date") && message.contains("expected YYYY-MM-DD")
+    }));
+}
+
+#[test]
+fn market_history_date_inputs_pass_validation_before_auth() {
+    for value in ["2026-01-01", "2026-01-01T09:30:00Z", "1767225600000"] {
+        let tempdir = tempfile::tempdir().expect("temporary directory");
+        let token_path = tempdir.path().join("missing-token.json");
+
+        let output = agent()
+            .env("SCHWAB_TOKEN_PATH", &token_path)
+            .env("XDG_CONFIG_HOME", tempdir.path())
+            .env_remove("SCHWAB_CLIENT_ID")
+            .env_remove("SCHWAB_CLIENT_SECRET")
+            .env_remove("SCHWAB_CALLBACK_URL")
+            .args(["market", "history", "SPY", "--from", value, "--to", value])
+            .output()
+            .expect("command runs");
+
+        assert_eq!(output.status.code(), Some(3));
+        assert!(output.stderr.is_empty());
+
+        let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+        assert_eq!(body["category"], "auth");
+    }
+}

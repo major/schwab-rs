@@ -794,6 +794,58 @@ fn selected_history_fields_rejects_empty_lists() {
 }
 
 #[test]
+fn parse_history_date_only_start_produces_midnight_utc_ms() {
+    let millis = parse_history_instant("2026-01-15", HistoryRangeBoundary::Start)
+        .expect("date-only start should parse");
+
+    assert_eq!(millis, 1_768_435_200_000);
+}
+
+#[test]
+fn parse_history_date_only_end_produces_end_of_day_utc_ms() {
+    let millis = parse_history_instant("2026-01-15", HistoryRangeBoundary::End)
+        .expect("date-only end should parse");
+
+    assert_eq!(millis, 1_768_521_599_999);
+}
+
+#[test]
+fn parse_history_rfc3339_produces_epoch_ms() {
+    let millis = parse_history_instant("2026-01-15T09:30:45.123Z", HistoryRangeBoundary::Start)
+        .expect("RFC3339 instant should parse");
+
+    assert_eq!(millis, 1_768_469_445_123);
+}
+
+#[test]
+fn parse_history_epoch_ms_passthrough_is_unchanged() {
+    let millis = parse_history_instant("1700000000000", HistoryRangeBoundary::Start)
+        .expect("epoch milliseconds should parse");
+
+    assert_eq!(millis, 1_700_000_000_000);
+}
+
+#[test]
+fn parse_history_invalid_date_rejects_before_api_call() {
+    let error = parse_history_instant("2026-02-30", HistoryRangeBoundary::Start)
+        .expect_err("invalid calendar date should fail");
+
+    assert!(matches!(error, AppError::MarketValidation { .. }));
+    assert!(error.to_string().contains("invalid market history date"));
+    assert!(error.to_string().contains("2026-02-30"));
+}
+
+#[test]
+fn parse_history_invalid_string_rejects_before_api_call() {
+    let error = parse_history_instant("not-a-date", HistoryRangeBoundary::Start)
+        .expect_err("invalid text should fail");
+
+    assert!(matches!(error, AppError::MarketValidation { .. }));
+    assert!(error.to_string().contains("expected YYYY-MM-DD"));
+    assert!(error.to_string().contains("not-a-date"));
+}
+
+#[test]
 fn history_rows_output_serializes_compact_table() {
     let history = serde_json::json!({
         "symbol": "SPY",

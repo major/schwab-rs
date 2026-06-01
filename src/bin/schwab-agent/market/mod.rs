@@ -3,6 +3,8 @@
 use schwab::{PriceHistoryOptions, QuoteOptions, QuoteResponseObject};
 use serde::Serialize;
 use serde_json::{Value, to_value};
+use time::format_description::well_known::Rfc3339;
+use time::{Date, Month, OffsetDateTime, Time};
 
 use crate::auth;
 use crate::cli::{Cli, HistoryArgs, MarketCommand, QuoteArgs};
@@ -26,7 +28,6 @@ async fn history(_cli: &Cli, args: &HistoryArgs) -> Result<Value, AppError> {
         Some(selected_history_fields(args.fields.as_deref())?)
     };
 
-    let client = auth::provider()?.client().await?;
     let mut options = PriceHistoryOptions::new();
     if let Some(period_type) = &args.period_type {
         options = options.parameter("periodType", period_type);
@@ -40,15 +41,18 @@ async fn history(_cli: &Cli, args: &HistoryArgs) -> Result<Value, AppError> {
     if let Some(frequency) = args.frequency {
         options = options.integer_parameter("frequency", frequency);
     }
-    if let Some(from) = args.from {
+    if let Some(from) = &args.from {
+        let from = parse_history_instant(from, HistoryRangeBoundary::Start)?;
         options = options.integer_parameter("startDate", from);
     }
-    if let Some(to) = args.to {
+    if let Some(to) = &args.to {
+        let to = parse_history_instant(to, HistoryRangeBoundary::End)?;
         options = options.integer_parameter("endDate", to);
     }
     if args.extended_hours {
         options = options.bool_parameter("needExtendedHoursData", true);
     }
+    let client = auth::provider()?.client().await?;
     let candle_list = client.get_price_history(&args.symbol, options).await?;
     let value = to_value(candle_list)?;
     if args.all_fields {
@@ -62,6 +66,87 @@ async fn history(_cli: &Cli, args: &HistoryArgs) -> Result<Value, AppError> {
 
 /// Default token-optimized candle fields for compact history row output.
 const DEFAULT_HISTORY_FIELDS: [&str; 6] = ["ts", "open", "high", "low", "close", "vol"];
+
+/// Inclusive boundary used when converting date-only history values.
+#[derive(Clone, Copy)]
+enum HistoryRangeBoundary {
+    /// Start of the UTC calendar day.
+    Start,
+    /// End of the UTC calendar day.
+    End,
+}
+
+/// Parses a history date argument to epoch milliseconds for the Schwab API.
+fn parse_history_instant(value: &str, boundary: HistoryRangeBoundary) -> Result<i64, AppError> {
+    let value = value.trim();
+    if let Ok(epoch_millis) = value.parse::<i64>() {
+        return Ok(epoch_millis);
+    }
+
+    let instant = if is_date_only(value) {
+        history_date_boundary(parse_history_date_only(value)?, boundary)
+    } else {
+        OffsetDateTime::parse(value, &Rfc3339).map_err(|e| AppError::MarketValidation {
+            message: format!(
+                "invalid market history date/time '{value}': expected YYYY-MM-DD, RFC3339, or epoch milliseconds ({e})"
+            ),
+        })?
+    };
+
+    Ok(epoch_millis(instant))
+}
+
+/// Returns true when a value matches the supported YYYY-MM-DD shape.
+fn is_date_only(value: &str) -> bool {
+    let bytes = value.as_bytes();
+    bytes.len() == 10
+        && bytes[4] == b'-'
+        && bytes[7] == b'-'
+        && bytes[..4].iter().all(u8::is_ascii_digit)
+        && bytes[5..7].iter().all(u8::is_ascii_digit)
+        && bytes[8..].iter().all(u8::is_ascii_digit)
+}
+
+/// Parses a YYYY-MM-DD history date without local timezone inference.
+fn parse_history_date_only(value: &str) -> Result<Date, AppError> {
+    let year = value[0..4]
+        .parse::<i32>()
+        .map_err(|e| invalid_history_date(value, e))?;
+    let month_number = value[5..7]
+        .parse::<u8>()
+        .map_err(|e| invalid_history_date(value, e))?;
+    let day = value[8..10]
+        .parse::<u8>()
+        .map_err(|e| invalid_history_date(value, e))?;
+    let month = Month::try_from(month_number).map_err(|e| invalid_history_date(value, e))?;
+
+    Date::from_calendar_date(year, month, day).map_err(|e| invalid_history_date(value, e))
+}
+
+/// Converts a calendar date to the requested inclusive UTC history boundary.
+fn history_date_boundary(date: Date, boundary: HistoryRangeBoundary) -> OffsetDateTime {
+    let time = match boundary {
+        HistoryRangeBoundary::Start => Time::MIDNIGHT,
+        HistoryRangeBoundary::End => {
+            Time::from_hms_milli(23, 59, 59, 999).expect("23:59:59.999 is a valid time")
+        }
+    };
+
+    date.with_time(time).assume_utc()
+}
+
+/// Converts a timestamp to epoch milliseconds.
+fn epoch_millis(value: OffsetDateTime) -> i64 {
+    i64::try_from(value.unix_timestamp_nanos() / 1_000_000)
+        .expect("time crate timestamp range fits in i64 epoch milliseconds")
+}
+
+/// Builds a consistent validation error for invalid YYYY-MM-DD history dates.
+fn invalid_history_date<E: std::fmt::Display>(value: &str, error: E) -> AppError {
+    AppError::MarketValidation {
+        message: format!("invalid market history date '{value}': {error}"),
+    }
+}
 
 /// Parses the optional comma-separated history field list, or returns the compact default.
 fn selected_history_fields(requested: Option<&str>) -> Result<Vec<&'static str>, AppError> {

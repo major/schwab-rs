@@ -5,7 +5,7 @@
 
 ## Module Architecture
 
-The public library remains rooted in `src/lib.rs`. The `schwab-agent` CLI is a separate binary target under `src/bin/schwab-agent/`, gated by the default `cli` feature so library consumers can build with `default-features = false`; it can use CLI config files, environment variables, structured JSON output, process exit codes, owner-only saved preview files, compatibility token paths, shell completion generation with stderr diagnostics for write failures, and CLI-specific validation such as rejecting non-finite option screen filters and enforcing normalized contract-type filters, but those behaviors must not leak into public library modules.
+The public library remains rooted in `src/lib.rs`. The `schwab-agent` CLI is a separate binary target under `src/bin/schwab-agent/`, gated by the default `cli` feature so library consumers can build with `default-features = false`; it can use CLI config files, environment variables, structured JSON output, process exit codes, owner-only saved preview files, compatibility token paths, shell completion generation with stderr diagnostics for write failures, and CLI-specific validation such as rejecting invalid market history date arguments before auth/API calls, rejecting non-finite option screen filters, and enforcing normalized contract-type filters, but those behaviors must not leak into public library modules.
 
 ```text
 lib.rs

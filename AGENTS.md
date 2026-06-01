@@ -57,6 +57,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - Binary target: `schwab-agent` at `src/bin/schwab-agent/main.rs`, gated by the default `cli` feature; CLI modules remain binary-private and may use documented CLI config, environment variables, JSON output, and process exit behavior without changing the library contract
 - `schwab-agent completions <shell>` is the sole raw stdout exception to the JSON output contract because shells need an unwrapped completion script; completion generation write failures report a short stderr diagnostic and exit non-zero
 - `schwab-agent` ignores empty `SCHWAB_TOKEN_PATH` values, keeps the compatibility token default under `schwab-agent-rs/token.json`, and resolves the base from `XDG_CONFIG_HOME` before the platform config directory
+- `schwab-agent market history --from/--to` accepts `YYYY-MM-DD`, RFC3339, or epoch milliseconds, validates invalid values before auth/API calls, and expands date-only values to inclusive UTC calendar-day boundaries
 - `schwab-agent option screen` rejects non-finite numeric filter inputs before API calls, enforces normalized contract-type filters in output rows, and serializes numeric output through the active `Number` representation so default and `decimal` builds stay consistent
 - Root re-exports include `StreamingSession` plus streaming event, data, and field selector model types through `models::*`
 - All public async methods: `&self` receiver, `#[instrument(skip_all)]` tracing attribute

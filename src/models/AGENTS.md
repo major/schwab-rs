@@ -13,7 +13,7 @@
 
 Everything is re-exported via `pub use` in `mod.rs`, then again via `models::*` at crate root.
 
-The `schwab-agent` binary under `src/bin/schwab-agent/` consumes these same model types for CLI output and order conversion. CLI formatting may add compact row-shaped views, persist preview payloads outside the model layer under `XDG_STATE_HOME` or platform state directories with owner-only file permissions, validate user-supplied numeric filters before model conversion, and enforce normalized contract-type filters in CLI rows, but it must not change the model-layer `Number`, serde, `Option<T>`, or enum conventions described here.
+The `schwab-agent` binary under `src/bin/schwab-agent/` consumes these same model types for CLI output and order conversion. CLI formatting may add compact row-shaped views, persist preview payloads outside the model layer under `XDG_STATE_HOME` or platform state directories with owner-only file permissions, normalize human-readable market history dates before building API query options, validate user-supplied numeric filters before model conversion, and enforce normalized contract-type filters in CLI rows, but it must not change the model-layer `Number`, serde, `Option<T>`, or enum conventions described here.
 
 ## Streaming Models
 
