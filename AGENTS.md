@@ -18,7 +18,7 @@ make audit          # cargo audit
 make coverage       # cargo llvm-cov test --fail-under-lines 90
 ```
 
-MSRV: 1.95. Edition: 2024. Always test with both default and `decimal` feature.
+MSRV: 1.96. Edition: 2024. Always test with both default and `decimal` feature.
 
 ## Feature Flags
 
@@ -72,6 +72,7 @@ src/
 - Async network methods use ` ```no_run ` fences with `# async fn example() -> schwab::Result<()> {` boilerplate
 - Sync builders and pure-logic items use plain ` ``` ` fences with compile-time assertions where possible
 - Examples must compile under both default and `decimal` features (use `"1.0".parse().unwrap()` for `Number` literals)
+- Pattern assertions in tests use Rust 1.96's standard `assert_matches!` macro instead of `assert!(matches!(...))`
 
 ## Security (Non-Negotiable)
 
@@ -88,7 +89,7 @@ Runs on Ubuntu, macOS, Windows:
 - `fmt` (nightly rustfmt)
 - `clippy` (stable, 3 OS)
 - `test` (stable, 3 OS)
-- `msrv` (Rust 1.95, Ubuntu)
+- `msrv` (Rust 1.96, Ubuntu)
 - `docs` (stable, Ubuntu)
 - `audit` (daily cron + on Cargo.toml/Cargo.lock changes)
 

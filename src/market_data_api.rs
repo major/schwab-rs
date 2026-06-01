@@ -384,6 +384,8 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use mockito::Matcher;
 
     use crate::test_support::fixture;
@@ -435,10 +437,10 @@ mod tests {
         let client = Client::new(Config::new().base_url(&url).unwrap());
         let error = client.get_quotes(["AAPL"]).await.unwrap_err();
 
-        assert!(matches!(
+        assert_matches!(
             error,
             Error::HttpStatus { status: 400, body } if body.contains("bad symbols")
-        ));
+        );
     }
 
     #[tokio::test]
@@ -635,9 +637,6 @@ mod tests {
         let client = Client::new(Config::new());
 
         let result = client.get_market_hours([" "], None).await;
-        assert!(matches!(
-            result,
-            Err(Error::MissingRequiredParameter("markets"))
-        ));
+        assert_matches!(result, Err(Error::MissingRequiredParameter("markets")));
     }
 }

@@ -1281,7 +1281,7 @@ fn sync_parent_dir(path: &Path) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use std::net::TcpListener;
+    use std::{assert_matches, net::TcpListener};
 
     use mockito::Matcher;
 
@@ -1290,27 +1290,27 @@ mod tests {
 
     #[test]
     fn auth_config_rejects_insecure_or_non_loopback_callbacks() {
-        assert!(matches!(
+        assert_matches!(
             AuthConfig::new("client", "secret", "http://127.0.0.1:8182/callback"),
             Err(Error::InvalidAuthConfig {
                 field: "callback_url",
                 ..
             })
-        ));
-        assert!(matches!(
+        );
+        assert_matches!(
             AuthConfig::new("client", "secret", "https://localhost:8182/callback"),
             Err(Error::InvalidAuthConfig {
                 field: "callback_url",
                 ..
             })
-        ));
-        assert!(matches!(
+        );
+        assert_matches!(
             AuthConfig::new("client", "secret", "https://127.0.0.1/callback"),
             Err(Error::InvalidAuthConfig {
                 field: "callback_url",
                 ..
             })
-        ));
+        );
     }
 
     #[test]
@@ -1386,7 +1386,7 @@ mod tests {
     fn memory_token_store_reports_auth_required_when_empty() {
         let store = MemoryTokenStore::new();
 
-        assert!(matches!(store.load(), Err(Error::AuthRequired)));
+        assert_matches!(store.load(), Err(Error::AuthRequired));
     }
 
     #[tokio::test]
@@ -1714,7 +1714,7 @@ mod tests {
     #[test]
     fn file_token_store_load_missing_file_returns_auth_required() {
         let store = FileTokenStore::new("/tmp/schwab-rs-nonexistent-token.json");
-        assert!(matches!(store.load(), Err(Error::AuthRequired)));
+        assert_matches!(store.load(), Err(Error::AuthRequired));
     }
 
     #[test]
@@ -1863,7 +1863,7 @@ mod tests {
             .await
             .unwrap_err();
 
-        assert!(matches!(error, Error::AuthExpired));
+        assert_matches!(error, Error::AuthExpired);
     }
 
     #[tokio::test]
@@ -1882,7 +1882,7 @@ mod tests {
             .await
             .unwrap_err();
 
-        assert!(matches!(error, Error::HttpStatus { status: 500, .. }));
+        assert_matches!(error, Error::HttpStatus { status: 500, .. });
     }
 
     #[tokio::test]
@@ -1901,7 +1901,7 @@ mod tests {
             .await
             .unwrap_err();
 
-        assert!(matches!(error, Error::Decode { .. }));
+        assert_matches!(error, Error::Decode { .. });
     }
 
     #[test]
@@ -2064,7 +2064,7 @@ mod tests {
         store.save(&tf).unwrap();
         let provider = Provider::with_http_client(config, store, reqwest::Client::new()).unwrap();
 
-        assert!(matches!(provider.token().await, Err(Error::AuthExpired)));
+        assert_matches!(provider.token().await, Err(Error::AuthExpired));
     }
 
     #[tokio::test]
@@ -2076,6 +2076,6 @@ mod tests {
         store.save(&tf).unwrap();
         let provider = Provider::with_http_client(config, store, reqwest::Client::new()).unwrap();
 
-        assert!(matches!(provider.refresh().await, Err(Error::AuthExpired)));
+        assert_matches!(provider.refresh().await, Err(Error::AuthExpired));
     }
 }

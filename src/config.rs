@@ -129,25 +129,24 @@ fn normalize_base_url(base_url: impl Into<String>) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
 
     #[test]
     fn rejects_empty_base_url() {
-        assert!(matches!(
-            Config::new().base_url("   "),
-            Err(Error::EmptyBaseUrl)
-        ));
+        assert_matches!(Config::new().base_url("   "), Err(Error::EmptyBaseUrl));
     }
 
     #[test]
     fn rejects_invalid_base_urls() {
-        assert!(matches!(
+        assert_matches!(
             Config::new().base_url("not a url"),
             Err(Error::InvalidBaseUrl { .. })
-        ));
-        assert!(matches!(
+        );
+        assert_matches!(
             Config::new().trader_base_url("not a url"),
             Err(Error::InvalidBaseUrl { .. })
-        ));
+        );
     }
 }

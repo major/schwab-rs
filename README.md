@@ -214,7 +214,7 @@ cargo test --features test_online
 
 ## Minimum supported Rust version
 
-This crate requires Rust **1.95** or later and uses Edition 2024.
+This crate requires Rust **1.96** or later and uses Edition 2024.
 
 ## License
 

@@ -365,6 +365,8 @@ impl TransactionListOptions {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use crate::Error;
 
     use super::*;
@@ -372,10 +374,10 @@ mod tests {
     #[test]
     fn required_options_reject_empty_values() {
         let options = OrderListOptions::new("", "2024-01-31T00:00:00Z");
-        assert!(matches!(
+        assert_matches!(
             options.into_query(),
             Err(Error::MissingRequiredParameter("fromEnteredTime"))
-        ));
+        );
     }
 
     #[test]

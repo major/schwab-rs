@@ -1604,6 +1604,8 @@ fn symbol_and_asset(
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
     use crate::Error;
     use crate::test_support::n;
@@ -2145,9 +2147,7 @@ mod tests {
             let order: Order = serde_json::from_value(value).unwrap();
             let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-            assert!(
-                matches!(error, Error::OrderConversion(message) if message.contains(missing_field))
-            );
+            assert_matches!(error, Error::OrderConversion(message) if message.contains(missing_field));
         }
     }
 
@@ -2171,7 +2171,7 @@ mod tests {
 
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-        assert!(matches!(error, Error::OrderConversion(message) if message.contains("SINGLE")));
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("SINGLE"));
     }
 
     /// Common response-level quantity is allowed when it matches the single leg.
@@ -2220,17 +2220,13 @@ mod tests {
         });
         let order: Order = serde_json::from_value(value.clone()).unwrap();
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
-        assert!(
-            matches!(error, Error::OrderConversion(message) if message.contains("does not match"))
-        );
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("does not match"));
 
         value["quantity"] = expected_number(1.0);
         value["taxLotMethod"] = serde_json::json!("FIFO");
         let order: Order = serde_json::from_value(value).unwrap();
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
-        assert!(
-            matches!(error, Error::OrderConversion(message) if message.contains("taxLotMethod"))
-        );
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("taxLotMethod"));
     }
 
     /// Top-level quantity with multiple legs fails because this builder cannot model spreads yet.
@@ -2261,9 +2257,7 @@ mod tests {
 
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-        assert!(
-            matches!(error, Error::OrderConversion(message) if message.contains("without exactly one leg"))
-        );
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("without exactly one leg"));
     }
 
     /// Unsupported leg request fields fail rather than being dropped.
@@ -2297,7 +2291,7 @@ mod tests {
             let order: Order = serde_json::from_value(value).unwrap();
             let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-            assert!(matches!(error, Error::OrderConversion(message) if message.contains(expected)));
+            assert_matches!(error, Error::OrderConversion(message) if message.contains(expected));
         }
     }
 
@@ -2327,9 +2321,7 @@ mod tests {
 
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-        assert!(
-            matches!(error, Error::OrderConversion(message) if message.contains("orderLegCollection[1].instruction"))
-        );
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("orderLegCollection[1].instruction"));
     }
 
     /// Unknown response-only order types fail instead of guessing a request type.
@@ -2351,7 +2343,7 @@ mod tests {
 
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-        assert!(matches!(error, Error::OrderConversion(message) if message.contains("UNKNOWN")));
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("UNKNOWN"));
     }
 
     /// Malformed OCO trees fail with a conversion error.
@@ -2365,6 +2357,6 @@ mod tests {
 
         let error = OrderBuilder::try_from_order(&order).unwrap_err();
 
-        assert!(matches!(error, Error::OrderConversion(message) if message.contains("requires 2")));
+        assert_matches!(error, Error::OrderConversion(message) if message.contains("requires 2"));
     }
 }

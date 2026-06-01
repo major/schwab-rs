@@ -25,10 +25,12 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// Validate configuration before making requests:
 ///
 /// ```
+/// use std::assert_matches;
+///
 /// use schwab::{Config, Error};
 ///
 /// let result = Config::new().base_url("not a url");
-/// assert!(matches!(result, Err(Error::InvalidBaseUrl { .. })));
+/// assert_matches!(result, Err(Error::InvalidBaseUrl { .. }));
 /// ```
 #[derive(thiserror::Error)]
 pub enum Error {

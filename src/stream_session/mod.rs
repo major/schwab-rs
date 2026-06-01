@@ -1020,7 +1020,7 @@ fn check_login_response(text: &str) -> LoginResult {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::VecDeque, sync::Arc, time::Duration};
+    use std::{assert_matches, collections::VecDeque, sync::Arc, time::Duration};
 
     use tokio::sync::Mutex;
 
@@ -1115,10 +1115,10 @@ mod tests {
             Err(error) => error,
         };
 
-        assert!(matches!(
+        assert_matches!(
             error,
             crate::Error::StreamLogin { code: 3, ref message } if message == "LOGIN_DENIED"
-        ));
+        );
     }
 
     #[tokio::test]
@@ -1180,10 +1180,10 @@ mod tests {
             .unwrap();
         let mut events = session.subscribe();
 
-        assert!(matches!(
+        assert_matches!(
             next_event(&mut events).await,
             StreamEvent::Heartbeat(1234567890)
-        ));
+        );
     }
 
     #[tokio::test]

@@ -369,6 +369,8 @@ fn build_keyed_command(
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
     use crate::test_support::fixture;
 
@@ -419,7 +421,7 @@ mod tests {
         let json = r#"{"response":[{"service":"ADMIN","command":"LOGIN","requestid":"0","SchwabClientCorrelId":"c","timestamp":1234,"content":{"code":0,"msg":"SUCCESS"}}]}"#;
         let msgs = parse_message(json).unwrap();
         assert_eq!(msgs.len(), 1);
-        assert!(matches!(msgs[0], ParsedMessage::Response(_)));
+        assert_matches!(msgs[0], ParsedMessage::Response(_));
     }
 
     #[test]
@@ -427,7 +429,7 @@ mod tests {
         let json = r#"{"notify":[{"heartbeat":"1234567890"}]}"#;
         let msgs = parse_message(json).unwrap();
         assert_eq!(msgs.len(), 1);
-        assert!(matches!(msgs[0], ParsedMessage::Heartbeat(1234567890)));
+        assert_matches!(msgs[0], ParsedMessage::Heartbeat(1234567890));
     }
 
     #[test]
@@ -435,13 +437,13 @@ mod tests {
         let json = r#"{"data":[{"service":"LEVELONE_EQUITIES","timestamp":1234,"command":"SUBS","content":[{"key":"AAPL","1":150.0}]}]}"#;
         let msgs = parse_message(json).unwrap();
         assert_eq!(msgs.len(), 1);
-        assert!(matches!(msgs[0], ParsedMessage::Data(_)));
+        assert_matches!(msgs[0], ParsedMessage::Data(_));
     }
 
     #[test]
     fn parse_malformed_returns_error() {
         let result = parse_message("not json");
-        assert!(matches!(result, Err(crate::Error::StreamProtocol(_))));
+        assert_matches!(result, Err(crate::Error::StreamProtocol(_)));
     }
 
     #[test]
@@ -486,7 +488,7 @@ mod tests {
     fn parse_heartbeat_fixture_timestamp() {
         let msgs = parse_message(&fixture("streaming_heartbeat.json")).unwrap();
 
-        assert!(matches!(msgs[0], ParsedMessage::Heartbeat(1234567890)));
+        assert_matches!(msgs[0], ParsedMessage::Heartbeat(1234567890));
     }
 
     #[test]

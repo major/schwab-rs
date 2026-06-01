@@ -2,7 +2,7 @@
 name = "schwab"
 version = "0.3.0"
 edition = "2024"
-rust-version = "1.95"
+rust-version = "1.96"
 description = "Unofficial Rust client library for the Schwab API, unaffiliated with Schwab brokerage or thinkorswim"
 license = "Apache-2.0"
 repository = "https://github.com/major/schwab-rs"

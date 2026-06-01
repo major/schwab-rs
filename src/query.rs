@@ -61,13 +61,12 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
 
     #[test]
     fn comma_separated_symbols_rejects_empty_values() {
-        assert!(matches!(
-            comma_separated_symbols([" "]),
-            Err(Error::EmptySymbols)
-        ));
+        assert_matches!(comma_separated_symbols([" "]), Err(Error::EmptySymbols));
     }
 }

@@ -111,7 +111,8 @@ Used when the API includes a type discriminator field:
 7. Use `Number` for all numeric fields, never `f64` or `Decimal` directly
 8. Add the type to the corresponding OpenAPI spec reference in `docs/` if applicable
 9. Test deserialization with a fixture in `tests/fixtures/`; streaming fixtures should include numeric string keys plus metadata such as `key` and `delayed`
-10. Verify compilation with both `cargo test` and `cargo test --features decimal`
+10. Use Rust 1.96's standard `assert_matches!` macro for pattern assertions in tests
+11. Verify compilation with both `cargo test` and `cargo test --features decimal`
 
 ## Keeping Documentation Current
 

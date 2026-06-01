@@ -165,6 +165,7 @@ Internal functions for building query parameter vectors:
 - `mockito` for HTTP mocking: create a mock server, set expectations, verify request shape
 - Streaming tests use inline `MockTransport` plus golden fixtures under `tests/fixtures/streaming_*.json`; keep them offline and deterministic
 - Tests verify: HTTP method, path, query params, headers, request body, response deserialization
+- Use Rust 1.96's standard `assert_matches!` macro for pattern assertions in tests
 - `test_support.rs` provides:
   - `n(value)` - convert numeric literals to `Number` (works for both f64 and Decimal)
   - `fixture(name)` - load JSON from `tests/fixtures/{name}.json`
