@@ -44,6 +44,7 @@ reviews:
   path_filters:
     - "!**/target/**"
     - "!.sisyphus/**"
+    - "!lcov.info"
 
   path_instructions:
     - path: "src/**/*.rs"
