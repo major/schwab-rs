@@ -82,6 +82,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - Async network methods use ` ```no_run ` fences with `# async fn example() -> schwab::Result<()> {` boilerplate
 - Sync builders and pure-logic items use plain ` ``` ` fences with compile-time assertions where possible
 - Examples must compile under both default and `decimal` features (use `"1.0".parse().unwrap()` for `Number` literals)
+- Keep source, docs, fixtures, and vendored reference text ASCII unless a wire-format fixture or API contract explicitly requires Unicode; replace decorative separators, mojibake, and non-breaking spaces so Renovate hidden-Unicode checks stay clean
 - `tests/cli_smoke.rs` is gated to the default `cli` feature and uses `assert_cmd` and `predicates` for offline compiled-binary checks of help output, shell completions, clap usage errors, structured JSON errors, and hermetic dry-run order JSON.
 - Pattern assertions in tests use Rust 1.96's standard `assert_matches!` macro instead of `assert!(matches!(...))`
 

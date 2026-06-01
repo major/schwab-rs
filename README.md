@@ -279,6 +279,8 @@ Offline tests include `cli` feature-gated compiled-binary smoke checks for `schw
 
 Generated `lcov.info` is ignored by git and CodeRabbit. CI pins the installed `cargo-llvm-cov` and `cargo-machete` versions, disables install-action fallback, gates Codecov upload with a non-secret presence flag, and scopes Codecov upload secrets only to the upload step.
 
+Keep source, docs, fixtures, and copied API reference text ASCII unless the Schwab wire format explicitly requires Unicode. Decorative separators, mojibake, and non-breaking spaces can trigger Renovate hidden-Unicode warnings, so use plain ASCII equivalents.
+
 ## Release automation
 
 release-plz runs through `.github/workflows/release-plz.yml`. It keeps a release PR current from Conventional Commits and the `cliff.toml` changelog configuration, refuses dirty working trees, and does not update dependencies because Renovate owns dependency bumps.

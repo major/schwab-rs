@@ -165,6 +165,7 @@ Internal functions for building query parameter vectors:
 ## Test Patterns
 
 - Inline `#[cfg(test)] mod tests` blocks in each source file
+- Keep source comments, docs, fixtures, and copied reference text ASCII unless a protocol fixture or API contract explicitly requires Unicode; avoid decorative Unicode separators, mojibake, and non-breaking spaces because Renovate flags them as hidden Unicode
 - Compiled-binary smoke tests live in `tests/cli_smoke.rs`, run only when the `cli` feature is enabled, and use `assert_cmd` plus `predicates` for offline help, shell completion, clap error, structured error JSON, and hermetic dry-run order checks
 - `mockito` for HTTP mocking: create a mock server, set expectations, verify request shape
 - Streaming tests use inline `MockTransport` plus golden fixtures under `tests/fixtures/streaming_*.json`; keep them offline and deterministic

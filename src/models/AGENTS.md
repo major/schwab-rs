@@ -50,6 +50,7 @@ All numeric fields in model structs use `Number`, never raw `f64` or `Decimal`. 
 - `cargo machete` runs in CI and through `make machete`; model dependency changes may require updating imports or dependencies together
 - Generated `lcov.info` is ignored by git and CodeRabbit, and CI pins the installed coverage and machete tool versions with install-action fallback disabled
 - The repository root `SKILL.md` is a pointer to the detailed `src/bin/schwab-agent/SKILL.md` CLI contract; model guidance remains in this file.
+- Keep model fixtures and copied API reference text ASCII unless the Schwab wire format explicitly requires Unicode; hidden or decorative Unicode trips Renovate warnings and should be replaced with plain ASCII equivalents.
 
 ## Type Design Rules
 

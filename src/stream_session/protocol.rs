@@ -5,7 +5,7 @@
 
 use serde::{Deserialize, Serialize};
 
-// ── Request types ──────────────────────────────────────────────
+// Request types
 
 /// Top-level request wrapper sent over the WebSocket.
 #[allow(missing_docs)]
@@ -68,7 +68,7 @@ impl std::fmt::Debug for StreamParameters {
     }
 }
 
-// ── Response types ─────────────────────────────────────────────
+// Response types
 
 /// Top-level message received from the streaming server.
 ///
@@ -132,7 +132,7 @@ pub(crate) struct StreamDataMessage {
     pub(crate) content: Option<Vec<serde_json::Map<String, serde_json::Value>>>,
 }
 
-// ── Parsed message enum ───────────────────────────────────────
+// Parsed message enum
 
 /// A discriminated streaming message, produced by parsing a raw WebSocket text frame.
 #[allow(missing_docs)]
@@ -159,7 +159,7 @@ where
     }))
 }
 
-// ── Message parser ────────────────────────────────────────────
+// Message parser
 
 /// Parse a raw WebSocket text frame into zero or more [`ParsedMessage`] values.
 ///
@@ -190,7 +190,7 @@ pub(crate) fn parse_message(text: &str) -> crate::Result<Vec<ParsedMessage>> {
     Ok(result)
 }
 
-// ── Command builders ──────────────────────────────────────────
+// Command builders
 
 /// Build a serialized LOGIN request.
 ///
