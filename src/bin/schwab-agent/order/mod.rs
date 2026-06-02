@@ -108,6 +108,8 @@ fn clone_common_args(args: &CommonOrderArgs) -> CommonOrderArgs {
         account: args.account.clone(),
         session: args.session,
         duration: args.duration,
+        dry_run: args.dry_run,
+        preview: args.preview,
         save_preview: args.save_preview,
         preview_first: args.preview_first,
     }
@@ -123,6 +125,8 @@ mod tests {
             account: Some("HASH".to_string()),
             session: SessionChoice::Normal,
             duration: DurationChoice::Day,
+            dry_run: true,
+            preview: false,
             save_preview: true,
             preview_first: false,
         }
@@ -133,6 +137,8 @@ mod tests {
         let orig = sample_common();
         let cloned = clone_common_args(&orig);
         assert_eq!(cloned.account, Some("HASH".to_string()));
+        assert!(cloned.dry_run);
+        assert!(!cloned.preview);
         assert!(cloned.save_preview);
         assert!(!cloned.preview_first);
     }

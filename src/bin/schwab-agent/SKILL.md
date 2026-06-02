@@ -32,7 +32,7 @@ Generate shell completions with `schwab-agent completions <shell>`, where `<shel
 
 ## Mutable Operation Guard
 
-Commands that submit, replace, repeat-place, or cancel orders require `"i-also-like-to-live-dangerously": true` in `~/.config/schwab-agent/config.json`. Without it, these commands return error code `config.mutable_disabled` (exit code 10). Read-only commands (build, preview, get) are not gated. `order repeat --save-preview` only previews and saves a digest, so it remains available without the mutable guard; direct repeat placement and `--preview-first` are gated.
+Commands that submit, replace, repeat-place, or cancel orders require `"i-also-like-to-live-dangerously": true` in `~/.config/schwab-agent/config.json`. Without it, these commands return error code `config.mutable_disabled` (exit code 10). Read-only commands (local `--dry-run`/`--preview`, no-account draft mode, saved preview, get) are not gated. `order repeat --save-preview` only previews and saves a digest, so it remains available without the mutable guard; direct repeat placement and `--preview-first` are gated.
 
 ## Auth
 
@@ -90,20 +90,28 @@ The `--account` flag on order commands accepts either the canonical account hash
 
 ## Equity Orders
 
-Buy/sell shares of stock. Recommended LLM workflow: pass `--account HASH --save-preview` to get a digest, then `order place-from-preview --account HASH --digest DIGEST`.
+Buy/sell shares of stock. Recommended LLM workflow: first use `--dry-run` or `--preview` for local JSON, then pass `--account HASH --save-preview` to get a Schwab preview digest, then `order place-from-preview --account HASH --digest DIGEST`.
 
-The `-a`/`--account` flag controls execution mode:
-- No `--account`: dry-run (prints order JSON, no API call)
+Execution modes:
+- `--dry-run`: local draft JSON, no account/auth/preview API/placement
+- `--preview`: alias for `--dry-run`, not Schwab `previewOrder`
+- No `--account`: compatibility local draft mode, same JSON-only behavior
+- `--account HASH --save-preview`: Schwab preview only, saves digest
+- `--account HASH --preview-first`: Schwab preview, then places automatically
 - `--account HASH`: places directly
-- `--account HASH --save-preview`: previews and saves digest
-- `--account HASH --preview-first`: previews then places automatically
+
+If `--dry-run` or `--preview` is present with `--account`, the command remains local-only. These local draft flags are aliases, so choose one per command, and both conflict with `--save-preview` and `--preview-first`.
 
 Non-fatal Schwab preview warnings do not block digest creation. When present, `--save-preview` and `preview-raw --save-preview` include sanitized `warnings` entries with severity, message, and validation rule fields; the saved digest still covers only the order payload and preview metadata. Saved previews use `$XDG_STATE_HOME/schwab-agent/previews/` when set, otherwise the platform state or local data directory.
 
 Prefer limit orders when practical: pass `--price` for limit orders. Omit `--price` only when a market order is explicitly desired.
 
 ```bash
-# Dry-run (no account = no API call)
+# Explicit local draft (no account, auth, preview API, or placement)
+schwab-agent order equity buy AAPL -q 1 --price 100 --dry-run
+schwab-agent order equity buy AAPL -q 1 --price 100 --preview
+
+# Compatibility dry-run (no account = no API call)
 schwab-agent order equity buy AAPL -q 10
 schwab-agent order equity sell AAPL -q 10
 
@@ -132,14 +140,18 @@ schwab-agent order equity buy AAPL -q 100 --price 180.00 -a HASH
 
 ## Option Orders
 
-Single-leg option orders using OCC symbols. Recommended LLM workflow: pass `--account HASH --save-preview` to get a digest, then `order place-from-preview`.
+Single-leg option orders using OCC symbols. Recommended LLM workflow: first use `--dry-run` or `--preview` for local JSON, then pass `--account HASH --save-preview` to get a digest, then `order place-from-preview`.
 
-The same `-a`/`--account` execution modes apply as for equity orders.
+The same execution modes apply as for equity orders.
 
 Prefer limit orders when practical: pass `--price`. Omit `--price` only when a market order is explicitly desired.
 
 ```bash
-# Dry-run
+# Explicit local draft
+schwab-agent order option buy-to-open "AAPL  250117C00150000" -q 1 --price 5.00 --dry-run
+schwab-agent order option buy-to-open "AAPL  250117C00150000" -q 1 --price 5.00 --preview
+
+# Compatibility dry-run
 schwab-agent order option buy-to-open "AAPL  250117C00150000" -q 1 --price 5.00
 
 # Preview and save digest

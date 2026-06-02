@@ -148,6 +148,8 @@ pub async fn execute_equity(
     )?;
     let mode = workflow::determine_mode(
         args.common.account,
+        args.common.dry_run,
+        args.common.preview,
         args.common.save_preview,
         args.common.preview_first,
     )?;
@@ -419,6 +421,8 @@ mod tests {
                     account: None,
                     session: SessionChoice::Normal,
                     duration: DurationChoice::Day,
+                    dry_run: false,
+                    preview: false,
                     save_preview: false,
                     preview_first: false,
                 },

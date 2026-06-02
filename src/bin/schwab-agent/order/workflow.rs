@@ -39,9 +39,30 @@ pub enum OrderMode {
 /// requiring `--account` is used without it.
 pub fn determine_mode(
     account: Option<String>,
+    dry_run: bool,
+    preview: bool,
     save_preview: bool,
     preview_first: bool,
 ) -> Result<OrderMode, AppError> {
+    if dry_run && preview {
+        return Err(AppError::OrderValidation(
+            "cannot combine --dry-run and --preview; choose one local draft flag".to_string(),
+        ));
+    }
+
+    let local_draft = dry_run || preview;
+
+    if local_draft && (save_preview || preview_first) {
+        return Err(AppError::OrderValidation(
+            "cannot combine --dry-run or --preview with --save-preview or --preview-first"
+                .to_string(),
+        ));
+    }
+
+    if local_draft {
+        return Ok(OrderMode::DryRun);
+    }
+
     match (account, save_preview, preview_first) {
         (None, false, false) => Ok(OrderMode::DryRun),
         (Some(a), false, false) => Ok(OrderMode::Place { account: a }),
@@ -362,37 +383,73 @@ mod tests {
 
     #[test]
     fn no_account_is_dry_run() {
-        let mode = determine_mode(None, false, false).unwrap();
+        let mode = determine_mode(None, false, false, false, false).unwrap();
+        assert!(matches!(mode, OrderMode::DryRun));
+    }
+
+    #[test]
+    fn explicit_dry_run_is_dry_run_without_account() {
+        let mode = determine_mode(None, true, false, false, false).unwrap();
+        assert!(matches!(mode, OrderMode::DryRun));
+    }
+
+    #[test]
+    fn explicit_preview_is_dry_run_without_account() {
+        let mode = determine_mode(None, false, true, false, false).unwrap();
+        assert!(matches!(mode, OrderMode::DryRun));
+    }
+
+    #[test]
+    fn explicit_dry_run_with_account_stays_local() {
+        let mode = determine_mode(Some("HASH".to_string()), true, false, false, false).unwrap();
         assert!(matches!(mode, OrderMode::DryRun));
     }
 
     #[test]
     fn account_only_is_place() {
-        let mode = determine_mode(Some("HASH".to_string()), false, false).unwrap();
+        let mode = determine_mode(Some("HASH".to_string()), false, false, false, false).unwrap();
         assert!(matches!(mode, OrderMode::Place { ref account } if account == "HASH"));
     }
 
     #[test]
     fn account_save_preview_is_save_preview() {
-        let mode = determine_mode(Some("HASH".to_string()), true, false).unwrap();
+        let mode = determine_mode(Some("HASH".to_string()), false, false, true, false).unwrap();
         assert!(matches!(mode, OrderMode::SavePreview { ref account } if account == "HASH"));
     }
 
     #[test]
     fn account_preview_first_is_preview_first() {
-        let mode = determine_mode(Some("HASH".to_string()), false, true).unwrap();
+        let mode = determine_mode(Some("HASH".to_string()), false, false, false, true).unwrap();
         assert!(matches!(mode, OrderMode::PreviewFirst { ref account } if account == "HASH"));
     }
 
     #[test]
     fn both_flags_is_error() {
-        let err = determine_mode(Some("HASH".to_string()), true, true).unwrap_err();
+        let err = determine_mode(Some("HASH".to_string()), false, false, true, true).unwrap_err();
         assert!(err.to_string().contains("cannot use both"));
     }
 
     #[test]
+    fn explicit_draft_conflicts_with_account_preview_modes() {
+        let err = determine_mode(Some("HASH".to_string()), true, false, true, false).unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("cannot combine --dry-run or --preview")
+        );
+    }
+
+    #[test]
+    fn explicit_draft_aliases_conflict_with_each_other() {
+        let err = determine_mode(None, true, true, false, false).unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("cannot combine --dry-run and --preview")
+        );
+    }
+
+    #[test]
     fn save_preview_without_account_is_error() {
-        let err = determine_mode(None, true, false).unwrap_err();
+        let err = determine_mode(None, false, false, true, false).unwrap_err();
         assert!(
             err.to_string()
                 .contains("--save-preview requires --account")
@@ -401,7 +458,7 @@ mod tests {
 
     #[test]
     fn preview_first_without_account_is_error() {
-        let err = determine_mode(None, false, true).unwrap_err();
+        let err = determine_mode(None, false, false, false, true).unwrap_err();
         assert!(
             err.to_string()
                 .contains("--preview-first requires --account")
@@ -410,8 +467,9 @@ mod tests {
 
     #[test]
     fn both_flags_without_account_hits_save_preview_error() {
-        // (None, true, true) matches the (None, true, _) arm
-        let err = determine_mode(None, true, true).unwrap_err();
+        // No account with save-preview plus preview-first reports the
+        // save-preview account requirement first.
+        let err = determine_mode(None, false, false, true, true).unwrap_err();
         assert!(
             err.to_string()
                 .contains("--save-preview requires --account")
@@ -420,16 +478,16 @@ mod tests {
 
     #[test]
     fn order_mode_debug_includes_variant_name() {
-        let dry = determine_mode(None, false, false).unwrap();
+        let dry = determine_mode(None, false, false, false, false).unwrap();
         assert!(format!("{dry:?}").contains("DryRun"));
 
-        let place = determine_mode(Some("H".to_string()), false, false).unwrap();
+        let place = determine_mode(Some("H".to_string()), false, false, false, false).unwrap();
         assert!(format!("{place:?}").contains("Place"));
 
-        let save = determine_mode(Some("H".to_string()), true, false).unwrap();
+        let save = determine_mode(Some("H".to_string()), false, false, true, false).unwrap();
         assert!(format!("{save:?}").contains("SavePreview"));
 
-        let pf = determine_mode(Some("H".to_string()), false, true).unwrap();
+        let pf = determine_mode(Some("H".to_string()), false, false, false, true).unwrap();
         assert!(format!("{pf:?}").contains("PreviewFirst"));
     }
     fn sample_order() -> schwab::OrderBuilder {

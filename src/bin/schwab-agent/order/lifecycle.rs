@@ -365,6 +365,8 @@ pub(crate) async fn handle_cancel(_cli: &Cli, args: &OrderCancelArgs) -> Result<
 pub(crate) async fn handle_repeat(args: &OrderRepeatArgs) -> Result<Value, AppError> {
     let mode = workflow::determine_mode(
         Some(args.account.clone()),
+        false,
+        false,
         args.save_preview,
         args.preview_first,
     )?;

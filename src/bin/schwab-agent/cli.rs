@@ -599,6 +599,17 @@ pub enum EquityArgs {
 
 /// Arguments for an equity order action.
 #[derive(Debug, Args)]
+#[command(after_help = "Execution modes:\n  \
+    schwab-agent order equity buy AAPL -q 1 --price 100 --dry-run\n      \
+    Print local draft JSON only. No account, auth, preview API, or placement is required. --preview is an alias for this local draft mode.\n\n  \
+    schwab-agent order equity buy AAPL -q 1 --price 100\n      \
+    Compatibility draft mode. Omitting --account still prints local order JSON without any API call.\n\n  \
+    schwab-agent order equity buy AAPL -q 1 --price 100 --account HASH --save-preview\n      \
+    Call Schwab previewOrder, save a tamper-evident digest, and do not place.\n\n  \
+    schwab-agent order place-from-preview --account HASH --digest DIGEST_HEX\n      \
+    Place the exact saved preview after review.\n\n  \
+    schwab-agent order equity buy AAPL -q 1 --price 100 --account HASH\n      \
+    Place immediately. Mutable order config must be enabled.")]
 pub struct EquityOrderArgs {
     /// Ticker symbol (e.g. AAPL, SPY).
     pub symbol: String,
@@ -634,6 +645,17 @@ pub enum OptionArgs {
 
 /// Arguments for an option order action.
 #[derive(Debug, Args)]
+#[command(after_help = "Execution modes:\n  \
+    schwab-agent order option buy-to-open \"AAPL  250117C00150000\" -q 1 --price 5.00 --dry-run\n      \
+    Print local draft JSON only. No account, auth, preview API, or placement is required. --preview is an alias for this local draft mode.\n\n  \
+    schwab-agent order option buy-to-open \"AAPL  250117C00150000\" -q 1 --price 5.00\n      \
+    Compatibility draft mode. Omitting --account still prints local order JSON without any API call.\n\n  \
+    schwab-agent order option buy-to-open \"AAPL  250117C00150000\" -q 1 --price 5.00 --account HASH --save-preview\n      \
+    Call Schwab previewOrder, save a tamper-evident digest, and do not place.\n\n  \
+    schwab-agent order place-from-preview --account HASH --digest DIGEST_HEX\n      \
+    Place the exact saved preview after review.\n\n  \
+    schwab-agent order option buy-to-open \"AAPL  250117C00150000\" -q 1 --price 5.00 --account HASH\n      \
+    Place immediately. Mutable order config must be enabled.")]
 pub struct OptionOrderArgs {
     /// OCC option symbol (e.g. AAPL  250117C00150000).
     pub symbol: String,
@@ -650,7 +672,7 @@ pub struct OptionOrderArgs {
 /// Arguments shared by equity and option order actions.
 #[derive(Debug, Args)]
 pub struct CommonOrderArgs {
-    /// Account hash or nickname (omit for dry-run mode).
+    /// Account hash or nickname. Omit for local draft mode.
     #[arg(short, long)]
     pub account: Option<String>,
     /// Trading session.
@@ -659,11 +681,17 @@ pub struct CommonOrderArgs {
     /// Order duration.
     #[arg(long, default_value = "day")]
     pub duration: crate::shared::DurationChoice,
-    /// Save order preview to disk (requires --account).
-    #[arg(long, requires = "account")]
+    /// Print local draft JSON without auth, preview, or placement.
+    #[arg(long, conflicts_with_all = ["preview", "save_preview", "preview_first"])]
+    pub dry_run: bool,
+    /// Alias for --dry-run. This is local payload preview, not Schwab previewOrder.
+    #[arg(long, conflicts_with_all = ["dry_run", "save_preview", "preview_first"])]
+    pub preview: bool,
+    /// Call Schwab previewOrder and save a digest to disk (requires --account).
+    #[arg(long, requires = "account", conflicts_with_all = ["dry_run", "preview"])]
     pub save_preview: bool,
-    /// Preview order first, then place automatically (requires --account).
-    #[arg(long, requires = "account")]
+    /// Call Schwab previewOrder first, then place automatically (requires --account).
+    #[arg(long, requires = "account", conflicts_with_all = ["dry_run", "preview"])]
     pub preview_first: bool,
 }
 
@@ -730,6 +758,8 @@ pub struct PlaceRawArgs {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use clap::{CommandFactory, Parser, error::ErrorKind};
 
     use super::{Cli, Command, MarketCommand, OrderCommand, TaCommand};
@@ -1184,7 +1214,126 @@ mod tests {
         assert!(args.price.is_none());
         assert!(args.stop.is_none());
         assert!(args.common.account.is_none());
+        assert!(!args.common.dry_run);
+        assert!(!args.common.preview);
         assert!(!args.common.save_preview);
+        assert!(!args.common.preview_first);
+    }
+
+    #[test]
+    fn parse_order_equity_buy_explicit_dry_run() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--dry-run",
+        ]);
+
+        assert_matches!(
+            cli.command,
+            Command::Order(OrderCommand::Equity(super::EquityArgs::Buy(
+                super::EquityOrderArgs {
+                    common: super::CommonOrderArgs {
+                        dry_run: true,
+                        preview: false,
+                        account: None,
+                        ..
+                    },
+                    ..
+                }
+            )))
+        );
+    }
+
+    #[test]
+    fn parse_order_equity_buy_preview_alias() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--preview",
+        ]);
+
+        assert_matches!(
+            cli.command,
+            Command::Order(OrderCommand::Equity(super::EquityArgs::Buy(
+                super::EquityOrderArgs {
+                    common: super::CommonOrderArgs {
+                        dry_run: false,
+                        preview: true,
+                        account: None,
+                        ..
+                    },
+                    ..
+                }
+            )))
+        );
+    }
+
+    #[test]
+    fn parse_order_dry_run_conflicts_with_save_preview() {
+        let err = Cli::try_parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--dry-run",
+            "--account",
+            "HASH123",
+            "--save-preview",
+        ])
+        .expect_err("draft mode should conflict with account-backed preview");
+
+        assert_eq!(err.kind(), ErrorKind::ArgumentConflict);
+    }
+
+    #[test]
+    fn parse_order_preview_conflicts_with_preview_first() {
+        let err = Cli::try_parse_from([
+            "schwab-agent",
+            "order",
+            "option",
+            "buy-to-open",
+            "AAPL  250117C00150000",
+            "-q",
+            "1",
+            "--preview",
+            "--account",
+            "HASH123",
+            "--preview-first",
+        ])
+        .expect_err("local preview should conflict with preview-first");
+
+        assert_eq!(err.kind(), ErrorKind::ArgumentConflict);
+    }
+
+    #[test]
+    fn parse_order_dry_run_conflicts_with_preview_alias() {
+        let err = Cli::try_parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--dry-run",
+            "--preview",
+        ])
+        .expect_err("draft aliases should conflict with each other");
+
+        assert_eq!(err.kind(), ErrorKind::ArgumentConflict);
     }
 
     #[test]
@@ -1210,6 +1359,8 @@ mod tests {
         assert_eq!(args.quantity, 10.0);
         assert_eq!(args.price, Some(150.0));
         assert_eq!(args.common.account.as_deref(), Some("HASH123"));
+        assert!(!args.common.dry_run);
+        assert!(!args.common.preview);
     }
 
     #[test]
@@ -1260,7 +1411,10 @@ mod tests {
         assert_eq!(args.quantity, 1.0);
         assert_eq!(args.price, Some(3.50));
         assert_eq!(args.common.account.as_deref(), Some("HASH123"));
+        assert!(!args.common.dry_run);
+        assert!(!args.common.preview);
         assert!(args.common.save_preview);
+        assert!(!args.common.preview_first);
     }
 
     #[test]
@@ -1284,6 +1438,8 @@ mod tests {
         assert_eq!(args.quantity, 2.0);
         assert!(args.price.is_none());
         assert!(args.common.account.is_none());
+        assert!(!args.common.dry_run);
+        assert!(!args.common.preview);
     }
 
     #[test]

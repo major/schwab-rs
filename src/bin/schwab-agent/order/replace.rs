@@ -110,6 +110,8 @@ mod tests {
             account: None,
             session: SessionChoice::Normal,
             duration: DurationChoice::Day,
+            dry_run: false,
+            preview: false,
             save_preview: false,
             preview_first: false,
         }

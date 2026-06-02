@@ -276,6 +276,80 @@ fn dry_run_equity_order_outputs_order_json_without_auth() {
 }
 
 #[test]
+fn explicit_dry_run_equity_order_outputs_order_json_without_auth() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let token_path = tempdir.path().join("unused-token.json");
+
+    let output = agent()
+        .env("SCHWAB_TOKEN_PATH", &token_path)
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args([
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "1",
+            "--price",
+            "100.00",
+            "--dry-run",
+        ])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["orderType"], "LIMIT");
+    assert_eq!(body["orderLegCollection"][0]["instruction"], "BUY");
+    assert_eq!(
+        body["orderLegCollection"][0]["instrument"]["symbol"],
+        "AAPL"
+    );
+}
+
+#[test]
+fn preview_alias_option_order_outputs_order_json_without_auth() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let token_path = tempdir.path().join("unused-token.json");
+
+    let output = agent()
+        .env("SCHWAB_TOKEN_PATH", &token_path)
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args([
+            "order",
+            "option",
+            "buy-to-open",
+            "AAPL  250117C00150000",
+            "-q",
+            "1",
+            "--price",
+            "5.00",
+            "--preview",
+        ])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["orderType"], "LIMIT");
+    assert_eq!(body["orderLegCollection"][0]["instruction"], "BUY_TO_OPEN");
+    assert_eq!(
+        body["orderLegCollection"][0]["instrument"]["symbol"],
+        "AAPL  250117C00150000"
+    );
+}
+
+#[test]
 fn market_history_help_shows_accepted_date_formats() {
     help_contains(
         &["market", "history", "--help"],

@@ -106,12 +106,16 @@ Use `order option ACTION OCC_SYMBOL` for single-leg option orders. Each action h
 
 ### Order Workflow
 
-The `-a`/`--account` flag controls execution mode:
+Execution modes for direct equity and option builders:
 
-- No `--account`: dry-run. Prints the OrderBuilder JSON locally, no API call.
+- `--dry-run`: local draft. Prints the OrderBuilder JSON locally, no account, auth, preview API call, or placement.
+- `--preview`: alias for `--dry-run`. This is a local payload preview, not Schwab `previewOrder`.
+- No `--account`: compatibility local draft mode. Same JSON-only behavior as `--dry-run`.
+- `--account HASH --save-preview`: calls Schwab `previewOrder` only, saves the preview file, returns the SHA-256 digest.
+- `--account HASH --preview-first`: calls Schwab `previewOrder`, then places automatically if the preview succeeds.
 - `--account HASH`: places the order directly.
-- `--account HASH --save-preview`: previews only, saves the preview file, returns the SHA-256 digest.
-- `--account HASH --preview-first`: previews first, then places automatically if the preview succeeds.
+
+`--dry-run` and `--preview` deliberately win safety over account intent: they remain local draft modes even if `--account` is also present. They are aliases, so choose one per command, and both conflict with `--save-preview` and `--preview-first`.
 
 Recommended LLM workflow: pass `--save-preview` to get a digest, then `order place-from-preview --account HASH --digest DIGEST`. This submits the exact saved preview payload after the SHA-256 digest, 15-minute TTL, and account checks pass. Previews are stored in `$XDG_STATE_HOME/schwab-agent/previews/` when `XDG_STATE_HOME` is set, otherwise in the platform state or local data directory.
 
