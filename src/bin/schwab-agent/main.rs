@@ -26,13 +26,14 @@ use std::{
 use clap::Parser;
 use serde_json::Value;
 
-use crate::cli::{Cli, Command, OptionCommand, TaCommand};
+use crate::cli::{Cli, Command, ConfigCommand, OptionCommand, TaCommand};
 use crate::error::AppError;
 use crate::output::ErrorBody;
 
 /// Parses process arguments, runs the selected command, and writes JSON output.
 #[cfg_attr(coverage_nightly, coverage(off))]
 pub async fn run_from_env() -> i32 {
+    init_tracing_from_env();
     run(Cli::parse()).await
 }
 
@@ -77,6 +78,7 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
 
     match &cli.command {
         Command::Auth(command) => auth::handle(&cli, command).await,
+        Command::Config(ConfigCommand::Status) => config::status(),
         Command::Market(command) => market::handle(&cli, command).await,
         Command::Option(command) => {
             let client = auth::provider()?.client().await?;
@@ -103,6 +105,16 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
         Command::Order(_) => unreachable!("handled above"),
         Command::Account(command) => account::handle(&cli, command).await,
     }
+}
+
+fn init_tracing_from_env() {
+    let Some(filter) = std::env::var_os("RUST_LOG").filter(|value| !value.is_empty()) else {
+        return;
+    };
+    let _ = tracing_subscriber::fmt()
+        .with_env_filter(filter.to_string_lossy())
+        .with_writer(io::stderr)
+        .try_init();
 }
 
 /// Serializes `value` as JSON and writes it to `writer` followed by a newline.

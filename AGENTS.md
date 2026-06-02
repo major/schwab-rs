@@ -25,7 +25,7 @@ MSRV: 1.96. Edition: 2024. Always test with both default and `decimal` feature.
 
 ## Feature Flags
 
-- `cli`: default feature that enables the `schwab-agent` binary and CLI-only dependencies (`clap`, `clap_complete`, `dirs`, `open`, `sha2`). Library consumers can use `default-features = false` to avoid CLI dependencies.
+- `cli`: default feature that enables the `schwab-agent` binary and CLI-only dependencies (`clap`, `clap_complete`, `dirs`, `open`, `sha2`, `tracing-subscriber`). Library consumers can use `default-features = false` to avoid CLI dependencies.
 - `decimal`: swaps `Number` type alias from `f64` to `rust_decimal::Decimal`. All numeric model fields use `Number`, so both variants must compile and pass tests.
 - `test_online`: gates live integration tests against the real Schwab API. Never run in CI.
 
@@ -57,6 +57,8 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - Binary target: `schwab-agent` at `src/bin/schwab-agent/main.rs`, gated by the default `cli` feature; CLI modules remain binary-private and may use documented CLI config, environment variables, JSON output, and process exit behavior without changing the library contract
 - `schwab-agent completions <shell>` is the sole raw stdout exception to the JSON output contract because shells need an unwrapped completion script; completion generation write failures report a short stderr diagnostic and exit non-zero
 - `schwab-agent` ignores empty `SCHWAB_TOKEN_PATH` values, keeps the compatibility token default under `schwab-agent-rs/token.json`, and resolves the base from `XDG_CONFIG_HOME` before the platform config directory
+- `schwab-agent config status` reports sanitized setup state, including config/token paths, file presence, credential sources, precedence, mutable-operation guard state, known environment variable names, and `RUST_LOG` status without printing secrets, account hashes, balances, or order IDs
+- `schwab-agent` initializes tracing diagnostics on stderr only when `RUST_LOG` is set, preserving JSON stdout for normal command output
 - `schwab-agent` command-specific help includes copyable examples for the primary market, option, technical analysis, and analyze workflows; `option chain --help` and `option screen --help` list valid `--type` values (`call`, `put`, `all`)
 - `schwab-agent market history --from/--to` accepts `YYYY-MM-DD`, RFC3339, or epoch milliseconds, validates invalid values before auth/API calls, and expands date-only values to inclusive UTC calendar-day boundaries
 - `schwab-agent option screen` rejects non-finite numeric filter inputs before API calls, enforces normalized contract-type filters in output rows, and serializes numeric output through the active `Number` representation so default and `decimal` builds stay consistent

@@ -82,7 +82,9 @@ Install the bundled JSON CLI from the published crate:
 cargo install schwab --bin schwab-agent --locked
 ```
 
-`schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on failure. The `completions` command is the only raw stdout exception because shells need a completion script; write failures emit a short stderr diagnostic and exit non-zero. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
+`schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on failure. The `completions` command is the only raw stdout exception because shells need a completion script; write failures emit a short stderr diagnostic and exit non-zero. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. Precedence is command flags, environment variables, config file, then defaults. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset. Set `RUST_LOG`, for example `RUST_LOG=schwab=debug`, to enable tracing diagnostics on stderr without changing JSON stdout.
+
+Use `schwab-agent config status` to inspect sanitized setup state. It reports config and token paths, file presence, credential sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. It does not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
 
 For the full LLM-facing command contract, workflows, and safety rules, see [`SKILL.md`](SKILL.md), which points to the detailed binary guide under `src/bin/schwab-agent/`.
 
@@ -90,6 +92,7 @@ For the full LLM-facing command contract, workflows, and safety rules, see [`SKI
 schwab-agent auth login-url
 schwab-agent auth exchange --redirect-url "CALLBACK_URL_WITH_CODE"
 schwab-agent auth refresh
+schwab-agent config status
 
 schwab-agent market quote AAPL MSFT --fields sym,last,pct,vol
 schwab-agent market quote AAPL --all-fields
@@ -241,7 +244,7 @@ session.disconnect().await?;
 
 | Feature | Default | Purpose |
 |---|---:|---|
-| `cli` | Yes | Enables the bundled `schwab-agent` binary and CLI-only dependencies, including clap parsing, shell completions, browser opening, config directory lookup, and preview digests. |
+| `cli` | Yes | Enables the bundled `schwab-agent` binary and CLI-only dependencies, including clap parsing, shell completions, browser opening, config directory lookup, preview digests, and `RUST_LOG` tracing setup. |
 | `decimal` | No | Enables `rust_decimal` support for models where decimal precision is preferable to floating-point values. |
 | `test_online` | No | Enables live integration tests that call the Schwab API. Use only with explicit credentials and never in untrusted CI. |
 
