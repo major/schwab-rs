@@ -8,6 +8,7 @@ mod auth;
 mod cli;
 mod completions;
 mod config;
+mod discovery;
 mod error;
 mod market;
 mod options;
@@ -81,7 +82,9 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
 
     match &cli.command {
         Command::Auth(command) => auth::handle(&cli, command).await,
-        Command::Config(ConfigCommand::Status) => config::status(),
+        Command::Config(ConfigCommand::Show | ConfigCommand::Status) => config::status(),
+        Command::Doctor => discovery::doctor(),
+        Command::Schema => discovery::schema(),
         Command::Market(command) => market::handle(&cli, command).await,
         Command::Option(command) => {
             let client = auth::provider()?.client().await?;

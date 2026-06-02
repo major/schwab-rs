@@ -23,6 +23,7 @@ src/bin/schwab-agent/
   main.rs          - Binary entry point, module tree, run_from_env(), CLI dispatch, JSON output
   cli.rs           - clap derive CLI definition with subcommands and global args
   completions.rs   - Shell completion script generation for the clap command tree
+  discovery.rs     - Offline agent schema and doctor discovery output
   output.rs        - ErrorBody struct for structured error JSON output
   shared.rs        - Shared types: SessionChoice, DurationChoice, to_number() helper
   config.rs        - Agent config: load shared config, sanitized setup status, mutable-operation guard
@@ -76,6 +77,8 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 
 - **auth** - Token management (status, login, login-url, exchange, refresh)
 - **config** - Sanitized config, credential-source, path, precedence, and debug discovery
+- **schema** - Machine-readable agent discovery: version, commands, classifications, output formats, env vars, exit codes, field selectors, docs URL
+- **doctor** - Sanitized config, auth, token, and debug health wrapper for humans and agents
 - **market** - Market data (history, quote)
 - **account** - Account discovery, balances, positions, and resolution
 - **order** - Unified order workflow: equity and option placement, lifecycle (get, cancel, replace, repeat), raw JSON
@@ -177,7 +180,7 @@ Credentials are read from environment variables (`SCHWAB_CLIENT_ID`, `SCHWAB_CLI
 
 Token path env var: `SCHWAB_TOKEN_PATH`. Empty values are ignored. Default: `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
 
-Discovery command: `schwab-agent config status`. It returns JSON with config and token paths, file presence, credential sources (`environment`, `config_file`, `default`, or `missing`), callback/token path sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. It must not print credential values, tokens, account numbers, account hashes, balances, or order IDs.
+Discovery commands: `schwab-agent config status`, `schwab-agent config show`, `schwab-agent doctor`, and `schwab-agent schema`. `config show` aliases `config status`. `config status` returns JSON with config and token paths, file presence, credential sources (`environment`, `config_file`, `default`, or `missing`), callback/token path sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. `doctor` wraps the same sanitized setup state with a human-oriented health summary. `schema` is fully offline and returns version, supported commands, read-only/mutating/local-only classification, known output formats, environment variables, exit codes, field selectors, and docs URL. None of these commands may print credential values, tokens, account numbers, account hashes, balances, or order IDs.
 
 Precedence is command flags, environment variables, config file, then defaults. `RUST_LOG`, for example `RUST_LOG=schwab=debug`, enables tracing diagnostics on stderr only; normal command stdout stays raw JSON.
 
@@ -194,6 +197,8 @@ Commands output raw JSON data payloads directly (no wrapper). Application errors
 - 20 = IO/JSON/config errors (includes account.response_shape, ta.calculation_error)
 
 Usage errors keep clap's exit code 2. In JSON usage-error mode, their category is `usage`, their codes use the `usage.*` prefix, and `retryable` is always `false`.
+
+`schwab-agent schema` is the discoverable source for exit-code documentation and field selectors. Keep its command classifications, environment-variable list, output formats, exit-code table, and field-selector defaults synchronized with clap args, `AppError::exit_code()`, `config::status()`, market field helpers, and option field helpers.
 
 ## Key Dependencies
 

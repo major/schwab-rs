@@ -65,7 +65,7 @@ async fn history(_cli: &Cli, args: &HistoryArgs) -> Result<Value, AppError> {
 }
 
 /// Default token-optimized candle fields for compact history row output.
-const DEFAULT_HISTORY_FIELDS: [&str; 6] = ["ts", "open", "high", "low", "close", "vol"];
+pub(crate) const DEFAULT_HISTORY_FIELDS: [&str; 6] = ["ts", "open", "high", "low", "close", "vol"];
 
 /// Inclusive boundary used when converting date-only history values.
 #[derive(Clone, Copy)]
@@ -239,7 +239,7 @@ fn canonical_history_field(field: &str) -> &'static str {
 }
 
 /// Returns every accepted history field name and alias for validation hints.
-fn available_history_fields() -> Vec<&'static str> {
+pub(crate) fn available_history_fields() -> Vec<&'static str> {
     let mut fields = [
         "timestamp",
         "datetime",
@@ -422,7 +422,7 @@ fn clone_quote_error(error: &QuoteErrorSummary) -> QuoteErrorSummary {
 }
 
 /// Default token-optimized quote fields for compact row output.
-const DEFAULT_QUOTE_FIELDS: [&str; 10] = [
+pub(crate) const DEFAULT_QUOTE_FIELDS: [&str; 10] = [
     "req", "sym", "bid", "ask", "last", "mark", "chg", "pct", "vol", "err",
 ];
 
@@ -521,7 +521,7 @@ fn canonical_quote_field(field: &str) -> &'static str {
 }
 
 /// Returns every accepted quote field name and alias for validation hints.
-fn available_quote_fields() -> Vec<&'static str> {
+pub(crate) fn available_quote_fields() -> Vec<&'static str> {
     let mut fields = [
         "requested_symbol",
         "requested",

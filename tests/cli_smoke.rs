@@ -39,7 +39,9 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("auth"))
         .stdout(predicate::str::contains("market"))
         .stdout(predicate::str::contains("config"))
+        .stdout(predicate::str::contains("doctor"))
         .stdout(predicate::str::contains("order"))
+        .stdout(predicate::str::contains("schema"))
         .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
 }
@@ -50,6 +52,9 @@ fn top_level_help_documents_setup_environment_and_debug() {
         &["--help"],
         &[
             "schwab-agent config status",
+            "schwab-agent config show",
+            "schwab-agent doctor",
+            "schwab-agent schema",
             "SCHWAB_CLIENT_ID",
             "SCHWAB_CLIENT_SECRET",
             "SCHWAB_CALLBACK_URL",
@@ -116,6 +121,116 @@ fn config_status_reports_sanitized_setup_without_secret_values() {
             .iter()
             .any(|item| item == "RUST_LOG")
     );
+    assert!(
+        body["environment_variables"]
+            .as_array()
+            .expect("env var list")
+            .iter()
+            .any(|item| item == "SCHWAB_AGENT_JSON_ERRORS")
+    );
+}
+
+#[test]
+fn config_show_alias_reports_sanitized_setup_without_auth() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let output = agent()
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args(["config", "show"])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["credential_sources"]["client_id"], "missing");
+    assert_eq!(body["credential_sources"]["client_secret"], "missing");
+}
+
+#[test]
+fn doctor_reports_sanitized_health_without_auth_or_accounts() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let output = agent()
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args(["doctor"])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["status"], "ok");
+    assert_eq!(body["config"]["credential_sources"]["client_id"], "missing");
+    assert!(
+        body["summary"]
+            .as_str()
+            .is_some_and(|summary| { summary.contains("without reading account data") })
+    );
+}
+
+#[test]
+fn schema_reports_agent_discovery_without_auth_or_accounts() {
+    let output = agent()
+        .env_remove("SCHWAB_CLIENT_ID")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .args(["schema"])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["name"], "schwab-agent");
+    assert!(body["version"].as_str().is_some());
+    assert!(
+        body["docs_url"]
+            .as_str()
+            .is_some_and(|url| { url.contains("github.com/major/schwab-rs") })
+    );
+    assert!(body["commands"].as_array().is_some_and(|commands| {
+        commands.iter().any(|command| {
+            command["name"] == "order cancel" && command["classification"] == "mutating"
+        }) && commands
+            .iter()
+            .any(|command| command["name"] == "schema" && command["classification"] == "local_only")
+    }));
+    assert!(
+        body["environment_variables"]
+            .as_array()
+            .is_some_and(|vars| {
+                vars.iter()
+                    .any(|var| var["name"] == "SCHWAB_CLIENT_SECRET" && var["sensitive"] == true)
+            })
+    );
+    assert!(
+        body["output_formats"]
+            .as_array()
+            .is_some_and(|formats| { formats.iter().any(|format| format["name"] == "usage_json") })
+    );
+    assert!(body["exit_codes"].as_array().is_some_and(|codes| {
+        codes
+            .iter()
+            .any(|code| code["code"] == 2 && code["category"] == "usage")
+    }));
+    assert!(body["field_selectors"].as_array().is_some_and(|selectors| {
+        selectors.iter().any(|selector| {
+            selector["command"] == "market quote"
+                && selector["default_fields"]
+                    .as_array()
+                    .is_some_and(|fields| fields.iter().any(|field| field == "sym"))
+        }) && selectors.iter().any(|selector| {
+            selector["command"] == "option chain"
+                && selector["available_fields"]
+                    .as_array()
+                    .is_some_and(|fields| fields.iter().any(|field| field == "delta"))
+        })
+    }));
 }
 
 #[test]

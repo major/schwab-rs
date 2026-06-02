@@ -84,7 +84,7 @@ cargo install schwab --bin schwab-agent --locked
 
 `schwab-agent` prints raw JSON payloads on success and structured JSON errors with stable `code`, `message`, `category`, `retryable`, and `hint` fields on application failure. Set `SCHWAB_AGENT_JSON_ERRORS=1` to request the same JSON shape for clap usage errors such as unknown commands, invalid values, missing required arguments, and conflicting arguments; when unset, the default human-readable clap stderr remains available. The `completions` command is the only raw stdout exception because shells need a completion script; write failures emit a short stderr diagnostic and exit non-zero. Credentials come from `SCHWAB_CLIENT_ID`, `SCHWAB_CLIENT_SECRET`, and optional `SCHWAB_CALLBACK_URL`, or from `~/.config/schwab-agent/config.json`. Precedence is command flags, environment variables, config file, then defaults. The token path can be overridden with a non-empty `SCHWAB_TOKEN_PATH`; the default remains `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset. Set `RUST_LOG`, for example `RUST_LOG=schwab=debug`, to enable tracing diagnostics on stderr without changing JSON stdout.
 
-Use `schwab-agent config status` to inspect sanitized setup state. It reports config and token paths, file presence, credential sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. It does not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
+Use `schwab-agent schema` for machine-readable discovery. It reports the CLI version, supported commands, read-only/mutating/local-only classification, output formats, environment variables, exit codes, field selectors, and docs URL without requiring account data. Use `schwab-agent doctor` or `schwab-agent config show` to inspect sanitized setup and auth/environment health. `config show` is an alias for `config status`, which reports config and token paths, file presence, credential sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. These discovery commands do not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
 
 For the full LLM-facing command contract, workflows, and safety rules, see [`SKILL.md`](SKILL.md), which points to the detailed binary guide under `src/bin/schwab-agent/`.
 
@@ -92,6 +92,9 @@ For the full LLM-facing command contract, workflows, and safety rules, see [`SKI
 schwab-agent auth login-url
 schwab-agent auth exchange --redirect-url "CALLBACK_URL_WITH_CODE"
 schwab-agent auth refresh
+schwab-agent schema
+schwab-agent doctor
+schwab-agent config show
 schwab-agent config status
 SCHWAB_AGENT_JSON_ERRORS=1 schwab-agent stock buy AAPL -q 1
 

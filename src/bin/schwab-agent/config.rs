@@ -186,7 +186,7 @@ struct ConfigStatus {
     mutable_operations_enabled: bool,
     debug: DebugStatus,
     precedence: [&'static str; 4],
-    environment_variables: [&'static str; 7],
+    environment_variables: [&'static str; 8],
 }
 
 impl ConfigStatus {
@@ -218,6 +218,7 @@ impl ConfigStatus {
                 "SCHWAB_CLIENT_SECRET",
                 "SCHWAB_CALLBACK_URL",
                 "SCHWAB_TOKEN_PATH",
+                "SCHWAB_AGENT_JSON_ERRORS",
                 "XDG_CONFIG_HOME",
                 "XDG_STATE_HOME",
                 "RUST_LOG",

@@ -549,7 +549,7 @@ fn extracted_field(contract: &OptionContract, field: &str) -> Option<Value> {
         .and_then(|definition| (definition.extractor)(contract))
 }
 
-fn available_fields() -> Vec<&'static str> {
+pub(crate) fn available_fields() -> Vec<&'static str> {
     let mut fields = ALL_FIELDS.keys().copied().collect::<Vec<_>>();
     fields.sort_unstable();
     fields
