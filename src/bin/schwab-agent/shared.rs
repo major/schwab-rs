@@ -12,12 +12,16 @@ use crate::error::AppError;
 #[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum SessionChoice {
     /// Regular market hours.
+    #[value(alias = "regular")]
     Normal,
     /// Pre-market session.
+    #[value(alias = "pre")]
     Am,
     /// After-hours session.
+    #[value(alias = "post")]
     Pm,
     /// Extended hours (pre-market through after-hours).
+    #[value(alias = "extended")]
     Seamless,
 }
 
@@ -36,15 +40,16 @@ impl From<SessionChoice> for schwab::Session {
 #[derive(Debug, Clone, Copy, ValueEnum)]
 pub enum DurationChoice {
     /// Good for the current trading day only.
+    #[value(alias = "DAY")]
     Day,
     /// Good until cancelled (typically 60-180 days depending on broker).
-    #[value(alias = "gtc")]
+    #[value(alias = "gtc", alias = "GTC")]
     GoodTillCancel,
     /// Fill the entire order immediately or cancel it.
-    #[value(alias = "fok")]
+    #[value(alias = "fok", alias = "FOK")]
     FillOrKill,
     /// Fill as much as possible immediately, cancel the rest.
-    #[value(alias = "ioc")]
+    #[value(alias = "ioc", alias = "IOC")]
     ImmediateOrCancel,
 }
 

@@ -9,7 +9,7 @@ use clap_complete::Shell;
     name = "schwab-agent",
     version,
     about = "Agent-oriented JSON CLI porcelain for Charles Schwab workflows",
-    long_about = "All normal command output is compact JSON. Use --help on any command for examples and flags. Trading commands intentionally start with draft and validate workflows before placement.\n\nSetup and agent discovery:\n  schwab-agent schema\n      Print machine-readable command capabilities, safety classifications, output formats, environment variables, exit codes, and field selectors.\n  schwab-agent doctor\n      Print sanitized config, auth, token, and debug health without reading account data.\n  schwab-agent config show\n      Alias for config status.\n  schwab-agent config status\n      Print sanitized config, token, credential-source, precedence, and debug status without exposing secrets.\n\nEnvironment variables:\n  SCHWAB_CLIENT_ID, SCHWAB_CLIENT_SECRET, SCHWAB_CALLBACK_URL\n      Auth credentials. Environment values override ~/.config/schwab-agent/config.json.\n  SCHWAB_TOKEN_PATH\n      Optional token path override. Empty values are ignored.\n  XDG_CONFIG_HOME\n      Base directory for config.json and the default compatibility token path.\n  XDG_STATE_HOME\n      Base directory for saved order previews, falling back to the platform state or local data directory.\n  RUST_LOG\n      Enable tracing diagnostics on stderr, for example RUST_LOG=schwab=debug. JSON stdout remains unchanged.\n  SCHWAB_AGENT_JSON_ERRORS\n      Set to 1 to render clap usage errors as JSON on stdout with code, message, category, retryable, and hint fields. Default clap stderr remains unchanged when unset.\n\nPrecedence: command flags > environment variables > config file > defaults. Defaults include https://127.0.0.1:8182 for the callback URL and $XDG_CONFIG_HOME/schwab-agent-rs/token.json for tokens when SCHWAB_TOKEN_PATH is unset.",
+    long_about = "All normal command output is compact JSON. Use --help on any command for examples and flags. Trading commands intentionally start with draft and validate workflows before placement.\n\nSetup and agent discovery:\n  schwab-agent schema\n      Print machine-readable command capabilities, safety classifications, output formats, environment variables, exit codes, and field selectors.\n  schwab-agent doctor\n      Print sanitized config, auth, token, and debug health without reading account data.\n  schwab-agent config show\n      Produces the same sanitized output as config status.\n  schwab-agent config status\n      Print sanitized config, token, credential-source, precedence, and debug status without exposing secrets.\n\nEnvironment variables:\n  SCHWAB_CLIENT_ID, SCHWAB_CLIENT_SECRET, SCHWAB_CALLBACK_URL\n      Auth credentials. Environment values override ~/.config/schwab-agent/config.json.\n  SCHWAB_TOKEN_PATH\n      Optional token path override. Empty values are ignored.\n  XDG_CONFIG_HOME\n      Base directory for config.json and the default compatibility token path.\n  XDG_STATE_HOME\n      Base directory for saved order previews, falling back to the platform state or local data directory.\n  RUST_LOG\n      Enable tracing diagnostics on stderr, for example RUST_LOG=schwab=debug. JSON stdout remains unchanged.\n  SCHWAB_AGENT_JSON_ERRORS\n      Set to 1 to render clap usage errors as JSON on stdout with code, message, category, retryable, and hint fields. Default clap stderr remains unchanged when unset.\n\nPrecedence: command flags > environment variables > config file > defaults. Defaults include https://127.0.0.1:8182 for the callback URL and $XDG_CONFIG_HOME/schwab-agent-rs/token.json for tokens when SCHWAB_TOKEN_PATH is unset.",
     arg_required_else_help = true,
     propagate_version = true,
     help_template = "{name} {version}\n{about-section}\n{usage-heading} {usage}\n\n{all-args}{tab}"
@@ -39,8 +39,14 @@ impl Cli {
             Command::Option(OptionCommand::Contract(_)) => "option.contract",
             Command::Market(MarketCommand::History(_)) => "market.history",
             Command::Market(MarketCommand::Quote(_)) => "market.quote",
+            Command::History(_) => "market.history",
+            Command::Quote(_) => "market.quote",
+            Command::Order(OrderCommand::Get(_)) => "order.get",
             Command::Order(_) => "order",
+            Command::Orders(_) => "order.get",
+            Command::Positions(_) => "account",
             Command::Schema => "schema",
+            Command::Stock(_) => "stock",
             Command::Completions(_) => "completions",
             Command::Ta(TaCommand::Dashboard(_)) => "ta.dashboard",
             Command::Ta(TaCommand::ExpectedMove(_)) => "ta.expected-move",
@@ -65,12 +71,23 @@ pub enum Command {
     /// Market-data workflows with compact JSON summaries.
     #[command(subcommand)]
     Market(MarketCommand),
+    /// Alias for `market quote`.
+    Quote(QuoteArgs),
+    /// Alias for `market history`.
+    History(HistoryArgs),
     /// Option chain, screening, and contract lookup workflows.
     #[command(subcommand)]
     Option(OptionCommand),
     /// Unified order construction, preview, placement, and lifecycle workflows.
     #[command(subcommand)]
     Order(OrderCommand),
+    /// Alias for `order get`.
+    Orders(crate::order::lifecycle::OrderGetArgs),
+    /// Alias for `account --positions`.
+    Positions(PositionsArgs),
+    /// Legacy stock command namespace with migration hints.
+    #[command(hide = true, subcommand)]
+    Stock(StockCommand),
     /// Generate shell completion scripts.
     Completions(CompletionsArgs),
     /// Technical analysis indicator workflows.
@@ -533,6 +550,31 @@ pub struct AccountArgs {
     pub positions: bool,
 }
 
+/// Arguments for the top-level `positions` alias.
+#[derive(Debug, Args)]
+pub struct PositionsArgs {
+    /// Account hash or nickname to inspect. Omit to list positions for all accounts.
+    pub selector: Option<String>,
+}
+
+impl From<&PositionsArgs> for AccountArgs {
+    fn from(args: &PositionsArgs) -> Self {
+        Self {
+            selector: args.selector.clone(),
+            positions: true,
+        }
+    }
+}
+
+/// Legacy stock commands that now point to `order equity`.
+#[derive(Debug, Subcommand)]
+pub enum StockCommand {
+    /// Use `order equity buy` instead.
+    Buy(EquityOrderArgs),
+    /// Use `order equity sell` instead.
+    Sell(EquityOrderArgs),
+}
+
 impl AccountArgs {
     /// Whether position data should be fetched from the API.
     ///
@@ -773,6 +815,48 @@ mod tests {
 
     use super::{Cli, Command, MarketCommand, OrderCommand, TaCommand};
 
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_history_alias(command: Command) -> super::HistoryArgs {
+        match command {
+            Command::History(args) => args,
+            _ => panic!("expected history alias command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_quote_alias(command: Command) -> super::QuoteArgs {
+        match command {
+            Command::Quote(args) => args,
+            _ => panic!("expected quote alias command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_positions_alias(command: &Command) -> &super::PositionsArgs {
+        match command {
+            Command::Positions(args) => args,
+            _ => panic!("expected positions alias command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_orders_alias(command: Command) -> crate::order::lifecycle::OrderGetArgs {
+        match command {
+            Command::Orders(args) => args,
+            _ => panic!("expected orders alias command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_equity_buy_duration(command: Command) -> crate::shared::DurationChoice {
+        match command {
+            Command::Order(OrderCommand::Equity(super::EquityArgs::Buy(
+                super::EquityOrderArgs { common, .. },
+            ))) => common.duration,
+            _ => panic!("expected order equity buy command"),
+        }
+    }
+
     #[test]
     fn command_tree_is_valid() {
         Cli::command().debug_assert();
@@ -885,6 +969,12 @@ mod tests {
     }
 
     #[test]
+    fn command_name_history_alias() {
+        let cli = Cli::parse_from(["schwab-agent", "history", "AAPL"]);
+        assert_eq!(cli.command_name(), "market.history");
+    }
+
+    #[test]
     fn command_name_market_history_with_all_flags() {
         let cli = Cli::parse_from([
             "schwab-agent",
@@ -929,6 +1019,15 @@ mod tests {
     }
 
     #[test]
+    fn history_alias_parses_market_history_args() {
+        let cli = Cli::parse_from(["schwab-agent", "history", "SPY", "--fields", "ts,close"]);
+
+        let args = expect_history_alias(cli.command);
+        assert_eq!(args.symbol, "SPY");
+        assert_eq!(args.fields.as_deref(), Some("ts,close"));
+    }
+
+    #[test]
     fn market_history_all_fields_parses() {
         let cli = Cli::parse_from(["schwab-agent", "market", "history", "AAPL", "--all-fields"]);
 
@@ -942,6 +1041,12 @@ mod tests {
     #[test]
     fn command_name_market_quote() {
         let cli = Cli::parse_from(["schwab-agent", "market", "quote", "AAPL"]);
+        assert_eq!(cli.command_name(), "market.quote");
+    }
+
+    #[test]
+    fn command_name_quote_alias() {
+        let cli = Cli::parse_from(["schwab-agent", "quote", "AAPL"]);
         assert_eq!(cli.command_name(), "market.quote");
     }
 
@@ -964,6 +1069,15 @@ mod tests {
         assert_eq!(args.fields.as_deref(), Some("sym,last"));
         assert_eq!(args.api_fields.as_deref(), Some("quote,reference"));
         assert!(!args.all_fields);
+    }
+
+    #[test]
+    fn quote_alias_parses_market_quote_args() {
+        let cli = Cli::parse_from(["schwab-agent", "quote", "AAPL", "--fields", "sym,last"]);
+
+        let args = expect_quote_alias(cli.command);
+        assert_eq!(args.symbols, ["AAPL"]);
+        assert_eq!(args.fields.as_deref(), Some("sym,last"));
     }
 
     #[test]
@@ -1020,6 +1134,12 @@ mod tests {
     #[test]
     fn command_name_account_with_positions() {
         let cli = Cli::parse_from(["schwab-agent", "account", "--positions"]);
+        assert_eq!(cli.command_name(), "account");
+    }
+
+    #[test]
+    fn command_name_positions_alias() {
+        let cli = Cli::parse_from(["schwab-agent", "positions"]);
         assert_eq!(cli.command_name(), "account");
     }
 
@@ -1126,6 +1246,28 @@ mod tests {
         assert!(args.positions);
         assert!(args.include_positions());
         assert!(args.requests_summary());
+    }
+
+    #[test]
+    fn positions_alias_requests_positions_for_all_accounts() {
+        let cli = Cli::parse_from(["schwab-agent", "positions"]);
+
+        let args = expect_positions_alias(&cli.command);
+        let account_args = super::AccountArgs::from(args);
+        assert!(account_args.selector.is_none());
+        assert!(account_args.positions);
+        assert!(account_args.include_positions());
+    }
+
+    #[test]
+    fn positions_alias_accepts_selector() {
+        let cli = Cli::parse_from(["schwab-agent", "positions", "Trading"]);
+
+        let args = expect_positions_alias(&cli.command);
+        let account_args = super::AccountArgs::from(args);
+        assert_eq!(account_args.selector.as_deref(), Some("Trading"));
+        assert!(account_args.positions);
+        assert!(account_args.requests_summary());
     }
 
     #[test]
@@ -1364,6 +1506,100 @@ mod tests {
     }
 
     #[test]
+    fn command_name_orders_alias() {
+        let cli = Cli::parse_from(["schwab-agent", "orders", "--symbol", "AAPL"]);
+        assert_eq!(cli.command_name(), "order.get");
+    }
+
+    #[test]
+    fn command_name_order_get() {
+        let cli = Cli::parse_from(["schwab-agent", "order", "get", "--symbol", "AAPL"]);
+        assert_eq!(cli.command_name(), "order.get");
+    }
+
+    #[test]
+    fn orders_alias_parses_order_get_args() {
+        let cli = Cli::parse_from(["schwab-agent", "orders", "--symbol", "AAPL"]);
+
+        let args = expect_orders_alias(cli.command);
+        assert_eq!(args.symbol.as_deref(), Some("AAPL"));
+        assert!(args.account.is_none());
+    }
+
+    #[test]
+    fn uppercase_duration_aliases_parse() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--duration",
+            "GTC",
+        ]);
+
+        assert_eq!(
+            std::mem::discriminant(&expect_equity_buy_duration(cli.command)),
+            std::mem::discriminant(&crate::shared::DurationChoice::GoodTillCancel)
+        );
+
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "equity",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--duration",
+            "DAY",
+        ]);
+
+        assert_eq!(
+            std::mem::discriminant(&expect_equity_buy_duration(cli.command)),
+            std::mem::discriminant(&crate::shared::DurationChoice::Day)
+        );
+    }
+
+    #[test]
+    fn human_session_aliases_parse() {
+        for (alias, expected) in [
+            ("regular", crate::shared::SessionChoice::Normal),
+            ("pre", crate::shared::SessionChoice::Am),
+            ("post", crate::shared::SessionChoice::Pm),
+            ("extended", crate::shared::SessionChoice::Seamless),
+        ] {
+            let cli = Cli::parse_from([
+                "schwab-agent",
+                "order",
+                "equity",
+                "buy",
+                "AAPL",
+                "-q",
+                "10",
+                "--session",
+                alias,
+            ]);
+
+            assert_matches!(
+                cli.command,
+                Command::Order(OrderCommand::Equity(super::EquityArgs::Buy(
+                    super::EquityOrderArgs {
+                        common: super::CommonOrderArgs { session, .. },
+                        ..
+                    }
+                ))) if matches!((session, expected),
+                    (crate::shared::SessionChoice::Normal, crate::shared::SessionChoice::Normal)
+                        | (crate::shared::SessionChoice::Am, crate::shared::SessionChoice::Am)
+                        | (crate::shared::SessionChoice::Pm, crate::shared::SessionChoice::Pm)
+                        | (crate::shared::SessionChoice::Seamless, crate::shared::SessionChoice::Seamless))
+            );
+        }
+    }
+
+    #[test]
     fn parse_order_equity_buy_with_account_and_price() {
         let cli = Cli::parse_from([
             "schwab-agent",
@@ -1535,6 +1771,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(coverage_nightly, coverage(off))]
     fn parse_order_place_raw() {
         let cli = Cli::parse_from([
             "schwab-agent",
@@ -1553,9 +1790,20 @@ mod tests {
     }
 
     #[test]
-    fn stock_subcommand_is_removed() {
-        let result = Cli::try_parse_from(["schwab-agent", "stock", "buy", "AAPL", "-q", "10"]);
-        assert!(result.is_err());
+    fn stock_subcommand_parses_for_migration_hint() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "stock",
+            "buy",
+            "AAPL",
+            "-q",
+            "10",
+            "--price",
+            "100",
+        ]);
+
+        assert_eq!(cli.command_name(), "stock");
+        assert_matches!(cli.command, Command::Stock(super::StockCommand::Buy(_)));
     }
 
     #[test]

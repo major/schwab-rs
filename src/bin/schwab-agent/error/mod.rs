@@ -64,6 +64,14 @@ pub enum AppError {
     /// Mutable operations are disabled in the agent config.
     #[error("mutable operations are disabled by default")]
     MutableDisabled,
+    /// A removed or legacy command needs a migration hint.
+    #[error("{message}")]
+    CommandMigration {
+        /// Human-readable migration failure.
+        message: &'static str,
+        /// Exact replacement command hint.
+        hint: &'static str,
+    },
 }
 
 impl AppError {
@@ -83,6 +91,7 @@ impl AppError {
             Self::TaCalculationError { .. } => 20,
             Self::Preview(_) => 11,
             Self::MutableDisabled => 10,
+            Self::CommandMigration { .. } => 2,
         }
     }
 
@@ -106,6 +115,7 @@ impl AppError {
             Self::TaCalculationError { .. } => "ta.calculation_error",
             Self::Preview(_) => "order.preview_failed",
             Self::MutableDisabled => "config.mutable_disabled",
+            Self::CommandMigration { .. } => "usage.migration",
         }
     }
 
@@ -125,6 +135,7 @@ impl AppError {
             | Self::TaInvalidInterval { .. }
             | Self::TaCalculationError { .. } => "ta",
             Self::MutableDisabled => "config",
+            Self::CommandMigration { .. } => "usage",
         }
     }
 
@@ -166,6 +177,7 @@ impl AppError {
             Self::MutableDisabled => Some(
                 "Set \"i-also-like-to-live-dangerously\": true in ~/.config/schwab-agent/config.json to enable order placement, cancellation, and replacement.",
             ),
+            Self::CommandMigration { hint, .. } => Some(hint),
             _ => None,
         }
     }

@@ -1,6 +1,6 @@
 # schwab-agent CLI
 
-Structured JSON CLI for Charles Schwab API. All command output is raw JSON data payloads except `completions`, which prints a shell completion script. Set env vars or config once, then most commands need zero flags. Use `schwab-agent schema` for machine-readable agent discovery and `schwab-agent doctor` or `schwab-agent config status` to inspect sanitized setup state before auth or trading workflows.
+Structured JSON CLI for Charles Schwab API. All command output is raw JSON data payloads except `completions`, which prints a shell completion script. Set env vars or config once, then most commands need zero flags. Use `schwab-agent schema` for machine-readable agent discovery, including command aliases, and `schwab-agent doctor` or `schwab-agent config status` to inspect sanitized setup state before auth or trading workflows.
 
 > **Disclaimer:** This project is unofficial and is not affiliated with, endorsed by, or connected to Charles Schwab, TD Ameritrade, or thinkorswim in any way.
 
@@ -25,7 +25,7 @@ schwab-agent doctor
 schwab-agent schema
 ```
 
-`config show` aliases `config status`. `config status` reports config and token paths, file presence, credential sources, token path source, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. `doctor` wraps that sanitized setup state with a health summary. `schema` is offline JSON discovery for agents: CLI version, supported commands, read-only/mutating/local-only classification, output formats, environment variables, exit codes, field selectors, and docs URL. These commands do not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
+`config show` produces the same sanitized output as `config status`. `config status` reports config and token paths, file presence, credential sources, token path source, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. `doctor` wraps that sanitized setup state with a health summary. `schema` is offline JSON discovery for agents: CLI version, supported commands and aliases, read-only/mutating/local-only classification, output formats, environment variables, exit codes, field selectors, and docs URL. These commands do not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
 
 ## Release Notes
 
@@ -42,7 +42,7 @@ Commands that submit, replace, repeat-place, or cancel orders require `"i-also-l
 ```bash
 schwab-agent auth status          # check token state
 schwab-agent config status        # check sanitized setup, paths, env sources, and debug state
-schwab-agent config show          # alias for config status
+schwab-agent config show          # same sanitized output as config status
 schwab-agent doctor               # sanitized setup/auth/token/debug health summary
 schwab-agent schema               # offline command, output, env, exit-code, and field discovery
 schwab-agent auth login-url       # get OAuth URL (open in browser)
@@ -58,6 +58,8 @@ If you get `auth.token_missing`, run `login-url` then `exchange`. If `auth.expir
 ## Market Data
 
 ```bash
+schwab-agent quote AAPL                         # alias for market quote
+schwab-agent history SPY                        # alias for market history
 schwab-agent market quote AAPL              # single quote
 schwab-agent market quote AAPL MSFT GOOG    # multiple quotes
 schwab-agent market quote AAPL --fields sym,last,pct,vol
@@ -84,6 +86,7 @@ Recommended workflow: `account` -> choose `account_hash` or nickname -> pass to 
 ```bash
 schwab-agent account                                    # list accounts with balances
 schwab-agent account --positions                        # include holdings as compact objects
+schwab-agent positions                                  # alias for account --positions
 schwab-agent account Trading                            # resolve nickname to canonical hash
 schwab-agent account Trading --positions                # selected account summary with holdings
 schwab-agent account ABCDEF1234567890                   # verify a known hash
@@ -107,6 +110,8 @@ Execution modes:
 - `--account HASH`: places directly
 
 If `--dry-run` or `--preview` is present with `--account`, the command remains local-only. These local draft flags are aliases, so choose one per command, and both conflict with `--save-preview` and `--preview-first`.
+
+Order session aliases: `normal`/`regular`, `am`/`pre`, `pm`/`post`, and `seamless`/`extended`. Duration aliases include uppercase `DAY`, `GTC`, `FOK`, and `IOC`. Legacy `stock buy` and `stock sell` are migration stubs only; they return `usage.migration` JSON with exact `order equity buy` or `order equity sell` replacements and never place orders.
 
 Non-fatal Schwab preview warnings do not block digest creation. When present, `--save-preview` and `preview-raw --save-preview` include sanitized `warnings` entries with severity, message, and validation rule fields; the saved digest still covers only the order payload and preview metadata. Saved previews use `$XDG_STATE_HOME/schwab-agent/previews/` when set, otherwise the platform state or local data directory.
 
@@ -324,6 +329,7 @@ schwab-agent order place-raw --account HASH --json '{
 ## Order Lifecycle
 
 ```bash
+schwab-agent orders --symbol AAPL                                                       # alias for order get --symbol AAPL
 schwab-agent order get                                                                    # active orders across all linked accounts
 schwab-agent order get --account HASH                                                     # active orders for one account
 schwab-agent order get --symbol IBM                                                       # active orders whose legs include IBM
@@ -510,7 +516,7 @@ On error (non-zero exit code), read `hint` for recovery steps. Check `retryable`
 
 JSON usage errors keep clap's exit code 2, use category `usage`, use stable `usage.*` codes, and set `retryable` to `false`.
 
-`schwab-agent schema` is the discoverable JSON contract for agents. Read it instead of scraping help when you need command names, safety classifications, output formats, relevant environment variables, exit codes, or supported compact field selectors for market and option output.
+`schwab-agent schema` is the discoverable JSON contract for agents. Read it instead of scraping help when you need command names, aliases, safety classifications, output formats, relevant environment variables, exit codes, or supported compact field selectors for market and option output.
 
 ### Error Codes
 

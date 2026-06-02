@@ -182,7 +182,7 @@ fn commands() -> Vec<CommandInfo> {
         CommandInfo {
             name: "config show",
             classification: LocalOnly,
-            description: "alias for config status",
+            description: "emit the same sanitized setup status as config status",
         },
         CommandInfo {
             name: "completions",
@@ -220,9 +220,19 @@ fn commands() -> Vec<CommandInfo> {
             description: "fetch quote data",
         },
         CommandInfo {
+            name: "quote",
+            classification: ReadOnly,
+            description: "alias for market quote",
+        },
+        CommandInfo {
             name: "market history",
             classification: ReadOnly,
             description: "fetch price-history candles",
+        },
+        CommandInfo {
+            name: "history",
+            classification: ReadOnly,
+            description: "alias for market history",
         },
         CommandInfo {
             name: "option expirations",
@@ -265,9 +275,29 @@ fn commands() -> Vec<CommandInfo> {
             description: "list account summaries, positions, or resolve account selectors",
         },
         CommandInfo {
+            name: "positions",
+            classification: ReadOnly,
+            description: "alias for account --positions",
+        },
+        CommandInfo {
             name: "order get",
             classification: ReadOnly,
             description: "inspect active, filtered, or specific orders",
+        },
+        CommandInfo {
+            name: "orders",
+            classification: ReadOnly,
+            description: "alias for order get",
+        },
+        CommandInfo {
+            name: "stock buy",
+            classification: LocalOnly,
+            description: "legacy migration stub; use order equity buy",
+        },
+        CommandInfo {
+            name: "stock sell",
+            classification: LocalOnly,
+            description: "legacy migration stub; use order equity sell",
         },
         CommandInfo {
             name: "order equity",

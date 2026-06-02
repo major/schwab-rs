@@ -27,7 +27,7 @@ use std::{
 use clap::{Parser, error::ErrorKind};
 use serde_json::Value;
 
-use crate::cli::{Cli, Command, ConfigCommand, OptionCommand, TaCommand};
+use crate::cli::{Cli, Command, ConfigCommand, OptionCommand, StockCommand, TaCommand};
 use crate::error::AppError;
 use crate::output::ErrorBody;
 
@@ -86,6 +86,8 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
         Command::Doctor => discovery::doctor(),
         Command::Schema => discovery::schema(),
         Command::Market(command) => market::handle(&cli, command).await,
+        Command::Quote(args) => market::quote(&cli, args).await,
+        Command::History(args) => market::history(&cli, args).await,
         Command::Option(command) => {
             let client = auth::provider()?.client().await?;
             match command {
@@ -109,7 +111,26 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
             }
         }
         Command::Order(_) => unreachable!("handled above"),
+        Command::Orders(args) => order::lifecycle::handle_get(&cli, args).await,
+        Command::Positions(args) => {
+            let account_args = cli::AccountArgs::from(args);
+            account::handle(&cli, &account_args).await
+        }
+        Command::Stock(command) => Err(stock_migration_error(command)),
         Command::Account(command) => account::handle(&cli, command).await,
+    }
+}
+
+fn stock_migration_error(command: &StockCommand) -> AppError {
+    match command {
+        StockCommand::Buy(_) => AppError::CommandMigration {
+            message: "stock buy was removed; use order equity buy",
+            hint: "Use `schwab-agent order equity buy SYMBOL -q QUANTITY --price PRICE`.",
+        },
+        StockCommand::Sell(_) => AppError::CommandMigration {
+            message: "stock sell was removed; use order equity sell",
+            hint: "Use `schwab-agent order equity sell SYMBOL -q QUANTITY --price PRICE`.",
+        },
     }
 }
 

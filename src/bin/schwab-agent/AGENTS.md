@@ -77,17 +77,22 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 
 - **auth** - Token management (status, login, login-url, exchange, refresh)
 - **config** - Sanitized config, credential-source, path, precedence, and debug discovery
-- **schema** - Machine-readable agent discovery: version, commands, classifications, output formats, env vars, exit codes, field selectors, docs URL
+- **schema** - Machine-readable agent discovery: version, commands, aliases, classifications, output formats, env vars, exit codes, field selectors, docs URL
 - **doctor** - Sanitized config, auth, token, and debug health wrapper for humans and agents
 - **market** - Market data (history, quote)
+- **quote** / **history** - Top-level aliases for `market quote` and `market history`
 - **account** - Account discovery, balances, positions, and resolution
+- **positions** - Top-level alias for `account --positions`
 - **order** - Unified order workflow: equity and option placement, lifecycle (get, cancel, replace, repeat), raw JSON
+- **orders** - Top-level alias for `order get`
 - **option** - Option chain data (expirations, chain, screen, contract)
 - **ta** - Technical analysis (dashboard, expected-move)
 - **analyze** - Multi-symbol analysis with partial-failure support
 - **completions** - Raw shell completion scripts for bash, elvish, fish, powershell, and zsh
 
 Command-specific `--help` for `market quote`, `market history`, `option chain`, `option screen`, `ta dashboard`, and `analyze` includes copyable examples. Keep these examples sanitized with public tickers and placeholders only, and keep `option chain --help` plus `option screen --help` listing valid `--type` values (`call`, `put`, `all`).
+
+High-frequency aliases are first-class clap commands: `quote` -> `market quote`, `history` -> `market history`, `orders` -> `order get`, and `positions` -> `account --positions`. Keep their `Cli::command_name()` values canonical (`market.quote`, `market.history`, `order.get`, and `account`) so JSON metadata stays stable. Legacy `stock buy` and `stock sell` are hidden migration stubs only; they must not place orders and must return `usage.migration` JSON with exact `order equity buy` or `order equity sell` replacements.
 
 ### Auth Callback Listener
 
@@ -119,6 +124,8 @@ Execution modes for direct equity and option builders:
 - `--account HASH`: places the order directly.
 
 `--dry-run` and `--preview` deliberately win safety over account intent: they remain local draft modes even if `--account` is also present. They are aliases, so choose one per command, and both conflict with `--save-preview` and `--preview-first`.
+
+Order session aliases: `normal`/`regular`, `am`/`pre`, `pm`/`post`, and `seamless`/`extended`. Duration aliases include uppercase `DAY`, `GTC`, `FOK`, and `IOC` in addition to canonical clap values.
 
 Recommended LLM workflow: pass `--save-preview` to get a digest, then `order place-from-preview --account HASH --digest DIGEST`. This submits the exact saved preview payload after the SHA-256 digest, 15-minute TTL, and account checks pass. Previews are stored in `$XDG_STATE_HOME/schwab-agent/previews/` when `XDG_STATE_HOME` is set, otherwise in the platform state or local data directory.
 
@@ -180,7 +187,7 @@ Credentials are read from environment variables (`SCHWAB_CLIENT_ID`, `SCHWAB_CLI
 
 Token path env var: `SCHWAB_TOKEN_PATH`. Empty values are ignored. Default: `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
 
-Discovery commands: `schwab-agent config status`, `schwab-agent config show`, `schwab-agent doctor`, and `schwab-agent schema`. `config show` aliases `config status`. `config status` returns JSON with config and token paths, file presence, credential sources (`environment`, `config_file`, `default`, or `missing`), callback/token path sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. `doctor` wraps the same sanitized setup state with a human-oriented health summary. `schema` is fully offline and returns version, supported commands, read-only/mutating/local-only classification, known output formats, environment variables, exit codes, field selectors, and docs URL. None of these commands may print credential values, tokens, account numbers, account hashes, balances, or order IDs.
+Discovery commands: `schwab-agent config status`, `schwab-agent config show`, `schwab-agent doctor`, and `schwab-agent schema`. `config show` produces the same sanitized output as `config status`. `config status` returns JSON with config and token paths, file presence, credential sources (`environment`, `config_file`, `default`, or `missing`), callback/token path sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. `doctor` wraps the same sanitized setup state with a human-oriented health summary. `schema` is fully offline and returns version, supported commands, read-only/mutating/local-only classification, known output formats, environment variables, exit codes, field selectors, and docs URL. None of these commands may print credential values, tokens, account numbers, account hashes, balances, or order IDs.
 
 Precedence is command flags, environment variables, config file, then defaults. `RUST_LOG`, for example `RUST_LOG=schwab=debug`, enables tracing diagnostics on stderr only; normal command stdout stays raw JSON.
 

@@ -38,9 +38,13 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("Commands:"))
         .stdout(predicate::str::contains("auth"))
         .stdout(predicate::str::contains("market"))
+        .stdout(predicate::str::contains("quote"))
+        .stdout(predicate::str::contains("history"))
         .stdout(predicate::str::contains("config"))
         .stdout(predicate::str::contains("doctor"))
         .stdout(predicate::str::contains("order"))
+        .stdout(predicate::str::contains("orders"))
+        .stdout(predicate::str::contains("positions"))
         .stdout(predicate::str::contains("schema"))
         .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
@@ -199,6 +203,15 @@ fn schema_reports_agent_discovery_without_auth_or_accounts() {
         }) && commands
             .iter()
             .any(|command| command["name"] == "schema" && command["classification"] == "local_only")
+            && commands.iter().any(|command| {
+                command["name"] == "quote" && command["classification"] == "read_only"
+            })
+            && commands.iter().any(|command| {
+                command["name"] == "orders" && command["classification"] == "read_only"
+            })
+            && commands.iter().any(|command| {
+                command["name"] == "stock buy" && command["classification"] == "local_only"
+            })
     }));
     assert!(
         body["environment_variables"]
@@ -234,6 +247,43 @@ fn schema_reports_agent_discovery_without_auth_or_accounts() {
 }
 
 #[test]
+fn stock_buy_reports_migration_replacement_as_json() {
+    let output = agent()
+        .args(["stock", "buy", "AAPL", "-q", "1", "--price", "100"])
+        .output()
+        .expect("command runs");
+
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stderr.is_empty());
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["code"], "usage.migration");
+    assert_eq!(body["category"], "usage");
+    assert_eq!(body["retryable"], false);
+    assert!(body["message"].as_str().is_some_and(|message| {
+        message.contains("stock buy") && message.contains("order equity buy")
+    }));
+    assert!(body["hint"].as_str().is_some_and(|hint| {
+        hint.contains("schwab-agent order equity buy SYMBOL -q QUANTITY --price PRICE")
+    }));
+}
+
+#[test]
+fn stock_sell_reports_migration_replacement_as_json() {
+    let output = agent()
+        .args(["stock", "sell", "AAPL", "-q", "1", "--price", "100"])
+        .output()
+        .expect("command runs");
+
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stderr.is_empty());
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["code"], "usage.migration");
+    assert!(body["hint"].as_str().is_some_and(|hint| {
+        hint.contains("schwab-agent order equity sell SYMBOL -q QUANTITY --price PRICE")
+    }));
+}
+
+#[test]
 fn completions_outputs_shell_script() {
     agent()
         .args(["completions", "bash"])
@@ -256,13 +306,13 @@ fn invalid_flag_reports_clap_usage_error() {
 
 #[test]
 fn unknown_subcommand_reports_json_usage_error_when_requested() {
-    let body = json_usage_error(&["stock", "buy", "AAPL", "-q", "1"]);
+    let body = json_usage_error(&["stonk", "buy", "AAPL", "-q", "1"]);
 
     assert_eq!(body["code"], "usage.unknown_command");
     assert_eq!(body["category"], "usage");
     assert_eq!(body["retryable"], false);
     assert!(body["message"].as_str().is_some_and(|message| {
-        message.contains("unrecognized subcommand") && message.contains("stock")
+        message.contains("unrecognized subcommand") && message.contains("stonk")
     }));
     assert!(
         body["hint"]
