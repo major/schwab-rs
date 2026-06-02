@@ -59,6 +59,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - `schwab-agent` ignores empty `SCHWAB_TOKEN_PATH` values, keeps the compatibility token default under `schwab-agent-rs/token.json`, and resolves the base from `XDG_CONFIG_HOME` before the platform config directory
 - `schwab-agent market history --from/--to` accepts `YYYY-MM-DD`, RFC3339, or epoch milliseconds, validates invalid values before auth/API calls, and expands date-only values to inclusive UTC calendar-day boundaries
 - `schwab-agent option screen` rejects non-finite numeric filter inputs before API calls, enforces normalized contract-type filters in output rows, and serializes numeric output through the active `Number` representation so default and `decimal` builds stay consistent
+- `schwab-agent order get --symbol <SYMBOL>` is the preferred open-order check for one public ticker; keep unfiltered `order get` or account-scoped `order get --account HASH` for broader conflict checks across symbols or strategies
 - Root re-exports include `StreamingSession` plus streaming event, data, and field selector model types through `models::*`
 - All public async methods: `&self` receiver, `#[instrument(skip_all)]` tracing attribute
 - Two API bases: `MarketData` (`/marketdata/v1`) and `Trader` (`/trader/v1`) via `ApiBase` enum

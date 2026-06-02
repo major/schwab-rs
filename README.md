@@ -96,6 +96,7 @@ schwab-agent market quote AAPL --all-fields
 schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol
 
 schwab-agent account --positions
+schwab-agent order get --symbol AAPL
 schwab-agent option expirations AAPL
 schwab-agent option chain AAPL --type call --dte 30 --fields strike,delta,bid,ask,volume,oi
 schwab-agent option screen AAPL --type call --min-bid 1.00 --max-spread-pct 10
@@ -105,7 +106,7 @@ schwab-agent completions bash > schwab-agent.bash
 
 `market history --from` and `--to` accept `YYYY-MM-DD`, RFC3339, or epoch milliseconds. Date-only values use inclusive UTC calendar-day boundaries. Option screen numeric filters reject non-finite values such as `NaN` and infinity before making API calls, and screen output serializes numeric values through the crate's active `Number` type so default and `decimal` builds stay consistent.
 
-Mutable order commands are disabled unless `~/.config/schwab-agent/config.json` contains `"i-also-like-to-live-dangerously": true`. The recommended agent workflow is preview-first: save an order preview to get a digest, then submit the saved payload by digest after review. Saved previews use owner-only file permissions, but they are tamper-evident rather than encrypted. Mutable actions resolve account nicknames to canonical Schwab hashes and perform best-effort post-action order verification.
+Mutable order commands are disabled unless `~/.config/schwab-agent/config.json` contains `"i-also-like-to-live-dangerously": true`. Before drafting or placing a symbol-specific order, use `schwab-agent order get --symbol AAPL` to inspect active open orders for that public ticker, adding `--account HASH` when the account scope is known. Use unfiltered `order get` or `order get --account HASH` when you need a broader conflict check across symbols or strategies. The recommended agent workflow is preview-first: save an order preview to get a digest, then submit the saved payload by digest after review. Saved previews use owner-only file permissions, but they are tamper-evident rather than encrypted. Mutable actions resolve account nicknames to canonical Schwab hashes and perform best-effort post-action order verification.
 
 ```bash
 schwab-agent order equity buy AAPL -q 10 --price 180.00 --account HASH --save-preview
