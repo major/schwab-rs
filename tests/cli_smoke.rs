@@ -26,9 +26,84 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("Commands:"))
         .stdout(predicate::str::contains("auth"))
         .stdout(predicate::str::contains("market"))
+        .stdout(predicate::str::contains("config"))
         .stdout(predicate::str::contains("order"))
         .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
+}
+
+#[test]
+fn top_level_help_documents_setup_environment_and_debug() {
+    help_contains(
+        &["--help"],
+        &[
+            "schwab-agent config status",
+            "SCHWAB_CLIENT_ID",
+            "SCHWAB_CLIENT_SECRET",
+            "SCHWAB_CALLBACK_URL",
+            "SCHWAB_TOKEN_PATH",
+            "XDG_CONFIG_HOME",
+            "XDG_STATE_HOME",
+            "RUST_LOG",
+            "Precedence: command flags > environment variables > config file > defaults",
+        ],
+    );
+}
+
+#[test]
+fn config_status_reports_sanitized_setup_without_secret_values() {
+    let tempdir = tempfile::tempdir().expect("temporary directory");
+    let config_dir = tempdir.path().join("schwab-agent");
+    std::fs::create_dir_all(&config_dir).expect("config directory");
+    std::fs::write(
+        config_dir.join("config.json"),
+        r#"{
+            "client_id": "file-client-id-secret",
+            "client_secret": "file-client-secret-secret",
+            "callback_url": "https://127.0.0.1:8182/callback",
+            "i-also-like-to-live-dangerously": true
+        }"#,
+    )
+    .expect("config file");
+    let token_path = tempdir.path().join("token.json");
+    std::fs::write(&token_path, "{}").expect("token marker");
+
+    let output = agent()
+        .env("XDG_CONFIG_HOME", tempdir.path())
+        .env("SCHWAB_TOKEN_PATH", &token_path)
+        .env("SCHWAB_CLIENT_ID", "env-client-id-secret")
+        .env_remove("SCHWAB_CLIENT_SECRET")
+        .env_remove("SCHWAB_CALLBACK_URL")
+        .env("RUST_LOG", "schwab=debug")
+        .args(["config", "status"])
+        .output()
+        .expect("command runs");
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8(output.stdout.clone()).expect("stdout utf8");
+    assert!(output.stderr.is_empty());
+    assert!(!stdout.contains("env-client-id-secret"));
+    assert!(!stdout.contains("file-client-id-secret"));
+    assert!(!stdout.contains("file-client-secret-secret"));
+    assert!(!stdout.contains("127.0.0.1:8182/callback"));
+
+    let body: Value = serde_json::from_slice(&output.stdout).expect("stdout is JSON");
+    assert_eq!(body["config_present"], true);
+    assert_eq!(body["token_present"], true);
+    assert_eq!(body["credential_sources"]["client_id"], "environment");
+    assert_eq!(body["credential_sources"]["client_secret"], "config_file");
+    assert_eq!(body["callback_url_source"], "config_file");
+    assert_eq!(body["token_path_source"], "environment");
+    assert_eq!(body["mutable_operations_enabled"], true);
+    assert_eq!(body["debug"]["rust_log_enabled"], true);
+    assert_eq!(body["debug"]["stderr_only"], true);
+    assert!(
+        body["environment_variables"]
+            .as_array()
+            .expect("env var list")
+            .iter()
+            .any(|item| item == "RUST_LOG")
+    );
 }
 
 #[test]

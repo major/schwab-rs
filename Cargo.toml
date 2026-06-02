@@ -38,10 +38,18 @@ tokio = { version = "1.52.3", features = ["macros", "rt", "rt-multi-thread", "sy
 urlencoding = "2.1.3"
 rust_decimal = { version = "1.42", features = ["serde-with-float"], optional = true }
 tokio-tungstenite = { version = "0.29", features = ["rustls-tls-native-roots"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "fmt"], optional = true }
 
 [features]
 default = ["cli"]
-cli = ["dep:clap", "dep:clap_complete", "dep:dirs", "dep:open", "dep:sha2"]
+cli = [
+    "dep:clap",
+    "dep:clap_complete",
+    "dep:dirs",
+    "dep:open",
+    "dep:sha2",
+    "dep:tracing-subscriber",
+]
 decimal = ["dep:rust_decimal"]
 test_online = []
 

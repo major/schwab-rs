@@ -1,6 +1,6 @@
 # schwab-agent CLI
 
-Structured JSON CLI for Charles Schwab API. All command output is raw JSON data payloads except `completions`, which prints a shell completion script. Set env vars or config once, then most commands need zero flags.
+Structured JSON CLI for Charles Schwab API. All command output is raw JSON data payloads except `completions`, which prints a shell completion script. Set env vars or config once, then most commands need zero flags. Use `schwab-agent config status` to inspect sanitized setup state before auth or trading workflows.
 
 > **Disclaimer:** This project is unofficial and is not affiliated with, endorsed by, or connected to Charles Schwab, TD Ameritrade, or thinkorswim in any way.
 
@@ -12,9 +12,16 @@ export SCHWAB_CLIENT_SECRET="..."
 # Token path defaults to $XDG_CONFIG_HOME/schwab-agent-rs/token.json for compatibility with existing installs
 # Override with a non-empty SCHWAB_TOKEN_PATH if needed
 # Callback URL defaults to https://127.0.0.1:8182
+# Set RUST_LOG=schwab=debug for tracing diagnostics on stderr while keeping stdout JSON
 ```
 
-Credentials can also live in `~/.config/schwab-agent/config.json`. Environment variables take precedence over config file values.
+Credentials can also live in `~/.config/schwab-agent/config.json`. Precedence is command flags, environment variables, config file, then defaults.
+
+```bash
+schwab-agent config status
+```
+
+`config status` reports config and token paths, file presence, credential sources, token path source, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. It does not print tokens, client secrets, account numbers, account hashes, balances, or order IDs.
 
 ## Release Notes
 
@@ -30,6 +37,7 @@ Commands that submit, replace, repeat-place, or cancel orders require `"i-also-l
 
 ```bash
 schwab-agent auth status          # check token state
+schwab-agent config status        # check sanitized setup, paths, env sources, and debug state
 schwab-agent auth login-url       # get OAuth URL (open in browser)
 schwab-agent auth exchange --redirect-url "CALLBACK_URL_WITH_CODE"
 schwab-agent auth refresh         # refresh expired token

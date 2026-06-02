@@ -12,6 +12,8 @@ use std::path::{Path, PathBuf};
 use std::sync::{LazyLock, Mutex};
 
 use serde::Deserialize;
+use serde::Serialize;
+use serde_json::{Value, to_value};
 
 use crate::error::AppError;
 
@@ -53,7 +55,7 @@ pub(crate) struct AgentConfig {
 /// Uses `$XDG_CONFIG_HOME/schwab-agent/config.json`, falling back to
 /// `~/.config/schwab-agent/config.json` on platforms without `XDG_CONFIG_HOME`.
 #[must_use]
-fn config_path() -> PathBuf {
+pub(crate) fn config_path() -> PathBuf {
     xdg_config_home()
         .unwrap_or_else(|| dirs::config_dir().unwrap_or_else(|| PathBuf::from(".config")))
         .join("schwab-agent")
@@ -77,6 +79,15 @@ fn default_token_path() -> PathBuf {
         .unwrap_or_else(|| dirs::config_dir().unwrap_or_else(|| PathBuf::from(".config")))
         .join("schwab-agent-rs")
         .join("token.json")
+}
+
+/// Returns sanitized setup status for config, auth, path, and debug discovery.
+pub(crate) fn status() -> Result<Value, AppError> {
+    let config_path = config_path();
+    let config = load_agent_config_from(&config_path)?;
+    let token_path = token_path();
+    let status = ConfigStatus::from_config(&config_path, &token_path, &config);
+    Ok(to_value(status)?)
 }
 
 /// Returns the OAuth token path from `SCHWAB_TOKEN_PATH`, falling back to the
@@ -158,6 +169,109 @@ pub(crate) fn require_mutable_enabled() -> Result<(), AppError> {
         Ok(())
     } else {
         Err(AppError::MutableDisabled)
+    }
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Debug, Serialize)]
+struct ConfigStatus {
+    config_path: String,
+    config_present: bool,
+    token_path: String,
+    token_present: bool,
+    credential_sources: CredentialSources,
+    callback_url_source: ConfigSource,
+    callback_url_default: &'static str,
+    token_path_source: ConfigSource,
+    mutable_operations_enabled: bool,
+    debug: DebugStatus,
+    precedence: [&'static str; 4],
+    environment_variables: [&'static str; 7],
+}
+
+impl ConfigStatus {
+    fn from_config(config_path: &Path, token_path: &Path, config: &AgentConfig) -> Self {
+        Self {
+            config_path: config_path.display().to_string(),
+            config_present: config_path.exists(),
+            token_path: token_path.display().to_string(),
+            token_present: token_path.exists(),
+            credential_sources: CredentialSources {
+                client_id: credential_source("SCHWAB_CLIENT_ID", config.client_id.as_deref()),
+                client_secret: credential_source(
+                    "SCHWAB_CLIENT_SECRET",
+                    config.client_secret.as_deref(),
+                ),
+            },
+            callback_url_source: callback_url_source(config),
+            callback_url_default: DEFAULT_CALLBACK_URL,
+            token_path_source: token_path_source(),
+            mutable_operations_enabled: config.i_also_like_to_live_dangerously,
+            debug: DebugStatus {
+                rust_log_enabled: std::env::var_os("RUST_LOG")
+                    .is_some_and(|value| !value.is_empty()),
+                stderr_only: true,
+            },
+            precedence: ["command flags", "environment", "config file", "defaults"],
+            environment_variables: [
+                "SCHWAB_CLIENT_ID",
+                "SCHWAB_CLIENT_SECRET",
+                "SCHWAB_CALLBACK_URL",
+                "SCHWAB_TOKEN_PATH",
+                "XDG_CONFIG_HOME",
+                "XDG_STATE_HOME",
+                "RUST_LOG",
+            ],
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct CredentialSources {
+    client_id: ConfigSource,
+    client_secret: ConfigSource,
+}
+
+#[derive(Debug, Serialize)]
+struct DebugStatus {
+    rust_log_enabled: bool,
+    stderr_only: bool,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum ConfigSource {
+    Environment,
+    ConfigFile,
+    Default,
+    Missing,
+}
+
+fn credential_source(env_var: &str, config_value: Option<&str>) -> ConfigSource {
+    if std::env::var_os(env_var).is_some() {
+        ConfigSource::Environment
+    } else if config_value.is_some() {
+        ConfigSource::ConfigFile
+    } else {
+        ConfigSource::Missing
+    }
+}
+
+fn callback_url_source(config: &AgentConfig) -> ConfigSource {
+    if std::env::var_os("SCHWAB_CALLBACK_URL").is_some() {
+        ConfigSource::Environment
+    } else if config.callback_url.is_some() {
+        ConfigSource::ConfigFile
+    } else {
+        ConfigSource::Default
+    }
+}
+
+fn token_path_source() -> ConfigSource {
+    if std::env::var_os("SCHWAB_TOKEN_PATH").is_some_and(|value| !value.is_empty()) {
+        ConfigSource::Environment
+    } else {
+        ConfigSource::Default
     }
 }
 
@@ -496,5 +610,94 @@ mod tests {
         let (_, _, callback_url) = resolve_credentials_from(&config_path).unwrap();
 
         assert_eq!(callback_url, DEFAULT_CALLBACK_URL);
+    }
+
+    #[test]
+    fn status_reports_sources_without_secret_values() {
+        let _lock = TEST_ENV_LOCK.lock().unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let config_dir = dir.path().join("schwab-agent");
+        std::fs::create_dir_all(&config_dir).unwrap();
+        std::fs::write(
+            config_dir.join("config.json"),
+            r#"{
+                "client_id": "file-client-id-secret",
+                "client_secret": "file-client-secret-secret",
+                "callback_url": "https://127.0.0.1:8182/callback",
+                "i-also-like-to-live-dangerously": true
+            }"#,
+        )
+        .unwrap();
+        let token_path = dir.path().join("token.json");
+        std::fs::write(&token_path, "{}").unwrap();
+        let _xdg_config_home = EnvVarGuard::set_path("XDG_CONFIG_HOME", dir.path());
+        let _token_path = EnvVarGuard::set_path("SCHWAB_TOKEN_PATH", &token_path);
+        let _client_id = EnvVarGuard::set("SCHWAB_CLIENT_ID", "env-client-id-secret");
+        let _client_secret = EnvVarGuard::remove("SCHWAB_CLIENT_SECRET");
+        let _callback_url = EnvVarGuard::remove("SCHWAB_CALLBACK_URL");
+        let _rust_log = EnvVarGuard::set("RUST_LOG", "schwab=debug");
+
+        let value = status().unwrap();
+        let output = serde_json::to_string(&value).unwrap();
+
+        assert_eq!(value["config_present"], true);
+        assert_eq!(value["token_present"], true);
+        assert_eq!(value["credential_sources"]["client_id"], "environment");
+        assert_eq!(value["credential_sources"]["client_secret"], "config_file");
+        assert_eq!(value["callback_url_source"], "config_file");
+        assert_eq!(value["token_path_source"], "environment");
+        assert_eq!(value["mutable_operations_enabled"], true);
+        assert_eq!(value["debug"]["rust_log_enabled"], true);
+        assert!(!output.contains("env-client-id-secret"));
+        assert!(!output.contains("file-client-id-secret"));
+        assert!(!output.contains("file-client-secret-secret"));
+        assert!(!output.contains("127.0.0.1:8182/callback"));
+    }
+
+    #[test]
+    fn status_reports_callback_url_environment_source_without_value() {
+        let _lock = TEST_ENV_LOCK.lock().unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let _xdg_config_home = EnvVarGuard::set_path("XDG_CONFIG_HOME", dir.path());
+        let _token_path = EnvVarGuard::remove("SCHWAB_TOKEN_PATH");
+        let _client_id = EnvVarGuard::remove("SCHWAB_CLIENT_ID");
+        let _client_secret = EnvVarGuard::remove("SCHWAB_CLIENT_SECRET");
+        let _callback_url =
+            EnvVarGuard::set("SCHWAB_CALLBACK_URL", "https://127.0.0.1:9443/callback");
+        let _rust_log = EnvVarGuard::remove("RUST_LOG");
+
+        let value = status().unwrap();
+        let output = serde_json::to_string(&value).unwrap();
+
+        assert_eq!(value["callback_url_source"], "environment");
+        assert!(!output.contains("127.0.0.1:9443/callback"));
+    }
+
+    #[test]
+    fn status_reports_missing_credentials_and_default_paths() {
+        let _lock = TEST_ENV_LOCK.lock().unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let _xdg_config_home = EnvVarGuard::set_path("XDG_CONFIG_HOME", dir.path());
+        let _token_path = EnvVarGuard::remove("SCHWAB_TOKEN_PATH");
+        let _client_id = EnvVarGuard::remove("SCHWAB_CLIENT_ID");
+        let _client_secret = EnvVarGuard::remove("SCHWAB_CLIENT_SECRET");
+        let _callback_url = EnvVarGuard::remove("SCHWAB_CALLBACK_URL");
+        let _rust_log = EnvVarGuard::remove("RUST_LOG");
+
+        let value = status().unwrap();
+
+        assert_eq!(value["config_present"], false);
+        assert_eq!(value["token_present"], false);
+        assert_eq!(value["credential_sources"]["client_id"], "missing");
+        assert_eq!(value["credential_sources"]["client_secret"], "missing");
+        assert_eq!(value["callback_url_source"], "default");
+        assert_eq!(value["token_path_source"], "default");
+        assert_eq!(value["debug"]["rust_log_enabled"], false);
+        assert!(
+            value["token_path"]
+                .as_str()
+                .unwrap()
+                .ends_with("schwab-agent-rs/token.json")
+        );
     }
 }

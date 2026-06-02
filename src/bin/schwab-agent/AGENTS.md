@@ -25,7 +25,7 @@ src/bin/schwab-agent/
   completions.rs   - Shell completion script generation for the clap command tree
   output.rs        - ErrorBody struct for structured error JSON output
   shared.rs        - Shared types: SessionChoice, DurationChoice, to_number() helper
-  config.rs        - Agent config: load shared config, mutable-operation guard
+  config.rs        - Agent config: load shared config, sanitized setup status, mutable-operation guard
   raw.rs           - Raw Schwab API requests with response normalization (account endpoint envelopes, false to null)
   error/
     mod.rs         - AppError enum (thiserror) with stable codes, exit codes, categories, hints
@@ -75,6 +75,7 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 ## Command Groups
 
 - **auth** - Token management (status, login, login-url, exchange, refresh)
+- **config** - Sanitized config, credential-source, path, precedence, and debug discovery
 - **market** - Market data (history, quote)
 - **account** - Account discovery, balances, positions, and resolution
 - **order** - Unified order workflow: equity and option placement, lifecycle (get, cancel, replace, repeat), raw JSON
@@ -172,6 +173,10 @@ Credentials are read from environment variables (`SCHWAB_CLIENT_ID`, `SCHWAB_CLI
 
 Token path env var: `SCHWAB_TOKEN_PATH`. Empty values are ignored. Default: `$XDG_CONFIG_HOME/schwab-agent-rs/token.json` for compatibility with existing agent installs, falling back to the platform config directory when `XDG_CONFIG_HOME` is unset.
 
+Discovery command: `schwab-agent config status`. It returns JSON with config and token paths, file presence, credential sources (`environment`, `config_file`, `default`, or `missing`), callback/token path sources, mutable-operation guard state, precedence, known environment variable names, and whether `RUST_LOG` is active. It must not print credential values, tokens, account numbers, account hashes, balances, or order IDs.
+
+Precedence is command flags, environment variables, config file, then defaults. `RUST_LOG`, for example `RUST_LOG=schwab=debug`, enables tracing diagnostics on stderr only; normal command stdout stays raw JSON.
+
 ## Output Format
 
 Commands output raw JSON data payloads directly (no wrapper). Errors output an `ErrorBody` JSON object with `code`, `message`, `category`, `retryable`, and `hint` fields. `completions` is the only raw stdout exception because shell completion scripts must not be JSON-wrapped; completion generation write failures emit a short stderr diagnostic and exit non-zero.
@@ -197,6 +202,7 @@ Commands output raw JSON data payloads directly (no wrapper). Errors output an `
 - `time` - Date/time handling
 - `rcgen` / `rustls` - Local HTTPS callback listener
 - `sha2` - Preview digest
+- `tracing-subscriber` - CLI `RUST_LOG` subscriber on stderr
 - `tempfile` (dev) - Test fixtures
 
 ## Build and Test
@@ -223,7 +229,7 @@ Always run default, `decimal`, library no-default, and library no-default `decim
 ### Code Style
 
 - Every module uses `#[cfg(test)] mod tests;` - separate test files for auth, error, market, account; inline tests for lib, cli, output, preview, order/mod, order/equity, order/option, order/replace, order/workflow, verify, lifecycle, raw
-- `tests/cli_smoke.rs` runs only with the `cli` feature and uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, shell completions, clap usage errors, structured JSON error output, and hermetic dry-run order JSON checks
+- `tests/cli_smoke.rs` runs only with the `cli` feature and uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, sanitized config status output, shell completions, clap usage errors, structured JSON error output, and hermetic dry-run order JSON checks
 - Docstrings on all public items and many private items
 - `#[must_use]` on pure functions
 - `serde_with::skip_serializing_none` for clean JSON output
