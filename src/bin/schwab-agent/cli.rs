@@ -107,6 +107,11 @@ pub enum TaCommand {
 
 /// Arguments for `ta dashboard`.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent ta dashboard AAPL\n      \
+    Run a daily dashboard with the default 20 points per indicator series.\n\n  \
+    schwab-agent ta dashboard SPY --interval weekly --points 10\n      \
+    Run a weekly dashboard and cap each indicator series at 10 points.")]
 pub struct DashboardArgs {
     /// Ticker symbol, for example AAPL.
     #[arg(required = true)]
@@ -132,6 +137,13 @@ pub struct ExpectedMoveArgs {
 
 /// Arguments for the top-level `analyze` command.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent analyze AAPL\n      \
+    Analyze one symbol with a compact one-point TA summary plus quote data.\n\n  \
+    schwab-agent analyze AAPL MSFT GOOG\n      \
+    Analyze multiple public tickers and keep partial per-symbol errors in the JSON output.\n\n  \
+    schwab-agent analyze AAPL --interval weekly --points 10\n      \
+    Request a weekly dashboard depth similar to ta dashboard. The default is 1 point, while ta dashboard defaults to 20, because analyze is optimized for compact multi-symbol output.")]
 pub struct AnalyzeArgs {
     /// One or more ticker symbols to analyze.
     #[arg(required = true)]
@@ -223,6 +235,13 @@ pub struct OptionExpirationsArgs {
 
 /// Arguments for `option chain`.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent option chain AAPL\n      \
+    Get the full option chain with all contract types, expirations, and strikes.\n\n  \
+    schwab-agent option chain AAPL --type call --dte 30 --fields strike,delta,bid,ask,volume,oi\n      \
+    Get calls near 30 DTE with selected row fields.\n\n  \
+    schwab-agent option chain AMD --type put --strike-min 140 --strike-max 160 --delta-min -0.30 --delta-max -0.15\n      \
+    Get puts in a strike range with delta filters.\n\nValid --type values: call, put, all. Input is case-insensitive.")]
 pub struct ChainArgs {
     /// Underlying symbol, for example AAPL.
     #[arg(required = true)]
@@ -275,6 +294,11 @@ pub struct ChainArgs {
 
 /// Arguments for `option screen`.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent option screen AAPL --type call --dte-min 20 --dte-max 45 --min-volume 100 --min-oi 500 --max-spread-pct 10\n      \
+    Screen liquid calls with tighter spreads across a DTE window.\n\n  \
+    schwab-agent option screen SPY --type put --min-premium 1.00 --max-premium 5.00 --limit 20\n      \
+    Screen puts by premium range and cap the result count.\n\nValid --type values: call, put, all. Numeric filters must be finite values.")]
 pub struct ScreenArgs {
     /// Underlying symbol, for example AAPL.
     #[arg(required = true)]
@@ -396,6 +420,13 @@ pub struct ContractArgs {
 
 /// Arguments for `market history`.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent market history SPY\n      \
+    Get compact default candles for SPY.\n\n  \
+    schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol\n      \
+    Get an inclusive date range with selected candle columns.\n\n  \
+    schwab-agent market history AAPL --period-type day --period 5 --frequency-type minute --frequency 5 --extended-hours\n      \
+    Get recent 5-minute candles including extended-hours data.")]
 pub struct HistoryArgs {
     /// Ticker symbol, for example AAPL.
     #[arg(required = true)]
@@ -446,6 +477,13 @@ pub struct HistoryArgs {
 
 /// Arguments for `market quote`.
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    schwab-agent market quote AAPL\n      \
+    Get a compact quote row for one public ticker.\n\n  \
+    schwab-agent market quote AAPL MSFT GOOG --fields sym,last,pct,vol\n      \
+    Get selected compact fields for multiple public tickers.\n\n  \
+    schwab-agent market quote AAPL --all-fields\n      \
+    Return the full detailed quote object instead of compact rows.")]
 pub struct QuoteArgs {
     /// Symbols to quote, for example AAPL MSFT $SPX.
     #[arg(required = true)]

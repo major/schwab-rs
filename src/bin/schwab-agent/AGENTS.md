@@ -83,6 +83,8 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 - **analyze** - Multi-symbol analysis with partial-failure support
 - **completions** - Raw shell completion scripts for bash, elvish, fish, powershell, and zsh
 
+Command-specific `--help` for `market quote`, `market history`, `option chain`, `option screen`, `ta dashboard`, and `analyze` includes copyable examples. Keep these examples sanitized with public tickers and placeholders only, and keep `option chain --help` plus `option screen --help` listing valid `--type` values (`call`, `put`, `all`).
+
 ### Auth Callback Listener
 
 `auth login` owns its local HTTPS callback listener in `src/bin/schwab-agent/auth/mod.rs` instead of using the one-shot listener from `schwab::auth::start_login()`. The listener must keep accepting requests through browser certificate-warning probes, wrong paths, missing query parameters, and other incomplete localhost requests. It should stop only after a complete Schwab OAuth callback with `code` and matching `state`, an OAuth error callback, a state mismatch, a bind/listener error, or the login timeout. Manual/headless flows still use `auth login-url` plus `auth exchange`.
