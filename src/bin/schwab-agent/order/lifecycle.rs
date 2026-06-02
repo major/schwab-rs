@@ -42,7 +42,7 @@ const ACTIVE_ORDER_STATUSES: &[&str] = &[
 ///
 /// `--account` accepts a raw account hash or a nickname (same resolution as
 /// `account`). When omitted, active orders are queried across all linked
-/// accounts. Add `--order` with `--account` to retrieve one exact order.
+/// accounts. Add `--order-id` with `--account` to retrieve one exact order.
 ///
 /// Discovery mode fetches Schwab's order list without a status filter and then
 /// treats any returned status outside `ACTIVE_ORDER_STATUSES` as inactive. By
@@ -58,7 +58,7 @@ pub struct OrderGetArgs {
     pub account: Option<String>,
 
     /// Specific order ID to retrieve. Requires `--account`.
-    #[arg(long = "order", requires = "account", value_parser = clap::value_parser!(i64).range(1..))]
+    #[arg(long = "order-id", alias = "order", requires = "account", value_parser = clap::value_parser!(i64).range(1..))]
     pub order_id: Option<i64>,
 
     /// Start of time range (YYYY-MM-DD or RFC3339, e.g. 2025-01-15).
@@ -94,7 +94,7 @@ pub struct OrderCancelArgs {
     #[arg(long)]
     pub account: String,
 
-    /// Order ID to cancel.
+    /// Order ID to cancel. Positional compatibility form; prefer `--order-id`.
     #[arg(
         value_parser = clap::value_parser!(i64).range(1..),
         required_unless_present = "order_id_flag"
@@ -105,8 +105,7 @@ pub struct OrderCancelArgs {
     #[arg(
         long = "order-id",
         value_name = "ORDER_ID",
-        value_parser = clap::value_parser!(i64).range(1..),
-        conflicts_with = "order_id"
+        value_parser = clap::value_parser!(i64).range(1..)
     )]
     pub order_id_flag: Option<i64>,
 }
@@ -124,7 +123,7 @@ pub struct OrderRepeatArgs {
     #[arg(short, long)]
     pub account: String,
 
-    /// Order ID to repeat.
+    /// Order ID to repeat. Positional compatibility form; prefer `--order-id`.
     #[arg(
         value_parser = clap::value_parser!(i64).range(1..),
         required_unless_present = "order_id_flag"
@@ -135,8 +134,7 @@ pub struct OrderRepeatArgs {
     #[arg(
         long = "order-id",
         value_name = "ORDER_ID",
-        value_parser = clap::value_parser!(i64).range(1..),
-        conflicts_with = "order_id"
+        value_parser = clap::value_parser!(i64).range(1..)
     )]
     pub order_id_flag: Option<i64>,
 
@@ -151,21 +149,34 @@ pub struct OrderRepeatArgs {
 
 impl OrderRepeatArgs {
     /// Returns the order ID supplied either positionally or via `--order-id`.
-    #[must_use]
-    pub fn order_id(&self) -> i64 {
-        self.order_id
-            .or(self.order_id_flag)
-            .expect("clap requires order_id or order_id_flag")
+    pub fn order_id(&self) -> Result<i64, AppError> {
+        resolve_order_id(self.order_id, self.order_id_flag, "repeat")
     }
 }
 
 impl OrderCancelArgs {
     /// Returns the order ID supplied either positionally or via `--order-id`.
-    #[must_use]
-    pub fn order_id(&self) -> i64 {
-        self.order_id
-            .or(self.order_id_flag)
-            .expect("clap requires order_id or order_id_flag")
+    pub fn order_id(&self) -> Result<i64, AppError> {
+        resolve_order_id(self.order_id, self.order_id_flag, "cancel")
+    }
+}
+
+/// Resolves positional and named order ID inputs while preserving compatibility.
+fn resolve_order_id(
+    positional: Option<i64>,
+    flag: Option<i64>,
+    command: &str,
+) -> Result<i64, AppError> {
+    match (positional, flag) {
+        (Some(positional), Some(flag)) if positional != flag => {
+            Err(AppError::OrderValidation(format!(
+                "order {command} received different positional ORDER_ID ({positional}) and --order-id ({flag}); use --order-id ORDER_ID"
+            )))
+        }
+        (Some(order_id), _) | (_, Some(order_id)) => Ok(order_id),
+        (None, None) => Err(AppError::OrderValidation(format!(
+            "order {command} requires --order-id ORDER_ID"
+        ))),
     }
 }
 
@@ -351,7 +362,7 @@ pub(crate) async fn handle_cancel(_cli: &Cli, args: &OrderCancelArgs) -> Result<
         .await?
         .account_hash;
     let client = provider.client().await?;
-    let order_id = args.order_id();
+    let order_id = args.order_id()?;
     client.cancel_order(&account_hash, order_id).await?;
 
     let result =
@@ -380,7 +391,7 @@ pub(crate) async fn handle_repeat(args: &OrderRepeatArgs) -> Result<Value, AppEr
         .await?
         .account_hash;
     let client = provider.client().await?;
-    let order_id = args.order_id();
+    let order_id = args.order_id()?;
     let source_order = client.get_order(&account_hash, order_id).await?;
     let order = repeat_order_builder(&source_order, order_id)?;
 
@@ -512,11 +523,35 @@ mod tests {
     use super::{
         ACTIVE_ORDER_STATUSES, OrderGetArgs, expand_trigger_child_orders, is_active_order,
         normalize_get_range, parse_range_instant, render_order_discovery_response,
-        repeat_mode_places_order, repeat_order_builder,
+        repeat_mode_places_order, repeat_order_builder, resolve_order_id,
     };
     use crate::cli::{Cli, Command, OrderCommand};
     use crate::order::workflow;
     use crate::shared::to_number;
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_order_get(command: Command) -> OrderGetArgs {
+        match command {
+            Command::Order(OrderCommand::Get(args)) => args,
+            _ => panic!("expected order get command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_order_cancel(command: Command) -> super::OrderCancelArgs {
+        match command {
+            Command::Order(OrderCommand::Cancel(args)) => args,
+            _ => panic!("expected order cancel command"),
+        }
+    }
+
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    fn expect_order_repeat(command: Command) -> super::OrderRepeatArgs {
+        match command {
+            Command::Order(OrderCommand::Repeat(args)) => args,
+            _ => panic!("expected order repeat command"),
+        }
+    }
 
     #[test]
     fn parse_order_get_no_args_means_all_active_orders() {
@@ -606,6 +641,22 @@ mod tests {
             "get",
             "--account",
             "HASH123",
+            "--order-id",
+            "12345",
+        ]);
+        let args = expect_order_get(cli.command);
+        assert_eq!(args.account.as_deref(), Some("HASH123"));
+        assert_eq!(args.order_id, Some(12345));
+    }
+
+    #[test]
+    fn parse_order_get_accepts_deprecated_order_alias() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "get",
+            "--account",
+            "HASH123",
             "--order",
             "12345",
         ]);
@@ -618,7 +669,9 @@ mod tests {
 
     #[test]
     fn parse_order_get_rejects_order_without_account() {
-        assert!(Cli::try_parse_from(["schwab-agent", "order", "get", "--order", "12345"]).is_err());
+        assert!(
+            Cli::try_parse_from(["schwab-agent", "order", "get", "--order-id", "12345"]).is_err()
+        );
     }
 
     #[test]
@@ -630,7 +683,7 @@ mod tests {
                 "get",
                 "--account",
                 "HASH123",
-                "--order",
+                "--order-id",
                 "12345",
                 "--include-inactive"
             ])
@@ -643,7 +696,7 @@ mod tests {
                 "get",
                 "--account",
                 "HASH123",
-                "--order",
+                "--order-id",
                 "12345",
                 "--recent"
             ])
@@ -656,7 +709,7 @@ mod tests {
                 "get",
                 "--account",
                 "HASH123",
-                "--order",
+                "--order-id",
                 "12345",
                 "--symbol",
                 "IBM"
@@ -1113,7 +1166,7 @@ mod tests {
             panic!("expected order cancel command");
         };
         assert_eq!(args.account, "HASH123");
-        assert_eq!(args.order_id(), 67890);
+        assert_eq!(args.order_id().unwrap(), 67890);
     }
 
     #[test]
@@ -1131,7 +1184,7 @@ mod tests {
             panic!("expected order cancel command");
         };
         assert_eq!(args.account, "HASH123");
-        assert_eq!(args.order_id(), 67890);
+        assert_eq!(args.order_id().unwrap(), 67890);
     }
 
     #[test]
@@ -1143,20 +1196,43 @@ mod tests {
     }
 
     #[test]
-    fn parse_order_cancel_rejects_duplicate_order_ids() {
-        assert!(
-            Cli::try_parse_from([
-                "schwab-agent",
-                "order",
-                "cancel",
-                "--account",
-                "HASH123",
-                "67890",
-                "--order-id",
-                "12345",
-            ])
-            .is_err()
-        );
+    fn parse_order_cancel_rejects_mismatched_duplicate_order_ids() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "cancel",
+            "--account",
+            "HASH123",
+            "67890",
+            "--order-id",
+            "12345",
+        ]);
+        let args = expect_order_cancel(cli.command);
+        let err = args.order_id().unwrap_err();
+        assert!(err.to_string().contains("different positional ORDER_ID"));
+        assert!(err.to_string().contains("--order-id"));
+    }
+
+    #[test]
+    fn parse_order_cancel_accepts_matching_duplicate_order_ids() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "cancel",
+            "--account",
+            "HASH123",
+            "67890",
+            "--order-id",
+            "67890",
+        ]);
+        let args = expect_order_cancel(cli.command);
+        assert_eq!(args.order_id().unwrap(), 67890);
+    }
+
+    #[test]
+    fn resolve_order_id_rejects_missing_values() {
+        let err = resolve_order_id(None, None, "cancel").unwrap_err();
+        assert_eq!(err.to_string(), "order cancel requires --order-id ORDER_ID");
     }
 
     #[test]
@@ -1173,7 +1249,7 @@ mod tests {
             panic!("expected order repeat command");
         };
         assert_eq!(args.account, "HASH123");
-        assert_eq!(args.order_id(), 67890);
+        assert_eq!(args.order_id().unwrap(), 67890);
         assert!(!args.save_preview);
         assert!(!args.preview_first);
     }
@@ -1194,7 +1270,7 @@ mod tests {
             panic!("expected order repeat command");
         };
         assert_eq!(args.account, "Trading");
-        assert_eq!(args.order_id(), 67890);
+        assert_eq!(args.order_id().unwrap(), 67890);
         assert!(args.save_preview);
         assert!(!args.preview_first);
     }
@@ -1208,20 +1284,37 @@ mod tests {
     }
 
     #[test]
-    fn parse_order_repeat_rejects_duplicate_order_ids() {
-        assert!(
-            Cli::try_parse_from([
-                "schwab-agent",
-                "order",
-                "repeat",
-                "--account",
-                "HASH123",
-                "67890",
-                "--order-id",
-                "12345",
-            ])
-            .is_err()
-        );
+    fn parse_order_repeat_rejects_mismatched_duplicate_order_ids() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "repeat",
+            "--account",
+            "HASH123",
+            "67890",
+            "--order-id",
+            "12345",
+        ]);
+        let args = expect_order_repeat(cli.command);
+        let err = args.order_id().unwrap_err();
+        assert!(err.to_string().contains("different positional ORDER_ID"));
+        assert!(err.to_string().contains("--order-id"));
+    }
+
+    #[test]
+    fn parse_order_repeat_accepts_matching_duplicate_order_ids() {
+        let cli = Cli::parse_from([
+            "schwab-agent",
+            "order",
+            "repeat",
+            "--account",
+            "HASH123",
+            "67890",
+            "--order-id",
+            "67890",
+        ]);
+        let args = expect_order_repeat(cli.command);
+        assert_eq!(args.order_id().unwrap(), 67890);
     }
 
     #[test]
@@ -1250,7 +1343,7 @@ mod tests {
                 "get",
                 "--account",
                 "HASH123",
-                "--order",
+                "--order-id",
                 "0"
             ])
             .is_err()
