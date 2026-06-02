@@ -90,7 +90,7 @@ jobs:
           toolchain: nightly
           components: llvm-tools
           rustflags: ""
-      - uses: taiki-e/install-action@e49978b799e49ff429d162b7a30601a569ab6538 # v2.81.1
+      - uses: taiki-e/install-action@6887963ccf37a9ddcd8c5fa4baeb3e1e5fd61fa1 # v2.81.2
         with:
           tool: cargo-llvm-cov@0.8.7
           fallback: none
@@ -114,7 +114,7 @@ jobs:
         with:
           toolchain: stable
           rustflags: ""
-      - uses: taiki-e/install-action@e49978b799e49ff429d162b7a30601a569ab6538 # v2.81.1
+      - uses: taiki-e/install-action@6887963ccf37a9ddcd8c5fa4baeb3e1e5fd61fa1 # v2.81.2
         with:
           tool: cargo-machete@0.9.2
           fallback: none
