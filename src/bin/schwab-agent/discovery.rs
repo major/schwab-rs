@@ -110,7 +110,7 @@ fn output_formats() -> Vec<OutputFormat> {
         OutputFormat {
             name: "shell_completion",
             stdout: "raw shell completion script",
-            when: "completions command only",
+            when: "completions or completion command only",
         },
     ]
 }
@@ -187,7 +187,12 @@ fn commands() -> Vec<CommandInfo> {
         CommandInfo {
             name: "completions",
             classification: LocalOnly,
-            description: "generate shell completion scripts",
+            description: "generate shell completion scripts; completion is a singular alias",
+        },
+        CommandInfo {
+            name: "completion",
+            classification: LocalOnly,
+            description: "singular alias for completions",
         },
         CommandInfo {
             name: "auth status",

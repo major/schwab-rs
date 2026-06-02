@@ -88,7 +88,7 @@ SKILL.md            - Detailed LLM-facing command contract; root `SKILL.md` poin
 - **option** - Option chain data (expirations, chain, screen, contract)
 - **ta** - Technical analysis (dashboard, expected-move)
 - **analyze** - Multi-symbol analysis with partial-failure support
-- **completions** - Raw shell completion scripts for bash, elvish, fish, powershell, and zsh
+- **completions** - Raw shell completion scripts for bash, elvish, fish, powershell, and zsh; `completion` is a singular alias
 
 Command-specific `--help` for `market quote`, `market history`, `option chain`, `option screen`, `ta dashboard`, and `analyze` includes copyable examples. Keep these examples sanitized with public tickers and placeholders only, and keep `option chain --help` plus `option screen --help` listing valid `--type` values (`call`, `put`, `all`).
 
@@ -193,7 +193,7 @@ Precedence is command flags, environment variables, config file, then defaults. 
 
 ## Output Format
 
-Commands output raw JSON data payloads directly (no wrapper). Application errors output an `ErrorBody` JSON object with `code`, `message`, `category`, `retryable`, and `hint` fields. Set `SCHWAB_AGENT_JSON_ERRORS=1` to render clap usage errors as the same JSON shape on stdout with stable `usage.*` codes and actionable hints for unknown commands, invalid values, missing required arguments, and argument conflicts; default human-readable clap stderr remains unchanged when the variable is unset or false-like. `completions` is the only raw stdout exception because shell completion scripts must not be JSON-wrapped; completion generation write failures emit a short stderr diagnostic and exit non-zero.
+Commands output raw JSON data payloads directly (no wrapper). Application errors output an `ErrorBody` JSON object with `code`, `message`, `category`, `retryable`, and `hint` fields. Set `SCHWAB_AGENT_JSON_ERRORS=1` to render clap usage errors as the same JSON shape on stdout with stable `usage.*` codes and actionable hints for unknown commands, invalid values, missing required arguments, and argument conflicts; default human-readable clap stderr remains unchanged when the variable is unset or false-like. `completions` and its singular alias `completion` are the only raw stdout exceptions because shell completion scripts must not be JSON-wrapped; completion generation write failures emit a short stderr diagnostic and exit non-zero.
 
 ### Error Codes and Exit Codes
 
@@ -247,7 +247,7 @@ Always run default, `decimal`, library no-default, and library no-default `decim
 ### Code Style
 
 - Every module uses `#[cfg(test)] mod tests;` - separate test files for auth, error, market, account; inline tests for lib, cli, output, preview, order/mod, order/equity, order/option, order/replace, order/workflow, verify, lifecycle, raw
-- `tests/cli_smoke.rs` runs only with the `cli` feature and uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, sanitized config status output, shell completions, clap usage errors, structured JSON error output, and hermetic dry-run order JSON checks
+- `tests/cli_smoke.rs` runs only with the `cli` feature and uses `assert_cmd` and `predicates` to spawn the compiled `schwab-agent` binary for offline help output, sanitized config status output, shell completions for bash, zsh, fish, and PowerShell, clap usage errors, structured JSON error output, and hermetic dry-run order JSON checks
 - Docstrings on all public items and many private items
 - `#[must_use]` on pure functions
 - `serde_with::skip_serializing_none` for clean JSON output

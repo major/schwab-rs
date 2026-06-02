@@ -59,6 +59,8 @@ fn top_level_help_documents_setup_environment_and_debug() {
             "schwab-agent config show",
             "schwab-agent doctor",
             "schwab-agent schema",
+            "schwab-agent completions bash",
+            "schwab-agent completion zsh",
             "SCHWAB_CLIENT_ID",
             "SCHWAB_CLIENT_SECRET",
             "SCHWAB_CALLBACK_URL",
@@ -212,6 +214,9 @@ fn schema_reports_agent_discovery_without_auth_or_accounts() {
             && commands.iter().any(|command| {
                 command["name"] == "stock buy" && command["classification"] == "local_only"
             })
+            && commands.iter().any(|command| {
+                command["name"] == "completion" && command["classification"] == "local_only"
+            })
     }));
     assert!(
         body["environment_variables"]
@@ -284,14 +289,30 @@ fn stock_sell_reports_migration_replacement_as_json() {
 }
 
 #[test]
-fn completions_outputs_shell_script() {
-    agent()
-        .args(["completions", "bash"])
-        .assert()
-        .success()
-        .stderr(predicate::str::is_empty())
-        .stdout(predicate::str::contains("_schwab-agent"))
-        .stdout(predicate::str::contains("complete"));
+fn completions_output_supported_shell_scripts() {
+    for (args, marker) in [
+        (["completions", "bash"], "_schwab-agent"),
+        (["completion", "zsh"], "#compdef schwab-agent"),
+        (["completions", "fish"], "complete -c schwab-agent"),
+        (["completions", "powershell"], "Register-ArgumentCompleter"),
+    ] {
+        let output = agent()
+            .args(args)
+            .output()
+            .expect("completion command runs");
+
+        assert!(output.status.success());
+        assert!(output.stderr.is_empty());
+        let stdout = String::from_utf8(output.stdout).expect("completion script is utf8");
+        assert!(stdout.contains(marker));
+        assert!(stdout.contains("order"));
+        assert!(stdout.contains("equity"));
+        if args == ["completions", "bash"] {
+            assert!(stdout.contains("--order-id"));
+            assert!(stdout.contains("bash"));
+            assert!(stdout.contains("zsh"));
+        }
+    }
 }
 
 #[test]

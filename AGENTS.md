@@ -55,7 +55,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 
 - Public API: `Client` + typed async methods returning `schwab::Result<T>`
 - Binary target: `schwab-agent` at `src/bin/schwab-agent/main.rs`, gated by the default `cli` feature; CLI modules remain binary-private and may use documented CLI config, environment variables, JSON output, and process exit behavior without changing the library contract
-- `schwab-agent completions <shell>` is the sole raw stdout exception to the JSON output contract because shells need an unwrapped completion script; completion generation write failures report a short stderr diagnostic and exit non-zero
+- `schwab-agent completions <shell>` and its singular alias `schwab-agent completion <shell>` are the sole raw stdout exceptions to the JSON output contract because shells need an unwrapped completion script; completion generation write failures report a short stderr diagnostic and exit non-zero
 - `schwab-agent` ignores empty `SCHWAB_TOKEN_PATH` values, keeps the compatibility token default under `schwab-agent-rs/token.json`, and resolves the base from `XDG_CONFIG_HOME` before the platform config directory
 - `schwab-agent config status` reports sanitized setup state, including config/token paths, file presence, credential sources, precedence, mutable-operation guard state, known environment variable names, and `RUST_LOG` status without printing secrets, account hashes, balances, or order IDs
 - `schwab-agent schema` reports machine-readable CLI discovery, including version, supported commands and aliases, safety classification, output formats, environment variables, exit codes, field selectors, and docs URL without requiring account data; `schwab-agent doctor` and `schwab-agent config show` report sanitized setup and auth/environment health without secrets
@@ -94,7 +94,7 @@ SKILL.md              # repository-level pointer to the schwab-agent LLM command
 - Sync builders and pure-logic items use plain ` ``` ` fences with compile-time assertions where possible
 - Examples must compile under both default and `decimal` features (use `"1.0".parse().unwrap()` for `Number` literals)
 - Keep source, docs, fixtures, and vendored reference text ASCII unless a wire-format fixture or API contract explicitly requires Unicode; replace decorative separators, mojibake, and non-breaking spaces so Renovate hidden-Unicode checks stay clean
-- `tests/cli_smoke.rs` is gated to the default `cli` feature and uses `assert_cmd` and `predicates` for offline compiled-binary checks of help output, shell completions, clap usage errors, structured JSON errors, and hermetic dry-run order JSON.
+- `tests/cli_smoke.rs` is gated to the default `cli` feature and uses `assert_cmd` and `predicates` for offline compiled-binary checks of help output, shell completions for bash, zsh, fish, and PowerShell, clap usage errors, structured JSON errors, and hermetic dry-run order JSON.
 - Pattern assertions in tests use Rust 1.96's standard `assert_matches!` macro instead of `assert!(matches!(...))`
 
 ## Security (Non-Negotiable)
