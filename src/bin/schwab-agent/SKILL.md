@@ -58,6 +58,8 @@ History output also defaults to token-efficient rows with `symbol`, `columns`, `
 
 Optional history flags: `--period-type`, `--period`, `--frequency-type`, `--frequency`, `--from`, `--to`, `--extended-hours`.
 
+Run `schwab-agent market quote --help` or `schwab-agent market history --help` for the same copyable examples directly in the CLI.
+
 ## Account
 
 Discover and resolve accounts before placing orders.
@@ -368,6 +370,8 @@ Chain flags:
 
 Output is row-based: `{ "columns": [...], "rows": [[...], ...], "rowCount": N }`.
 
+`schwab-agent option chain --help` lists representative examples and the valid `--type` values: `call`, `put`, and `all`.
+
 ### Screen
 
 Screen adds liquidity and pricing filters on top of all chain flags. Use it when you want to narrow results by volume, open interest, spread quality, or premium range.
@@ -397,6 +401,8 @@ Screen-only flags (all chain flags also apply):
 | `--limit N` | Maximum number of results |
 
 Output adds `totalScanned` and `filtersApplied` alongside the row-based data. Numeric filters must be finite values; `NaN` and infinity are validation errors, not empty-result filters.
+
+`schwab-agent option screen --help` lists representative examples and the valid `--type` values: `call`, `put`, and `all`.
 
 ### Contract
 
@@ -429,6 +435,8 @@ Dashboard flags:
 | `--interval INTERVAL` | Candle interval: daily (default), weekly, 1min, 5min, 15min, 30min |
 | `--points N` | Number of data points per indicator series (default: 20) |
 
+Run `schwab-agent ta dashboard --help` for copyable daily and weekly examples.
+
 ### Expected Move
 
 Computes expected move from the ATM straddle price in the option chain. Output includes straddle price, expected move (price and percent), upper/lower ranges, and implied volatility from ATM options.
@@ -460,6 +468,8 @@ Analyze flags:
 |---|---|
 | `--interval INTERVAL` | Candle interval (same values as ta dashboard) |
 | `--points N` | Number of data points per indicator series (default: 1) |
+
+Run `schwab-agent analyze --help` for copyable single-symbol, multi-symbol, and weekly examples. `analyze` defaults to 1 point because it is optimized for compact multi-symbol output; use `--points` when you want dashboard-like depth.
 
 ## Output Format
 

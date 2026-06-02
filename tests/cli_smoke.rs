@@ -10,6 +10,13 @@ fn agent() -> Command {
     command
 }
 
+fn help_contains(args: &[&str], expected: &[&str]) {
+    let mut assert = agent().args(args).assert().success();
+    for item in expected {
+        assert = assert.stdout(predicate::str::contains(*item));
+    }
+}
+
 #[test]
 fn help_lists_command_groups() {
     agent()
@@ -115,16 +122,93 @@ fn dry_run_equity_order_outputs_order_json_without_auth() {
 
 #[test]
 fn market_history_help_shows_accepted_date_formats() {
-    agent()
-        .args(["market", "history", "--help"])
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("YYYY-MM-DD"))
-        .stdout(predicate::str::contains("RFC3339"))
-        .stdout(predicate::str::contains("epoch milliseconds"))
-        .stdout(predicate::str::contains("2026-01-01"))
-        .stdout(predicate::str::contains("2026-01-01T09:30:00Z"))
-        .stdout(predicate::str::contains("1767225600000"));
+    help_contains(
+        &["market", "history", "--help"],
+        &[
+            "YYYY-MM-DD",
+            "RFC3339",
+            "epoch milliseconds",
+            "2026-01-01",
+            "2026-01-01T09:30:00Z",
+            "1767225600000",
+        ],
+    );
+}
+
+#[test]
+fn market_quote_help_shows_examples() {
+    help_contains(
+        &["market", "quote", "--help"],
+        &[
+            "schwab-agent market quote AAPL",
+            "schwab-agent market quote AAPL MSFT GOOG --fields sym,last,pct,vol",
+            "schwab-agent market quote AAPL --all-fields",
+        ],
+    );
+}
+
+#[test]
+fn market_history_help_shows_examples() {
+    help_contains(
+        &["market", "history", "--help"],
+        &[
+            "schwab-agent market history SPY",
+            "schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol",
+            "schwab-agent market history AAPL --period-type day --period 5 --frequency-type minute --frequency 5 --extended-hours",
+        ],
+    );
+}
+
+#[test]
+fn option_chain_help_shows_examples_and_type_values() {
+    help_contains(
+        &["option", "chain", "--help"],
+        &[
+            "schwab-agent option chain AAPL",
+            "schwab-agent option chain AAPL --type call --dte 30 --fields strike,delta,bid,ask,volume,oi",
+            "schwab-agent option chain AMD --type put --strike-min 140 --strike-max 160 --delta-min -0.30 --delta-max -0.15",
+            "Valid --type values: call, put, all",
+        ],
+    );
+}
+
+#[test]
+fn option_screen_help_shows_examples_and_type_values() {
+    help_contains(
+        &["option", "screen", "--help"],
+        &[
+            "schwab-agent option screen AAPL --type call --dte-min 20 --dte-max 45 --min-volume 100 --min-oi 500 --max-spread-pct 10",
+            "schwab-agent option screen SPY --type put --min-premium 1.00 --max-premium 5.00 --limit 20",
+            "Valid --type values: call, put, all",
+            "Numeric filters must be finite values",
+        ],
+    );
+}
+
+#[test]
+fn ta_dashboard_help_shows_examples() {
+    help_contains(
+        &["ta", "dashboard", "--help"],
+        &[
+            "schwab-agent ta dashboard AAPL",
+            "default 20 points",
+            "schwab-agent ta dashboard SPY --interval weekly --points 10",
+        ],
+    );
+}
+
+#[test]
+fn analyze_help_shows_examples_and_compact_default_reason() {
+    help_contains(
+        &["analyze", "--help"],
+        &[
+            "schwab-agent analyze AAPL",
+            "schwab-agent analyze AAPL MSFT GOOG",
+            "schwab-agent analyze AAPL --interval weekly --points 10",
+            "The default is 1 point, while ta dashboard defaults to 20",
+            "optimized for compact multi-symbol output",
+        ],
+    );
 }
 
 #[test]
