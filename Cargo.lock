@@ -2147,7 +2147,7 @@ dependencies = [
 
 [[package]]
 name = "schwab"
-version = "0.3.3"
+version = "0.4.0"
 dependencies = [
  "assert-json-diff",
  "assert_cmd",
