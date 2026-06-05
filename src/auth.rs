@@ -1484,6 +1484,25 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn refresh_token_file_maps_text_invalid_grant_to_reauth_error() {
+        let mut server = mockito::Server::new_async().await;
+        server
+            .mock("POST", "/token")
+            .with_status(400)
+            .with_body("invalid_grant: refresh token expired")
+            .create_async()
+            .await;
+
+        let url = server.url();
+        let config = test_config(&url);
+        let original = token_file("OLD", "REFRESH1", current_timestamp().unwrap() - 1);
+
+        let error = refresh_token_file(&config, &original).await.unwrap_err();
+
+        assert_matches!(error, Error::RefreshTokenInvalid);
+    }
+
+    #[tokio::test]
     async fn provider_refreshes_expired_token_and_saves_result() {
         let mut server = mockito::Server::new_async().await;
         let mock = server
