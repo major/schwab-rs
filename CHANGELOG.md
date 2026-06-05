@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/major/schwab-rs/compare/0.5.1..0.6.0) - 2026-06-05
+
+### Bug Fixes
+
+- *(cli)* Report margin cash balance - ([beef699](https://github.com/major/schwab-rs/commit/beef699c4a9ce75fa37f4db1572c42ba57f64124))
+- *(models)* Accept NASDAQ exchange values - ([ecb1a90](https://github.com/major/schwab-rs/commit/ecb1a900718ee48345ea4ee66df48970d6287050))
+
+### Documentation
+
+- *(cli)* Clarify true cash guidance - ([bb5f493](https://github.com/major/schwab-rs/commit/bb5f493d5c1eebb30c00115dc66700715a4e7bd7))
+
+
 ## [0.5.1](https://github.com/major/schwab-rs/compare/0.5.0..0.5.1) - 2026-06-05
 
 ### Bug Fixes
