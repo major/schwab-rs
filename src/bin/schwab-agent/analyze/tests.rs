@@ -2,7 +2,7 @@
 
 use serde_json::{Value, json};
 
-use super::quote_map_to_value;
+use super::{dashboard_from_value, quote_map_to_value};
 use crate::ta::types::{
     AdxPoint, AnalyzeOutput, AnalyzeSymbolResult, BbandsPoint, DashboardOutput, DerivedFields,
     MacdPoint, MomentumIndicators, MomentumSignal, SignalSummary, StochPoint, TaPoint,
@@ -110,6 +110,47 @@ fn analyze_output_serializes_to_json() {
     assert_eq!(value["results"][0]["symbol"], "AAPL");
     assert!(value["results"][0]["quote"].is_object());
     assert!(value["results"][0]["analysis"].is_object());
+}
+
+#[test]
+fn analyze_output_serializes_derived_price_basis_when_quote_is_newer() {
+    let mut result = successful_result("AAPL");
+    result.quote = Some(json!({
+        "AAPL": {
+            "quote": {
+                "lastPrice": 125.0,
+                "quoteTime": 1_700_086_400_000i64
+            }
+        }
+    }));
+    let output = AnalyzeOutput {
+        results: vec![result],
+    };
+
+    let value = serde_json::to_value(&output).unwrap();
+    let derived = &value["results"][0]["analysis"]["derived"];
+
+    assert_eq!(derived["price_basis"], json!("previous_close"));
+    assert_eq!(derived["price_basis_value"], json!(101.0));
+    assert_eq!(
+        derived["price_basis_timestamp"],
+        json!(1_700_000_000_000i64)
+    );
+    assert_eq!(
+        value["results"][0]["quote"]["AAPL"]["quote"]["quoteTime"],
+        json!(1_700_086_400_000i64)
+    );
+}
+
+#[test]
+fn dashboard_from_value_preserves_derived_price_basis() {
+    let value = serde_json::to_value(sample_dashboard("AAPL")).unwrap();
+
+    let output = dashboard_from_value(value).unwrap();
+
+    assert_eq!(output.derived.price_basis, "previous_close");
+    assert_eq!(output.derived.price_basis_value, 101.0);
+    assert_eq!(output.derived.price_basis_timestamp, 1_700_000_000_000);
 }
 
 #[test]
@@ -239,6 +280,9 @@ fn sample_dashboard(symbol: &str) -> DashboardOutput {
             relative_volume: Some(1.2),
         },
         derived: DerivedFields {
+            price_basis: "previous_close".to_string(),
+            price_basis_value: 101.0,
+            price_basis_timestamp: 1_700_000_000_000,
             atr_percent: 1.0,
             range_20_high: 110.0,
             range_20_low: 90.0,

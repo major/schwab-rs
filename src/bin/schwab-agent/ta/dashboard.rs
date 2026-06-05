@@ -45,6 +45,7 @@ const STOCH_OVERSOLD: f64 = 20.0;
 const ADX_TRENDING: f64 = 25.0;
 const ATR_ELEVATED_PERCENT: f64 = 5.0;
 const HIGH_RELATIVE_VOLUME: f64 = 1.5;
+const PRICE_BASIS_PREVIOUS_CLOSE: &str = "previous_close";
 
 #[derive(Debug, Clone)]
 struct IndicatorSeries {
@@ -93,6 +94,7 @@ struct AdxSeries {
 #[derive(Debug, Clone, Copy)]
 struct LatestValues {
     close: f64,
+    timestamp: i64,
     volume: f64,
     sma_21: f64,
     sma_50: f64,
@@ -274,6 +276,9 @@ fn assemble_output(
             relative_volume: relative_volume.map(round2),
         },
         derived: DerivedFields {
+            price_basis: derived.price_basis,
+            price_basis_value: round2(derived.price_basis_value),
+            price_basis_timestamp: derived.price_basis_timestamp,
             atr_percent: round2(derived.atr_percent),
             range_20_high: round2(derived.range_20_high),
             range_20_low: round2(derived.range_20_low),
@@ -293,6 +298,7 @@ fn latest_values(
 ) -> Result<LatestValues, AppError> {
     Ok(LatestValues {
         close: latest(&ohlcv.closes, "close")?,
+        timestamp: latest_timestamp(&ohlcv.timestamps, "timestamp")?,
         volume: latest(&ohlcv.volumes, "volume")?,
         sma_21: latest(&indicators.sma_21, "sma_21")?,
         sma_50: latest(&indicators.sma_50, "sma_50")?,
@@ -315,6 +321,9 @@ fn compute_derived_fields(
     lows: &[f64],
 ) -> Result<DerivedFields, AppError> {
     Ok(DerivedFields {
+        price_basis: PRICE_BASIS_PREVIOUS_CLOSE.to_string(),
+        price_basis_value: latest.close,
+        price_basis_timestamp: latest.timestamp,
         atr_percent: percentage(latest.atr_14, latest.close, "atr_percent")?,
         range_20_high: range_high(highs, RANGE_20_CANDLES)?,
         range_20_low: range_low(lows, RANGE_20_CANDLES)?,
@@ -544,6 +553,13 @@ fn latest(values: &[f64], indicator: &str) -> Result<f64, AppError> {
         .ok_or_else(|| insufficient_data(1, 0, indicator))
 }
 
+fn latest_timestamp(values: &[i64], indicator: &str) -> Result<i64, AppError> {
+    values
+        .last()
+        .copied()
+        .ok_or_else(|| insufficient_data(1, 0, indicator))
+}
+
 fn range_high(highs: &[f64], window: usize) -> Result<f64, AppError> {
     let values = last_window(highs, window, "range_high")?;
     Ok(values.iter().copied().fold(f64::NEG_INFINITY, f64::max))
@@ -612,6 +628,7 @@ mod tests {
     fn latest_fixture() -> LatestValues {
         LatestValues {
             close: 110.0,
+            timestamp: 1_700_000_000,
             volume: 1500.0,
             sma_21: 100.0,
             sma_50: 95.0,
@@ -699,6 +716,17 @@ mod tests {
         assert_close(derived.range_20_low, 241.0);
         assert_close(derived.range_252_high, 260.0);
         assert_close(derived.range_252_low, 9.0);
+    }
+
+    #[test]
+    fn dashboard_latest_values_include_latest_candle_timestamp() {
+        let ohlcv = mock_ohlcv(260);
+        let indicators = indicator_series(20);
+
+        let latest = latest_values(&ohlcv, &indicators).expect("latest values should compute");
+
+        assert_close(latest.close, 334.0);
+        assert_eq!(latest.timestamp, 1_700_000_259);
     }
 
     #[test]
@@ -859,6 +887,10 @@ mod tests {
             Err(AppError::TaInsufficientData { .. })
         ));
         assert!(matches!(
+            latest_timestamp(&[], "timestamp"),
+            Err(AppError::TaInsufficientData { .. })
+        ));
+        assert!(matches!(
             last_window(&[1.0, 2.0], 3, "window"),
             Err(AppError::TaInsufficientData { .. })
         ));
@@ -917,5 +949,8 @@ mod tests {
         assert_eq!(output.trend.sma_21[0].timestamp, 1_700_000_255);
         assert_close(output.momentum.macd[4].histogram, 27.0);
         assert_close(output.volatility.bollinger_bands[4].upper, 34.0);
+        assert_eq!(output.derived.price_basis, "previous_close");
+        assert_close(output.derived.price_basis_value, 110.0);
+        assert_eq!(output.derived.price_basis_timestamp, 1_700_000_000);
     }
 }

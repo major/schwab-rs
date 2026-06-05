@@ -122,6 +122,12 @@ pub struct VolumeIndicators {
 #[serde_with::skip_serializing_none]
 #[derive(Debug, Clone, Serialize)]
 pub struct DerivedFields {
+    /// Price basis used for derived calculations.
+    pub price_basis: String,
+    /// Price value used for derived calculations.
+    pub price_basis_value: f64,
+    /// Timestamp for the price basis as a Unix epoch millisecond value.
+    pub price_basis_timestamp: i64,
     /// ATR as a percentage of price.
     pub atr_percent: f64,
     /// 20-day high price range.
@@ -348,6 +354,9 @@ mod tests {
                 relative_volume: None,
             },
             derived: DerivedFields {
+                price_basis: "previous_close".to_string(),
+                price_basis_value: 101.0,
+                price_basis_timestamp: 1,
                 atr_percent: 1.0,
                 range_20_high: 2.0,
                 range_20_low: 3.0,

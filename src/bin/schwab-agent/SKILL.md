@@ -461,7 +461,7 @@ Read-only TA commands. No orders are placed.
 
 ### Dashboard
 
-Runs all indicators for a symbol and returns category-grouped output: trend, momentum, volatility, and volume. Includes derived fields (ATR percent, relative volume, distance from SMAs) and signal interpretations.
+Runs all indicators for a symbol and returns category-grouped output: trend, momentum, volatility, and volume. Includes derived fields (ATR percent, relative volume, distance from SMAs) and signal interpretations. Derived fields include `price_basis`, `price_basis_value`, and `price_basis_timestamp` so callers can see that daily TA comparisons use the latest completed candle close.
 
 ```bash
 schwab-agent ta dashboard AAPL                          # daily dashboard, 20 points
@@ -494,7 +494,7 @@ Expected-move flags:
 
 ## Analyze
 
-Multi-symbol analysis combining quote and TA dashboard per symbol. Partial failures include per-symbol error fields (`quote_error`, `analysis_error`) alongside successful results.
+Multi-symbol analysis combining quote and TA dashboard per symbol. Partial failures include per-symbol error fields (`quote_error`, `analysis_error`) alongside successful results. Quote payload timestamps may be newer than daily TA candle timestamps; use `analysis.derived.price_basis`, `price_basis_value`, and `price_basis_timestamp` to interpret derived values such as distance from SMAs.
 
 ```bash
 schwab-agent analyze AAPL                    # single symbol

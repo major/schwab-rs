@@ -293,6 +293,9 @@ impl From<VolumeIndicatorsWire> for VolumeIndicators {
 
 #[derive(Deserialize)]
 struct DerivedFieldsWire {
+    price_basis: String,
+    price_basis_value: f64,
+    price_basis_timestamp: i64,
     atr_percent: f64,
     range_20_high: f64,
     range_20_low: f64,
@@ -306,6 +309,9 @@ struct DerivedFieldsWire {
 impl From<DerivedFieldsWire> for DerivedFields {
     fn from(value: DerivedFieldsWire) -> Self {
         Self {
+            price_basis: value.price_basis,
+            price_basis_value: value.price_basis_value,
+            price_basis_timestamp: value.price_basis_timestamp,
             atr_percent: value.atr_percent,
             range_20_high: value.range_20_high,
             range_20_low: value.range_20_low,

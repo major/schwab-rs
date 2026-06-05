@@ -181,7 +181,7 @@ pub struct ExpectedMoveArgs {
     schwab-agent analyze AAPL MSFT GOOG\n      \
     Analyze multiple public tickers and keep partial per-symbol errors in the JSON output.\n\n  \
     schwab-agent analyze AAPL --interval weekly --points 10\n      \
-    Request a weekly dashboard depth similar to ta dashboard. The default is 1 point, while ta dashboard defaults to 20, because analyze is optimized for compact multi-symbol output.")]
+    Request a weekly dashboard depth similar to ta dashboard. The default is 1 point, while ta dashboard defaults to 20, because analyze is optimized for compact multi-symbol output. Quote fields may be live, while derived daily TA fields name their completed-candle price basis under analysis.derived.")]
 pub struct AnalyzeArgs {
     /// One or more ticker symbols to analyze.
     #[arg(required = true)]
