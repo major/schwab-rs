@@ -19,7 +19,7 @@ CLI-only TA/analyze DTOs live under `src/bin/schwab-agent/ta/types.rs`, not this
 
 Auth refresh error classification, including OAuth `invalid_grant` mapping to `Error::RefreshTokenInvalid` and CLI `auth.refresh_token_invalid`, lives outside `src/models/` and must not introduce model-layer error DTOs or change response model serde conventions.
 
-Cash and margin account `currentBalances` include `cash_balance` (`cashBalance`) when Schwab provides Cash & Sweep Vehicle-style cash in that snapshot. For margin accounts, available-funds and buying-power fields are capacity values; CLI margin-safe cash uses `currentBalances.cashBalance` first, with modeled margin `initialBalances` cash fields only as fallbacks when current cash balance is absent.
+Cash and margin account `currentBalances` include `cash_balance` (`cashBalance`) when Schwab provides Cash & Sweep Vehicle-style cash in that snapshot. For margin accounts, available-funds and buying-power fields are capacity values; CLI margin-safe cash uses `currentBalances.cashBalance` first, with modeled margin `initialBalances` cash fields only as fallbacks when current cash balance is absent. Downstream automation must use `true_cash` only when `balances.true_cash_status` is `verified`; capacity and buying-power fields are not margin-safe cash substitutes.
 
 ## Streaming Models
 
