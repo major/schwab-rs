@@ -245,7 +245,34 @@ pub(crate) async fn fetch_order_list(
         format!("{}/{hash}/orders", account_orders_url_prefix())
     });
 
-    fetch_json_query(&url, bearer_token, query).await
+    fetch_order_json_query(&url, bearer_token, query).await
+}
+
+/// Fetches transaction list JSON directly from Schwab.
+#[cfg_attr(coverage_nightly, coverage(off))]
+pub(crate) async fn fetch_transaction_list(
+    bearer_token: &str,
+    account_hash: &str,
+    params: &[(&str, &str)],
+) -> Result<Value, AppError> {
+    let url = format!(
+        "{}/{account_hash}/transactions",
+        account_orders_url_prefix()
+    );
+    fetch_json_query(&url, bearer_token, params).await
+}
+
+/// Fetches one transaction JSON directly from Schwab.
+pub(crate) async fn fetch_transaction_by_id(
+    bearer_token: &str,
+    account_hash: &str,
+    transaction_id: i64,
+) -> Result<Value, AppError> {
+    let url = format!(
+        "{}/{account_hash}/transactions/{transaction_id}",
+        account_orders_url_prefix()
+    );
+    fetch_json_with_client(&reqwest::Client::new(), &url, bearer_token).await
 }
 
 #[cfg(test)]
@@ -435,7 +462,7 @@ async fn post_json_with_client(
 
 /// Fetches a Schwab order list URL as raw JSON with query parameters.
 #[cfg_attr(coverage_nightly, coverage(off))]
-async fn fetch_json_query(
+async fn fetch_order_json_query(
     url: &str,
     bearer_token: &str,
     query: &OrderListQuery<'_>,
@@ -453,10 +480,20 @@ async fn fetch_json_query(
         params.push(("status", status));
     }
 
+    fetch_json_query(url, bearer_token, &params).await
+}
+
+/// Fetches a Schwab URL as raw JSON with query parameters.
+#[cfg_attr(coverage_nightly, coverage(off))]
+async fn fetch_json_query(
+    url: &str,
+    bearer_token: &str,
+    params: &[(&str, &str)],
+) -> Result<Value, AppError> {
     let response = reqwest::Client::new()
         .get(url)
         .bearer_auth(bearer_token)
-        .query(&params)
+        .query(params)
         .send()
         .await
         .map_err(schwab::Error::Request)?;
@@ -1485,6 +1522,75 @@ mod tests {
         assert!(request.contains("toEnteredTime=2026-01-02T00%3A00%3A00Z"));
         assert!(request.contains("maxResults=10"));
         assert!(request.contains("status=WORKING"));
+    }
+
+    #[tokio::test]
+    async fn fetch_transaction_list_builds_account_query() {
+        let (url, request) = spawn_json_method_response_at_path(
+            "GET",
+            "/accounts/HASH123/transactions",
+            "HTTP/1.1 200 OK",
+            r#"[{"transactionId":1}]"#,
+        );
+        let prefix = url
+            .strip_suffix("/accounts/HASH123/transactions")
+            .unwrap()
+            .to_string();
+        let _raw_url = set_raw_url_prefix_for_tests(prefix);
+
+        let transactions = fetch_transaction_list(
+            "TOKEN123",
+            "HASH123",
+            &[
+                ("startDate", "2026-01-01T00:00:00Z"),
+                ("endDate", "2026-01-02T00:00:00Z"),
+                ("types", "TRADE"),
+                ("symbol", "AAPL"),
+            ],
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(transactions[0]["transactionId"], 1);
+        let request = request.join().unwrap();
+        assert!(request.contains("GET /accounts/HASH123/transactions?"));
+        assert!(request.contains("startDate=2026-01-01T00%3A00%3A00Z"));
+        assert!(request.contains("endDate=2026-01-02T00%3A00%3A00Z"));
+        assert!(request.contains("types=TRADE"));
+        assert!(request.contains("symbol=AAPL"));
+        assert!(
+            request
+                .to_ascii_lowercase()
+                .contains("authorization: bearer token123")
+        );
+    }
+
+    #[tokio::test]
+    async fn fetch_transaction_by_id_builds_account_path() {
+        let (url, request) = spawn_json_method_response_at_path(
+            "GET",
+            "/accounts/HASH123/transactions/456",
+            "HTTP/1.1 200 OK",
+            r#"{"transactionId":456}"#,
+        );
+        let prefix = url
+            .strip_suffix("/accounts/HASH123/transactions/456")
+            .unwrap()
+            .to_string();
+        let _raw_url = set_raw_url_prefix_for_tests(prefix);
+
+        let transaction = fetch_transaction_by_id("TOKEN123", "HASH123", 456)
+            .await
+            .unwrap();
+
+        assert_eq!(transaction["transactionId"], 456);
+        let request = request.join().unwrap();
+        assert!(request.contains("GET /accounts/HASH123/transactions/456 HTTP/1.1"));
+        assert!(
+            request
+                .to_ascii_lowercase()
+                .contains("authorization: bearer token123")
+        );
     }
 
     #[tokio::test]

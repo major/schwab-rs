@@ -107,6 +107,8 @@ schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,cl
 
 schwab-agent account --positions
 schwab-agent positions
+schwab-agent transactions
+schwab-agent transactions --account Trading --symbol AAPL
 schwab-agent orders --symbol AAPL
 schwab-agent order get --symbol AAPL
 schwab-agent order get --account HASH --order-id 12345678

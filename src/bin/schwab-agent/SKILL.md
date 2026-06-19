@@ -95,6 +95,8 @@ schwab-agent positions                                  # alias for account --po
 schwab-agent account Trading                            # resolve nickname to canonical hash
 schwab-agent account Trading --positions                # selected account summary with holdings
 schwab-agent account ABCDEF1234567890                   # verify a known hash
+schwab-agent transactions                               # recent trades for primary account
+schwab-agent transactions --account Trading --symbol AAPL
 ```
 
 Position output with `--positions` returns compact position objects with all curated fields Schwab provides: `symbol`, `cusip`, `instrument_id`, `description`, `asset_type`, `long_quantity`, `short_quantity`, `average_price`, `market_value`, `current_day_profit_loss`, and `current_day_profit_loss_percentage`. Missing Schwab fields are omitted from each position object; `cusip` and `instrument_id` are included when available so positions without symbols still have actionable instrument identifiers. Add `--positions` to a selector when you need holdings for one account; omit position flags when you only need canonical hash resolution.

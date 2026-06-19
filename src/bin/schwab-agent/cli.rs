@@ -45,6 +45,7 @@ impl Cli {
             Command::Order(_) => "order",
             Command::Orders(_) => "order.get",
             Command::Positions(_) => "account",
+            Command::Transactions(_) => "transactions",
             Command::Schema => "schema",
             Command::Stock(_) => "stock",
             Command::Completions(_) => "completions",
@@ -85,6 +86,8 @@ pub enum Command {
     Orders(crate::order::lifecycle::OrderGetArgs),
     /// Alias for `account --positions`.
     Positions(PositionsArgs),
+    /// Get account transactions. Defaults to the primary account, last 30 days, and TRADE type.
+    Transactions(TransactionsArgs),
     /// Legacy stock command namespace with migration hints.
     #[command(hide = true, subcommand)]
     Stock(StockCommand),
@@ -144,6 +147,7 @@ pub use crate::order::cli::{
     StockCommand,
 };
 pub use crate::ta::cli::{DashboardArgs, ExpectedMoveArgs, TaCommand};
+pub use crate::transaction::cli::TransactionsArgs;
 
 #[cfg(test)]
 mod tests;
