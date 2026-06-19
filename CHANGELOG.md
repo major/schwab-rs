@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1](https://github.com/major/schwab-rs/compare/0.6.0..0.6.1) - 2026-06-19
+
+### Refactor
+
+- *(order-builder)* Split builder module - ([d54919c](https://github.com/major/schwab-rs/commit/d54919c08f5848fb9ccd57777858e10616d3a505))
+
+### Documentation
+
+- Consolidate agent guidance - ([ff4ed4c](https://github.com/major/schwab-rs/commit/ff4ed4c0242dc3b3a77ac3c1e2ce664513bb8f41))
+
+### Miscellaneous Tasks
+
+- Don't fail on codecov upload errors - ([1603166](https://github.com/major/schwab-rs/commit/1603166bc2660fe319ecd8f93ad5bd6202cbd595))
+- Relax patch coverage gate - ([5575874](https://github.com/major/schwab-rs/commit/5575874ab6703021929309a868d81a16d849f029))
+- Restore renovate onboarding config - ([6a0a350](https://github.com/major/schwab-rs/commit/6a0a35056e83c463c7e10cb285859df2098e28f0))
+
+
 ## [0.6.0](https://github.com/major/schwab-rs/compare/0.5.1..0.6.0) - 2026-06-05
 
 ### Bug Fixes
