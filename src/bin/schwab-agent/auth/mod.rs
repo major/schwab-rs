@@ -558,3 +558,5 @@ struct RefreshOutput {
 
 #[cfg(test)]
 mod tests;
+
+pub mod cli;

@@ -12,3 +12,5 @@ pub use dashboard::dashboard;
 
 #[cfg(test)]
 mod tests;
+
+pub mod cli;

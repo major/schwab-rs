@@ -386,3 +386,5 @@ mod builder {
         assert!(err.to_string().contains("expected YYYY-MM-DD"));
     }
 }
+
+pub mod cli;

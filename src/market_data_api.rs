@@ -113,7 +113,7 @@ impl Client {
         fields: Option<&str>,
     ) -> Result<Quotes> {
         let symbol_id = required_text("symbol_id", symbol_id.as_ref())?;
-        let url = self.endpoint_url(ApiBase::MarketData, &[&symbol_id, "quotes"])?;
+        let url = self.endpoint_url(ApiBase::MarketData, &[symbol_id, "quotes"])?;
         let mut query = Vec::new();
         push_optional(&mut query, "fields", fields);
         self.send_json(Method::GET, url, &query, None).await
@@ -240,7 +240,7 @@ impl Client {
         cusip_id: impl AsRef<str>,
     ) -> Result<InstrumentResponse> {
         let cusip_id = required_text("cusip_id", cusip_id.as_ref())?;
-        let url = self.endpoint_url(ApiBase::MarketData, &["instruments", &cusip_id])?;
+        let url = self.endpoint_url(ApiBase::MarketData, &["instruments", cusip_id])?;
         self.send_json(Method::GET, url, &[], None).await
     }
 
@@ -305,7 +305,7 @@ impl Client {
         date: Option<&str>,
     ) -> Result<HashMap<String, HashMap<String, Hours>>> {
         let market_id = required_text("market_id", market_id.as_ref())?;
-        let url = self.endpoint_url(ApiBase::MarketData, &["markets", &market_id])?;
+        let url = self.endpoint_url(ApiBase::MarketData, &["markets", market_id])?;
         let mut query = Vec::new();
         push_optional(&mut query, "date", date);
         self.send_json(Method::GET, url, &query, None).await
@@ -338,7 +338,7 @@ impl Client {
         options: MoverOptions,
     ) -> Result<ScreenerResponse> {
         let symbol_id = required_text("symbol_id", symbol_id.as_ref())?;
-        let url = self.endpoint_url(ApiBase::MarketData, &["movers", &symbol_id])?;
+        let url = self.endpoint_url(ApiBase::MarketData, &["movers", symbol_id])?;
         self.send_json(Method::GET, url, &options.into_query(), None)
             .await
     }

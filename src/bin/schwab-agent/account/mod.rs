@@ -190,7 +190,7 @@ pub async fn run_summary(
 
     let mut summary = render_summary_from_data(&accounts, &hashes, &prefs, with_positions);
     if let Some(account_hash) = selected_hash.as_deref() {
-        retain_account_summary(&mut summary, &account_hash);
+        retain_account_summary(&mut summary, account_hash);
         ensure_selected_account_rendered(&summary, account_hash)?;
     }
 
@@ -639,3 +639,5 @@ fn compact_account_label(row: &AccountRow) -> String {
 
 #[cfg(test)]
 mod tests;
+
+pub mod cli;

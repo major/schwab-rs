@@ -301,7 +301,7 @@ fn compare_values(left: &Value, right: &Value) -> Ordering {
         (SortKey::Null, _) => Ordering::Greater,
         (_, SortKey::Null) => Ordering::Less,
         (SortKey::Number(left), SortKey::Number(right)) => left.total_cmp(&right),
-        (SortKey::String(left), SortKey::String(right)) => left.cmp(&right),
+        (SortKey::String(left), SortKey::String(right)) => left.cmp(right),
         (SortKey::Bool(left), SortKey::Bool(right)) => left.cmp(&right),
         (left, right) => left.rank().cmp(&right.rank()),
     }

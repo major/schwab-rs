@@ -61,6 +61,8 @@ pub struct Account {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type")]
 #[allow(missing_docs)]
+// Keep account variants unboxed so public model access stays source-compatible.
+#[allow(clippy::large_enum_variant)]
 pub enum SecuritiesAccount {
     #[serde(rename = "MARGIN")]
     Margin(MarginAccount),

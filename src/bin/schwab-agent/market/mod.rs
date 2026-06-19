@@ -906,3 +906,5 @@ struct QuoteErrorSummary {
 
 #[cfg(test)]
 mod tests;
+
+pub mod cli;

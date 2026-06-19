@@ -90,7 +90,7 @@ impl Client {
         fields: Option<&str>,
     ) -> Result<Account> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
-        let url = self.endpoint_url(ApiBase::Trader, &["accounts", &account_number])?;
+        let url = self.endpoint_url(ApiBase::Trader, &["accounts", account_number])?;
         let mut query = Vec::new();
         push_optional(&mut query, "fields", fields);
         self.send_json(Method::GET, url, &query, None).await
@@ -127,7 +127,7 @@ impl Client {
         options: OrderListOptions,
     ) -> Result<Vec<Order>> {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
-        let url = self.endpoint_url(ApiBase::Trader, &["accounts", &account_number, "orders"])?;
+        let url = self.endpoint_url(ApiBase::Trader, &["accounts", account_number, "orders"])?;
         self.send_json(Method::GET, url, &options.into_query()?, None)
             .await
     }
@@ -163,7 +163,7 @@ impl Client {
         B: Serialize + ?Sized,
     {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
-        let url = self.endpoint_url(ApiBase::Trader, &["accounts", &account_number, "orders"])?;
+        let url = self.endpoint_url(ApiBase::Trader, &["accounts", account_number, "orders"])?;
         self.send_empty_with_location(Method::POST, url, order)
             .await
     }
@@ -192,7 +192,7 @@ impl Client {
         let order_id = order_id.to_string();
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "orders", &order_id],
+            &["accounts", account_number, "orders", &order_id],
         )?;
         self.send_empty(Method::DELETE, url).await
     }
@@ -222,7 +222,7 @@ impl Client {
         let order_id = order_id.to_string();
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "orders", &order_id],
+            &["accounts", account_number, "orders", &order_id],
         )?;
         self.send_json(Method::GET, url, &[], None).await
     }
@@ -262,7 +262,7 @@ impl Client {
         let order_id_text = order_id.to_string();
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "orders", &order_id_text],
+            &["accounts", account_number, "orders", &order_id_text],
         )?;
         let mut response = self
             .send_empty_with_location(Method::PUT, url, order)
@@ -305,7 +305,7 @@ impl Client {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "previewOrder"],
+            &["accounts", account_number, "previewOrder"],
         )?;
         self.send_json(
             Method::POST,
@@ -352,7 +352,7 @@ impl Client {
         let account_number = required_text("accountNumber", account_number.as_ref())?;
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "transactions"],
+            &["accounts", account_number, "transactions"],
         )?;
         self.send_json(Method::GET, url, &options.into_query()?, None)
             .await
@@ -386,7 +386,7 @@ impl Client {
         let transaction_id = transaction_id.to_string();
         let url = self.endpoint_url(
             ApiBase::Trader,
-            &["accounts", &account_number, "transactions", &transaction_id],
+            &["accounts", account_number, "transactions", &transaction_id],
         )?;
         self.send_json(Method::GET, url, &[], None).await
     }

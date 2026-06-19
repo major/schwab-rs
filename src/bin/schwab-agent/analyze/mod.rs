@@ -421,3 +421,5 @@ impl From<VolumeSignalWire> for VolumeSignal {
 
 #[cfg(test)]
 mod tests;
+
+pub mod cli;

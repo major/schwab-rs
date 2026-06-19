@@ -20,6 +20,8 @@ pub type QuoteResponse = HashMap<String, QuoteResponseObject>;
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 #[allow(missing_docs)]
+// Keep response variants unboxed so public model access stays source-compatible.
+#[allow(clippy::large_enum_variant)]
 pub enum QuoteResponseObject {
     Equity(EquityResponse),
     Option(OptionResponse),
