@@ -139,7 +139,7 @@ pub fn build_account_row(hash_value: String, pref: Option<&UserPreferenceAccount
     }
 }
 
-fn preference_accounts(preferences: Vec<UserPreference>) -> Vec<UserPreferenceAccount> {
+pub(crate) fn preference_accounts(preferences: Vec<UserPreference>) -> Vec<UserPreferenceAccount> {
     preferences
         .into_iter()
         .filter_map(|preference| preference.accounts)
@@ -502,7 +502,6 @@ fn find_hash_value(account_number: Option<&str>, hashes: &[AccountNumberHash]) -
 /// # Errors
 ///
 /// Returns `AppError::AccountValidation` when no accounts are available.
-#[cfg(test)]
 pub(crate) fn resolve_default_account_hash_from_data(
     hashes: &[AccountNumberHash],
     prefs: &[UserPreferenceAccount],

@@ -285,6 +285,11 @@ fn commands() -> Vec<CommandInfo> {
             description: "alias for account --positions",
         },
         CommandInfo {
+            name: "transactions",
+            classification: ReadOnly,
+            description: "get recent account transactions",
+        },
+        CommandInfo {
             name: "order get",
             classification: ReadOnly,
             description: "inspect active, filtered, or specific orders",

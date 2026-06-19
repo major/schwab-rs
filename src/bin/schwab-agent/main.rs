@@ -17,6 +17,7 @@ mod output;
 mod raw;
 mod shared;
 mod ta;
+mod transaction;
 mod verify;
 
 use std::{
@@ -116,6 +117,7 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
             let account_args = cli::AccountArgs::from(args);
             account::handle(&cli, &account_args).await
         }
+        Command::Transactions(args) => transaction::handle(args).await,
         Command::Stock(command) => Err(stock_migration_error(command)),
         Command::Account(command) => account::handle(&cli, command).await,
     }

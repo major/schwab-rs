@@ -150,6 +150,9 @@ fn command_name_doctor() {
 fn command_name_schema() {
     let cli = Cli::parse_from(["schwab-agent", "schema"]);
     assert_eq!(cli.command_name(), "schema");
+
+    let cli = Cli::parse_from(["schwab-agent", "transactions"]);
+    assert_eq!(cli.command_name(), "transactions");
 }
 
 #[test]
