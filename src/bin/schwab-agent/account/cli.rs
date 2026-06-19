@@ -11,22 +11,6 @@ pub struct AccountArgs {
     pub positions: bool,
 }
 
-/// Arguments for the top-level `positions` alias.
-#[derive(Debug, Args)]
-pub struct PositionsArgs {
-    /// Account hash or nickname to inspect. Omit to list positions for all accounts.
-    pub selector: Option<String>,
-}
-
-impl From<&PositionsArgs> for AccountArgs {
-    fn from(args: &PositionsArgs) -> Self {
-        Self {
-            selector: args.selector.clone(),
-            positions: true,
-        }
-    }
-}
-
 impl AccountArgs {
     /// Whether position data should be fetched from the API.
     ///

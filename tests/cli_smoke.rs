@@ -38,13 +38,10 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("Commands:"))
         .stdout(predicate::str::contains("auth"))
         .stdout(predicate::str::contains("market"))
-        .stdout(predicate::str::contains("quote"))
-        .stdout(predicate::str::contains("history"))
         .stdout(predicate::str::contains("config"))
         .stdout(predicate::str::contains("doctor"))
         .stdout(predicate::str::contains("order"))
-        .stdout(predicate::str::contains("orders"))
-        .stdout(predicate::str::contains("positions"))
+        .stdout(predicate::str::contains("account"))
         .stdout(predicate::str::contains("schema"))
         .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
@@ -206,10 +203,10 @@ fn schema_reports_agent_discovery_without_auth_or_accounts() {
             .iter()
             .any(|command| command["name"] == "schema" && command["classification"] == "local_only")
             && commands.iter().any(|command| {
-                command["name"] == "quote" && command["classification"] == "read_only"
+                command["name"] == "market quote" && command["classification"] == "read_only"
             })
             && commands.iter().any(|command| {
-                command["name"] == "orders" && command["classification"] == "read_only"
+                command["name"] == "order get" && command["classification"] == "read_only"
             })
             && commands.iter().any(|command| {
                 command["name"] == "stock buy" && command["classification"] == "local_only"

@@ -99,17 +99,13 @@ schwab-agent config show
 schwab-agent config status
 SCHWAB_AGENT_JSON_ERRORS=1 schwab-agent stock buy AAPL -q 1
 
-schwab-agent quote AAPL MSFT --fields sym,last,pct,vol
-schwab-agent history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol
 schwab-agent market quote AAPL MSFT --fields sym,last,pct,vol
 schwab-agent market quote AAPL --all-fields
 schwab-agent market history SPY --from 2026-01-01 --to 2026-01-31 --fields ts,close,vol
 
 schwab-agent account --positions
-schwab-agent positions
 schwab-agent transactions
 schwab-agent transactions --account Trading --symbol AAPL
-schwab-agent orders --symbol AAPL
 schwab-agent order get --symbol AAPL
 schwab-agent order get --account HASH --order-id 12345678
 schwab-agent order equity buy AAPL -q 1 --price 100 --dry-run
@@ -126,7 +122,7 @@ Command-specific `--help` output includes copyable examples for the main market,
 
 `schwab-agent account` and `schwab-agent account --positions` include balance `cash_balance`, `true_cash`, and `true_cash_status` fields for downstream funding decisions when Schwab provides them. Margin `cash_balance` comes from Schwab `currentBalances.cashBalance`, the Cash & Sweep Vehicle value shown in thinkorswim, and verified margin `true_cash` uses that value first. Use `true_cash` only when `true_cash_status` is `verified`; treat `unavailable` as a prompt for confirmation before selling SGOV or assuming idle cash. Do not treat `buying_power`, `available_funds`, `cash_available_for_trading`, `cash_available_for_withdrawal`, option buying power, or similar capacity fields as margin-safe cash for SGOV sweep and entry funding decisions.
 
-Mutable order commands are disabled unless `~/.config/schwab-agent/config.json` contains `"i-also-like-to-live-dangerously": true`. Before drafting or placing a symbol-specific order, use `schwab-agent order get --symbol AAPL` or its `schwab-agent orders --symbol AAPL` alias to inspect active open orders for that public ticker, adding `--account HASH` when the account scope is known. Use unfiltered `order get` or `order get --account HASH` when you need a broader conflict check across symbols or strategies. Use `--order-id ORDER_ID` as the canonical order ID spelling for exact `order get`, `order replace`, `order repeat`, and `order cancel` workflows; positional order IDs remain accepted for `cancel` and `repeat` compatibility, but mixed positional and `--order-id` values must agree. Direct equity and option builders support explicit local draft mode with `--dry-run` or its `--preview` alias; choose one local draft flag, and either one prints order JSON without requiring an account, auth token, Schwab preview API call, or placement. Omitting `--account` remains the same compatibility draft mode. The order session accepts `normal`/`regular`, `am`/`pre`, `pm`/`post`, and `seamless`/`extended`; duration accepts lowercase names plus uppercase aliases such as `DAY` and `GTC`. The recommended agent workflow for live orders is save-preview-then-place: pass `--account HASH --save-preview` to call Schwab `previewOrder` and save a digest, then submit the exact saved payload by digest after review. `--preview-first` is distinct: it calls Schwab preview and then places automatically if preview succeeds. Saved previews use owner-only file permissions, but they are tamper-evident rather than encrypted. Mutable actions resolve account nicknames to canonical Schwab hashes and perform best-effort post-action order verification.
+Mutable order commands are disabled unless `~/.config/schwab-agent/config.json` contains `"i-also-like-to-live-dangerously": true`. Before drafting or placing a symbol-specific order, use `schwab-agent order get --symbol AAPL` to inspect active open orders for that public ticker, adding `--account HASH` when the account scope is known. Use unfiltered `order get` or `order get --account HASH` when you need a broader conflict check across symbols or strategies. Use `--order-id ORDER_ID` as the canonical order ID spelling for exact `order get`, `order replace`, `order repeat`, and `order cancel` workflows; positional order IDs remain accepted for `cancel` and `repeat` compatibility, but mixed positional and `--order-id` values must agree. Direct equity and option builders support explicit local draft mode with `--dry-run` or its `--preview` alias; choose one local draft flag, and either one prints order JSON without requiring an account, auth token, Schwab preview API call, or placement. Omitting `--account` remains the same compatibility draft mode. The order session accepts `normal`/`regular`, `am`/`pre`, `pm`/`post`, and `seamless`/`extended`; duration accepts lowercase names plus uppercase aliases such as `DAY` and `GTC`. The recommended agent workflow for live orders is save-preview-then-place: pass `--account HASH --save-preview` to call Schwab `previewOrder` and save a digest, then submit the exact saved payload by digest after review. `--preview-first` is distinct: it calls Schwab preview and then places automatically if preview succeeds. Saved previews use owner-only file permissions, but they are tamper-evident rather than encrypted. Mutable actions resolve account nicknames to canonical Schwab hashes and perform best-effort post-action order verification.
 
 ```bash
 schwab-agent order equity buy AAPL -q 1 --price 100 --dry-run

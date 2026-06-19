@@ -225,19 +225,9 @@ fn commands() -> Vec<CommandInfo> {
             description: "fetch quote data",
         },
         CommandInfo {
-            name: "quote",
-            classification: ReadOnly,
-            description: "alias for market quote",
-        },
-        CommandInfo {
             name: "market history",
             classification: ReadOnly,
             description: "fetch price-history candles",
-        },
-        CommandInfo {
-            name: "history",
-            classification: ReadOnly,
-            description: "alias for market history",
         },
         CommandInfo {
             name: "option expirations",
@@ -280,11 +270,6 @@ fn commands() -> Vec<CommandInfo> {
             description: "list account summaries, positions, or resolve account selectors",
         },
         CommandInfo {
-            name: "positions",
-            classification: ReadOnly,
-            description: "alias for account --positions",
-        },
-        CommandInfo {
             name: "transactions",
             classification: ReadOnly,
             description: "get recent account transactions",
@@ -293,11 +278,6 @@ fn commands() -> Vec<CommandInfo> {
             name: "order get",
             classification: ReadOnly,
             description: "inspect active, filtered, or specific orders",
-        },
-        CommandInfo {
-            name: "orders",
-            classification: ReadOnly,
-            description: "alias for order get",
         },
         CommandInfo {
             name: "stock buy",
