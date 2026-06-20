@@ -2,7 +2,7 @@ use std::assert_matches;
 
 use clap::{CommandFactory, Parser, error::ErrorKind};
 
-use super::{Cli, Command, MarketCommand, OrderCommand, TaCommand};
+use super::{Cli, Command, MarketCommand, OrderCommand};
 
 #[cfg_attr(coverage_nightly, coverage(off))]
 fn expect_history_alias(command: Command) -> super::HistoryArgs {
@@ -343,18 +343,6 @@ fn command_name_account_with_selector() {
 }
 
 #[test]
-fn command_name_ta_dashboard() {
-    let cli = Cli::parse_from(["schwab-agent", "ta", "dashboard", "AAPL"]);
-    assert_eq!(cli.command_name(), "ta.dashboard");
-}
-
-#[test]
-fn command_name_ta_expected_move() {
-    let cli = Cli::parse_from(["schwab-agent", "ta", "expected-move", "AAPL"]);
-    assert_eq!(cli.command_name(), "ta.expected-move");
-}
-
-#[test]
 fn command_name_completions() {
     let cli = Cli::parse_from(["schwab-agent", "completions", "bash"]);
     assert_eq!(cli.command_name(), "completions");
@@ -481,58 +469,11 @@ fn parse_account_selector_before_positions() {
 }
 
 #[test]
-fn parse_ta_dashboard_defaults() {
-    let cli = Cli::parse_from(["schwab-agent", "ta", "dashboard", "AAPL"]);
+fn parse_ta_namespace_is_rejected() {
+    let err = Cli::try_parse_from(["schwab-agent", "ta", "dashboard", "AAPL"])
+        .expect_err("removed ta namespace should be rejected");
 
-    let Command::Ta(TaCommand::Dashboard(args)) = cli.command else {
-        panic!("expected ta dashboard command");
-    };
-    assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.interval, "daily");
-    assert_eq!(args.points, 20);
-}
-
-#[test]
-fn parse_ta_dashboard_custom_interval_and_points() {
-    let cli = Cli::parse_from([
-        "schwab-agent",
-        "ta",
-        "dashboard",
-        "AAPL",
-        "--interval",
-        "weekly",
-        "--points",
-        "10",
-    ]);
-
-    let Command::Ta(TaCommand::Dashboard(args)) = cli.command else {
-        panic!("expected ta dashboard command");
-    };
-    assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.interval, "weekly");
-    assert_eq!(args.points, 10);
-}
-
-#[test]
-fn parse_ta_expected_move_defaults() {
-    let cli = Cli::parse_from(["schwab-agent", "ta", "expected-move", "AAPL"]);
-
-    let Command::Ta(TaCommand::ExpectedMove(args)) = cli.command else {
-        panic!("expected ta expected-move command");
-    };
-    assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.dte, 30);
-}
-
-#[test]
-fn parse_ta_expected_move_custom_dte() {
-    let cli = Cli::parse_from(["schwab-agent", "ta", "expected-move", "AAPL", "--dte", "45"]);
-
-    let Command::Ta(TaCommand::ExpectedMove(args)) = cli.command else {
-        panic!("expected ta expected-move command");
-    };
-    assert_eq!(args.symbol, "AAPL");
-    assert_eq!(args.dte, 45);
+    assert!(err.to_string().contains("ta"));
 }
 
 #[test]
@@ -544,7 +485,9 @@ fn parse_analyze_multiple_symbols() {
     };
     assert_eq!(args.symbols, ["AAPL", "MSFT"]);
     assert_eq!(args.interval, "daily");
-    assert_eq!(args.points, 1);
+    assert_eq!(args.points, 20);
+    assert!(!args.expected_move);
+    assert_eq!(args.dte, 30);
 }
 
 #[test]
@@ -565,6 +508,25 @@ fn parse_analyze_custom_interval_and_points() {
     assert_eq!(args.symbols, ["AAPL"]);
     assert_eq!(args.interval, "daily");
     assert_eq!(args.points, 5);
+    assert!(!args.expected_move);
+}
+
+#[test]
+fn parse_analyze_expected_move() {
+    let cli = Cli::parse_from([
+        "schwab-agent",
+        "analyze",
+        "AAPL",
+        "--expected-move",
+        "--dte",
+        "45",
+    ]);
+
+    let Command::Analyze(args) = cli.command else {
+        panic!("expected analyze command");
+    };
+    assert!(args.expected_move);
+    assert_eq!(args.dte, 45);
 }
 
 #[test]

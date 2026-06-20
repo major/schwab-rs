@@ -457,61 +457,27 @@ schwab-agent option contract SPY --expiration 2025-06-20 --strike 550 --put
 
 All three flags are required: `--expiration YYYY-MM-DD`, `--strike N`, and one of `--call` or `--put`.
 
-## Technical Analysis
-
-Read-only TA commands. No orders are placed.
-
-### Dashboard
-
-Runs all indicators for a symbol and returns category-grouped output: trend, momentum, volatility, and volume. Includes derived fields (ATR percent, relative volume, distance from SMAs) and signal interpretations. Derived fields include `price_basis`, `price_basis_value`, and `price_basis_timestamp` so callers can see that daily TA comparisons use the latest completed candle close.
-
-```bash
-schwab-agent ta dashboard AAPL                          # daily dashboard, 20 points
-schwab-agent ta dashboard SPY --interval weekly --points 10
-```
-
-Dashboard flags:
-
-| Flag | Description |
-|---|---|
-| `--interval INTERVAL` | Candle interval: daily (default), weekly, 1min, 5min, 15min, 30min |
-| `--points N` | Number of data points per indicator series (default: 20) |
-
-Run `schwab-agent ta dashboard --help` for copyable daily and weekly examples.
-
-### Expected Move
-
-Computes expected move from the ATM straddle price in the option chain. Output includes straddle price, expected move (price and percent), upper/lower ranges, and implied volatility from ATM options.
-
-```bash
-schwab-agent ta expected-move AAPL                      # 30-day expected move
-schwab-agent ta expected-move SPY --dte 45
-```
-
-Expected-move flags:
-
-| Flag | Description |
-|---|---|
-| `--dte N` | Target days to expiration for the option chain (default: 30) |
-
 ## Analyze
 
-Multi-symbol analysis combining quote and TA dashboard per symbol. Partial failures include per-symbol error fields (`quote_error`, `analysis_error`) alongside successful results. Quote payload timestamps may be newer than daily TA candle timestamps; use `analysis.derived.price_basis`, `price_basis_value`, and `price_basis_timestamp` to interpret derived values such as distance from SMAs.
+Read-only multi-symbol analysis combining quote and TA dashboard per symbol. Partial failures include per-symbol error fields (`quote_error`, `analysis_error`, `expected_move_error`) alongside successful results. Quote payload timestamps may be newer than daily TA candle timestamps; use `analysis.derived.price_basis`, `price_basis_value`, and `price_basis_timestamp` to interpret derived values such as distance from SMAs.
 
 ```bash
-schwab-agent analyze AAPL                    # single symbol
+schwab-agent analyze AAPL                    # single symbol, 20 TA points
 schwab-agent analyze AAPL MSFT GOOG          # multiple symbols
 schwab-agent analyze AAPL --interval weekly --points 10
+schwab-agent analyze SPY --expected-move --dte 45
 ```
 
 Analyze flags:
 
 | Flag | Description |
 |---|---|
-| `--interval INTERVAL` | Candle interval (same values as ta dashboard) |
-| `--points N` | Number of data points per indicator series (default: 1) |
+| `--interval INTERVAL` | Candle interval: daily (default), weekly, 1min, 5min, 15min, 30min |
+| `--points N` | Number of data points per indicator series (default: 20) |
+| `--expected-move` | Include expected move from the ATM straddle price in the option chain |
+| `--dte N` | Target days to expiration for expected move (default: 30) |
 
-Run `schwab-agent analyze --help` for copyable single-symbol, multi-symbol, and weekly examples. `analyze` defaults to 1 point because it is optimized for compact multi-symbol output; use `--points` when you want dashboard-like depth.
+Run `schwab-agent analyze --help` for copyable single-symbol, multi-symbol, and expected-move examples.
 
 ## Output Format
 

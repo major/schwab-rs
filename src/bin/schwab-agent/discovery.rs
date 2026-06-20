@@ -260,19 +260,9 @@ fn commands() -> Vec<CommandInfo> {
             description: "look up a single option contract",
         },
         CommandInfo {
-            name: "ta dashboard",
-            classification: ReadOnly,
-            description: "fetch candles and compute technical indicators",
-        },
-        CommandInfo {
-            name: "ta expected-move",
-            classification: ReadOnly,
-            description: "estimate expected move from option straddle pricing",
-        },
-        CommandInfo {
             name: "analyze",
             classification: ReadOnly,
-            description: "combine quote and technical-analysis data for one or more symbols",
+            description: "combine quote, technical-analysis, and optional expected-move data for one or more symbols",
         },
         CommandInfo {
             name: "account",

@@ -28,7 +28,7 @@ use std::{
 use clap::{Parser, error::ErrorKind};
 use serde_json::Value;
 
-use crate::cli::{Cli, Command, ConfigCommand, OptionCommand, StockCommand, TaCommand};
+use crate::cli::{Cli, Command, ConfigCommand, OptionCommand, StockCommand};
 use crate::error::AppError;
 use crate::output::ErrorBody;
 
@@ -102,15 +102,6 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
         }
         Command::Analyze(_) => unreachable!("handled above"),
         Command::Completions(_) => unreachable!("handled above"),
-        Command::Ta(ta_cmd) => {
-            let client = auth::provider()?.client().await?;
-            match ta_cmd {
-                TaCommand::Dashboard(args) => ta::dashboard(&client, args).await,
-                TaCommand::ExpectedMove(args) => {
-                    ta::expected_move::expected_move(&client, args).await
-                }
-            }
-        }
         Command::Order(_) => unreachable!("handled above"),
         Command::Orders(args) => order::lifecycle::handle_get(&cli, args).await,
         Command::Positions(args) => {

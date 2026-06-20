@@ -211,8 +211,10 @@ fn result(
         symbol: symbol.to_string(),
         quote,
         analysis,
+        expected_move: None,
         quote_error: quote_error.map(str::to_string),
         analysis_error: analysis_error.map(str::to_string),
+        expected_move_error: None,
     }
 }
 

@@ -49,8 +49,6 @@ impl Cli {
             Command::Schema => "schema",
             Command::Stock(_) => "stock",
             Command::Completions(_) => "completions",
-            Command::Ta(TaCommand::Dashboard(_)) => "ta.dashboard",
-            Command::Ta(TaCommand::ExpectedMove(_)) => "ta.expected-move",
             Command::Account(_) => "account",
         }
     }
@@ -94,9 +92,6 @@ pub enum Command {
     /// Generate shell completion scripts.
     #[command(alias = "completion")]
     Completions(CompletionsArgs),
-    /// Technical analysis indicator workflows.
-    #[command(subcommand)]
-    Ta(TaCommand),
     /// Account discovery, balances, positions, and resolution workflows.
     ///
     /// Without a selector, returns account hashes, nicknames, balance summaries
@@ -146,7 +141,7 @@ pub use crate::order::cli::{
     PlaceFromPreviewArgs, PlaceRawArgs, PreviewRawArgs, ReplaceArgs, ReplaceOrderSpec,
     StockCommand,
 };
-pub use crate::ta::cli::{DashboardArgs, ExpectedMoveArgs, TaCommand};
+pub use crate::ta::cli::{DashboardArgs, ExpectedMoveArgs};
 pub use crate::transaction::cli::TransactionsArgs;
 
 #[cfg(test)]

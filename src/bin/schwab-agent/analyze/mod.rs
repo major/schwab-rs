@@ -6,7 +6,7 @@ use schwab::{Client, QuoteResponseObject};
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::cli::{AnalyzeArgs, DashboardArgs};
+use crate::cli::{AnalyzeArgs, DashboardArgs, ExpectedMoveArgs};
 use crate::error::AppError;
 use crate::market;
 use crate::ta;
@@ -35,16 +35,20 @@ pub async fn analyze(client: &Client, args: &AnalyzeArgs) -> Result<Value, AppEr
     Ok(serde_json::to_value(&output)?)
 }
 
+#[cfg_attr(coverage_nightly, coverage(off))]
 async fn analyze_symbol(client: &Client, args: &AnalyzeArgs, symbol: &str) -> AnalyzeSymbolResult {
     let (quote, quote_error) = quote_result(client, symbol).await;
     let (analysis, analysis_error) = dashboard_result(client, args, symbol).await;
+    let (expected_move, expected_move_error) = expected_move_result(client, args, symbol).await;
 
     AnalyzeSymbolResult {
         symbol: symbol.to_string(),
         quote,
         analysis,
+        expected_move,
         quote_error,
         analysis_error,
+        expected_move_error,
     }
 }
 
@@ -85,6 +89,27 @@ async fn dashboard_result(
             Ok(output) => (Some(output), None),
             Err(error) => (None, Some(error.to_string())),
         },
+        Err(error) => (None, Some(error.to_string())),
+    }
+}
+
+#[cfg_attr(coverage_nightly, coverage(off))]
+async fn expected_move_result(
+    client: &Client,
+    args: &AnalyzeArgs,
+    symbol: &str,
+) -> (Option<Value>, Option<String>) {
+    if !args.expected_move {
+        return (None, None);
+    }
+
+    let expected_args = ExpectedMoveArgs {
+        symbol: symbol.to_string(),
+        dte: args.dte,
+    };
+
+    match ta::expected_move::expected_move(client, &expected_args).await {
+        Ok(value) => (Some(value), None),
         Err(error) => (None, Some(error.to_string())),
     }
 }

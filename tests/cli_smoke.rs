@@ -601,27 +601,15 @@ fn option_screen_help_shows_examples_and_type_values() {
 }
 
 #[test]
-fn ta_dashboard_help_shows_examples() {
-    help_contains(
-        &["ta", "dashboard", "--help"],
-        &[
-            "schwab-agent ta dashboard AAPL",
-            "default 20 points",
-            "schwab-agent ta dashboard SPY --interval weekly --points 10",
-        ],
-    );
-}
-
-#[test]
-fn analyze_help_shows_examples_and_compact_default_reason() {
+fn analyze_help_shows_examples_and_expected_move() {
     help_contains(
         &["analyze", "--help"],
         &[
             "schwab-agent analyze AAPL",
             "schwab-agent analyze AAPL MSFT GOOG",
-            "schwab-agent analyze AAPL --interval weekly --points 10",
-            "The default is 1 point, while ta dashboard defaults to 20",
-            "optimized for compact multi-symbol output",
+            "schwab-agent analyze AAPL --expected-move --dte 45",
+            "--points <POINTS>",
+            "--expected-move",
         ],
     );
 }

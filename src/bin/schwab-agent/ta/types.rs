@@ -280,10 +280,14 @@ pub struct AnalyzeSymbolResult {
     pub quote: Option<serde_json::Value>,
     /// Dashboard analysis payload when available.
     pub analysis: Option<DashboardOutput>,
+    /// Expected move payload when requested and available.
+    pub expected_move: Option<serde_json::Value>,
     /// Quote retrieval failure message.
     pub quote_error: Option<String>,
     /// Analysis failure message.
     pub analysis_error: Option<String>,
+    /// Expected move failure message.
+    pub expected_move_error: Option<String>,
 }
 
 /// Top-level analyze command output.
@@ -451,13 +455,16 @@ mod tests {
             symbol: "AAPL".to_string(),
             quote: Some(json!({"last": 100.0})),
             analysis: Some(sample_dashboard()),
+            expected_move: None,
             quote_error: None,
             analysis_error: None,
+            expected_move_error: None,
         })
         .unwrap();
         let object = value.as_object().unwrap();
 
         assert!(object.get("quote_error").is_none());
         assert!(object.get("analysis_error").is_none());
+        assert!(object.get("expected_move_error").is_none());
     }
 }
