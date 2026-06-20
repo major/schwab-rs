@@ -284,18 +284,6 @@ fn command_name_account_with_selector() {
 }
 
 #[test]
-fn command_name_completions() {
-    let cli = Cli::parse_from(["schwab-agent", "completions", "bash"]);
-    assert_eq!(cli.command_name(), "completions");
-}
-
-#[test]
-fn command_name_completion_alias() {
-    let cli = Cli::parse_from(["schwab-agent", "completion", "zsh"]);
-    assert_eq!(cli.command_name(), "completions");
-}
-
-#[test]
 fn parse_account_no_flags() {
     let cli = Cli::parse_from(["schwab-agent", "account"]);
 

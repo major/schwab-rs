@@ -6,7 +6,6 @@ pub mod account;
 mod analyze;
 mod auth;
 mod cli;
-mod completions;
 mod config;
 mod discovery;
 mod error;
@@ -20,10 +19,7 @@ mod ta;
 mod transaction;
 mod verify;
 
-use std::{
-    io::{self, Write},
-    panic::{AssertUnwindSafe, catch_unwind},
-};
+use std::io::{self, Write};
 
 use clap::{Parser, error::ErrorKind};
 use serde_json::Value;
@@ -50,12 +46,6 @@ async fn main() {
 
 /// Runs a parsed CLI command and writes the structured JSON result.
 pub async fn run(cli: Cli) -> i32 {
-    if let Command::Completions(args) = &cli.command {
-        let mut stdout = io::stdout().lock();
-        let mut stderr = io::stderr().lock();
-        return write_completions(args, &mut stdout, &mut stderr);
-    }
-
     let result = execute(cli).await;
     let mut stdout = io::stdout().lock();
     match result {
@@ -99,7 +89,6 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
             }
         }
         Command::Analyze(_) => unreachable!("handled above"),
-        Command::Completions(_) => unreachable!("handled above"),
         Command::Order(_) => unreachable!("handled above"),
         Command::Transactions(args) => transaction::handle(args).await,
         Command::Stock(command) => Err(stock_migration_error(command)),
@@ -203,21 +192,6 @@ where
     Ok(0)
 }
 
-fn write_completions<W, E>(args: &cli::CompletionsArgs, stdout: &mut W, stderr: &mut E) -> i32
-where
-    W: Write,
-    E: Write,
-{
-    let result = catch_unwind(AssertUnwindSafe(|| completions::write(args, stdout)));
-    match result {
-        Ok(Ok(code)) => code,
-        Ok(Err(_)) | Err(_) => {
-            let _ = writeln!(stderr, "failed to write shell completions");
-            1
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::{ffi::OsString, path::Path};
@@ -286,36 +260,6 @@ mod tests {
         let mut writer = FailWriter;
         let value = serde_json::json!({"ok": true});
         assert!(super::write_json(&mut writer, &value).is_err());
-    }
-
-    #[test]
-    fn write_completions_reports_write_failure() {
-        struct FailWriter;
-        impl std::io::Write for FailWriter {
-            fn write(&mut self, _buf: &[u8]) -> std::io::Result<usize> {
-                Err(std::io::Error::other("write failed"))
-            }
-
-            #[cfg_attr(coverage_nightly, coverage(off))]
-            fn flush(&mut self) -> std::io::Result<()> {
-                Ok(())
-            }
-        }
-
-        let args = crate::cli::CompletionsArgs {
-            shell: clap_complete::Shell::Bash,
-        };
-        let mut stdout = FailWriter;
-        let mut stderr = Vec::new();
-
-        let code = super::write_completions(&args, &mut stdout, &mut stderr);
-
-        assert_eq!(code, 1);
-        assert!(
-            String::from_utf8(stderr)
-                .unwrap()
-                .contains("failed to write shell completions")
-        );
     }
 
     #[test]

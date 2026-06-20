@@ -107,11 +107,6 @@ fn output_formats() -> Vec<OutputFormat> {
             stdout: "ErrorBody JSON with usage.* codes",
             when: "clap usage errors when SCHWAB_AGENT_JSON_ERRORS=1",
         },
-        OutputFormat {
-            name: "shell_completion",
-            stdout: "raw shell completion script",
-            when: "completions or completion command only",
-        },
     ]
 }
 
@@ -183,16 +178,6 @@ fn commands() -> Vec<CommandInfo> {
             name: "config show",
             classification: LocalOnly,
             description: "emit the same sanitized setup status as config status",
-        },
-        CommandInfo {
-            name: "completions",
-            classification: LocalOnly,
-            description: "generate shell completion scripts; completion is a singular alias",
-        },
-        CommandInfo {
-            name: "completion",
-            classification: LocalOnly,
-            description: "singular alias for completions",
         },
         CommandInfo {
             name: "auth status",
@@ -332,7 +317,7 @@ fn exit_codes() -> Vec<ExitCodeInfo> {
         ExitCodeInfo {
             code: 1,
             category: "runtime",
-            description: "network, decoding, completion-write, or unexpected runtime failure",
+            description: "network, decoding, or unexpected runtime failure",
         },
         ExitCodeInfo {
             code: 2,
