@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1](https://github.com/major/schwab-rs/compare/0.6.0..0.6.1) - 2026-06-20
+
+### Features
+
+- *(cli)* Add transaction lookup command - ([0f95c38](https://github.com/major/schwab-rs/commit/0f95c385f024d3dae58dee6ee8b1159837ae63f3))
+
+### Refactor
+
+- *(cli)* Remove shell completions ([#108](https://github.com/major/schwab-rs/issues/108)) - ([e79d1a8](https://github.com/major/schwab-rs/commit/e79d1a8d79fdf7f531817d4ee3700ce2926ca0ed))
+- *(cli)* Fold ta commands into analyze ([#107](https://github.com/major/schwab-rs/issues/107)) - ([4e18641](https://github.com/major/schwab-rs/commit/4e186410425c3d88f71600afd6ae517c0661298c))
+- *(cli)* Remove top-level command aliases ([#105](https://github.com/major/schwab-rs/issues/105)) - ([33e27d7](https://github.com/major/schwab-rs/commit/33e27d796f014c4f6cf16b635ac76669445e04f6))
+- *(order-builder)* Split builder module - ([d54919c](https://github.com/major/schwab-rs/commit/d54919c08f5848fb9ccd57777858e10616d3a505))
+- Split large code smell modules ([#104](https://github.com/major/schwab-rs/issues/104)) - ([342a9fd](https://github.com/major/schwab-rs/commit/342a9fde9b0deb3972435028826693677c410a0f))
+
+### Documentation
+
+- Consolidate agent guidance - ([ff4ed4c](https://github.com/major/schwab-rs/commit/ff4ed4c0242dc3b3a77ac3c1e2ce664513bb8f41))
+
+### Miscellaneous Tasks
+
+- Don't fail on codecov upload errors - ([1603166](https://github.com/major/schwab-rs/commit/1603166bc2660fe319ecd8f93ad5bd6202cbd595))
+- Relax patch coverage gate - ([5575874](https://github.com/major/schwab-rs/commit/5575874ab6703021929309a868d81a16d849f029))
+- Restore renovate onboarding config - ([6a0a350](https://github.com/major/schwab-rs/commit/6a0a35056e83c463c7e10cb285859df2098e28f0))
+
+
 ## [0.6.0](https://github.com/major/schwab-rs/compare/0.5.1..0.6.0) - 2026-06-05
 
 ### Bug Fixes
