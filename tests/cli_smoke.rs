@@ -43,7 +43,6 @@ fn help_lists_command_groups() {
         .stdout(predicate::str::contains("order"))
         .stdout(predicate::str::contains("account"))
         .stdout(predicate::str::contains("schema"))
-        .stdout(predicate::str::contains("completions"))
         .stdout(predicate::str::contains("analyze"));
 }
 
@@ -56,8 +55,6 @@ fn top_level_help_documents_setup_environment_and_debug() {
             "schwab-agent config show",
             "schwab-agent doctor",
             "schwab-agent schema",
-            "schwab-agent completions bash",
-            "schwab-agent completion zsh",
             "SCHWAB_CLIENT_ID",
             "SCHWAB_CLIENT_SECRET",
             "SCHWAB_CALLBACK_URL",
@@ -211,9 +208,6 @@ fn schema_reports_agent_discovery_without_auth_or_accounts() {
             && commands.iter().any(|command| {
                 command["name"] == "stock buy" && command["classification"] == "local_only"
             })
-            && commands.iter().any(|command| {
-                command["name"] == "completion" && command["classification"] == "local_only"
-            })
     }));
     assert!(
         body["environment_variables"]
@@ -286,33 +280,6 @@ fn stock_sell_reports_migration_replacement_as_json() {
 }
 
 #[test]
-fn completions_output_supported_shell_scripts() {
-    for (args, marker) in [
-        (["completions", "bash"], "_schwab-agent"),
-        (["completion", "zsh"], "#compdef schwab-agent"),
-        (["completions", "fish"], "complete -c schwab-agent"),
-        (["completions", "powershell"], "Register-ArgumentCompleter"),
-    ] {
-        let output = agent()
-            .args(args)
-            .output()
-            .expect("completion command runs");
-
-        assert!(output.status.success());
-        assert!(output.stderr.is_empty());
-        let stdout = String::from_utf8(output.stdout).expect("completion script is utf8");
-        assert!(stdout.contains(marker));
-        assert!(stdout.contains("order"));
-        assert!(stdout.contains("equity"));
-        if args == ["completions", "bash"] {
-            assert!(stdout.contains("--order-id"));
-            assert!(stdout.contains("bash"));
-            assert!(stdout.contains("zsh"));
-        }
-    }
-}
-
-#[test]
 fn invalid_flag_reports_clap_usage_error() {
     agent()
         .arg("--definitely-invalid")
@@ -341,14 +308,26 @@ fn unknown_subcommand_reports_json_usage_error_when_requested() {
 
 #[test]
 fn invalid_value_reports_json_usage_error_when_requested() {
-    let body = json_usage_error(&["completions", "not-a-shell"]);
+    let body = json_usage_error(&[
+        "order",
+        "equity",
+        "buy",
+        "AAPL",
+        "-q",
+        "bogus",
+        "--price",
+        "1",
+        "--dry-run",
+    ]);
 
     assert_eq!(body["code"], "usage.invalid_value");
     assert_eq!(body["category"], "usage");
     assert_eq!(body["retryable"], false);
-    assert!(body["message"].as_str().is_some_and(|message| {
-        message.contains("invalid value") && message.contains("not-a-shell")
-    }));
+    assert!(
+        body["message"].as_str().is_some_and(|message| {
+            message.contains("invalid value") && message.contains("bogus")
+        })
+    );
     assert!(
         body["hint"]
             .as_str()
