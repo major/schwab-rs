@@ -87,8 +87,6 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
         Command::Doctor => discovery::doctor(),
         Command::Schema => discovery::schema(),
         Command::Market(command) => market::handle(&cli, command).await,
-        Command::Quote(args) => market::quote(&cli, args).await,
-        Command::History(args) => market::history(&cli, args).await,
         Command::Option(command) => {
             let client = auth::provider()?.client().await?;
             match command {
@@ -112,11 +110,6 @@ pub async fn execute(cli: Cli) -> Result<Value, AppError> {
             }
         }
         Command::Order(_) => unreachable!("handled above"),
-        Command::Orders(args) => order::lifecycle::handle_get(&cli, args).await,
-        Command::Positions(args) => {
-            let account_args = cli::AccountArgs::from(args);
-            account::handle(&cli, &account_args).await
-        }
         Command::Transactions(args) => transaction::handle(args).await,
         Command::Stock(command) => Err(stock_migration_error(command)),
         Command::Account(command) => account::handle(&cli, command).await,

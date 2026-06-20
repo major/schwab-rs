@@ -39,12 +39,8 @@ impl Cli {
             Command::Option(OptionCommand::Contract(_)) => "option.contract",
             Command::Market(MarketCommand::History(_)) => "market.history",
             Command::Market(MarketCommand::Quote(_)) => "market.quote",
-            Command::History(_) => "market.history",
-            Command::Quote(_) => "market.quote",
             Command::Order(OrderCommand::Get(_)) => "order.get",
             Command::Order(_) => "order",
-            Command::Orders(_) => "order.get",
-            Command::Positions(_) => "account",
             Command::Transactions(_) => "transactions",
             Command::Schema => "schema",
             Command::Stock(_) => "stock",
@@ -72,20 +68,12 @@ pub enum Command {
     /// Market-data workflows with compact JSON summaries.
     #[command(subcommand)]
     Market(MarketCommand),
-    /// Alias for `market quote`.
-    Quote(QuoteArgs),
-    /// Alias for `market history`.
-    History(HistoryArgs),
     /// Option chain, screening, and contract lookup workflows.
     #[command(subcommand)]
     Option(OptionCommand),
     /// Unified order construction, preview, placement, and lifecycle workflows.
     #[command(subcommand)]
     Order(OrderCommand),
-    /// Alias for `order get`.
-    Orders(crate::order::lifecycle::OrderGetArgs),
-    /// Alias for `account --positions`.
-    Positions(PositionsArgs),
     /// Get account transactions. Defaults to the primary account, last 30 days, and TRADE type.
     Transactions(TransactionsArgs),
     /// Legacy stock command namespace with migration hints.
@@ -136,7 +124,7 @@ pub struct CompletionsArgs {
     pub shell: Shell,
 }
 
-pub use crate::account::cli::{AccountArgs, PositionsArgs};
+pub use crate::account::cli::AccountArgs;
 pub use crate::analyze::cli::AnalyzeArgs;
 pub use crate::auth::cli::{AuthCommand, AuthExchangeArgs, LoginArgs, LoginUrlArgs};
 pub use crate::market::cli::{HistoryArgs, MarketCommand, QuoteArgs};

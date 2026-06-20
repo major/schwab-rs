@@ -5,38 +5,6 @@ use clap::{CommandFactory, Parser, error::ErrorKind};
 use super::{Cli, Command, MarketCommand, OrderCommand, TaCommand};
 
 #[cfg_attr(coverage_nightly, coverage(off))]
-fn expect_history_alias(command: Command) -> super::HistoryArgs {
-    match command {
-        Command::History(args) => args,
-        _ => panic!("expected history alias command"),
-    }
-}
-
-#[cfg_attr(coverage_nightly, coverage(off))]
-fn expect_quote_alias(command: Command) -> super::QuoteArgs {
-    match command {
-        Command::Quote(args) => args,
-        _ => panic!("expected quote alias command"),
-    }
-}
-
-#[cfg_attr(coverage_nightly, coverage(off))]
-fn expect_positions_alias(command: &Command) -> &super::PositionsArgs {
-    match command {
-        Command::Positions(args) => args,
-        _ => panic!("expected positions alias command"),
-    }
-}
-
-#[cfg_attr(coverage_nightly, coverage(off))]
-fn expect_orders_alias(command: Command) -> crate::order::lifecycle::OrderGetArgs {
-    match command {
-        Command::Orders(args) => args,
-        _ => panic!("expected orders alias command"),
-    }
-}
-
-#[cfg_attr(coverage_nightly, coverage(off))]
 fn expect_equity_buy_duration(command: Command) -> crate::shared::DurationChoice {
     match command {
         Command::Order(OrderCommand::Equity(super::EquityArgs::Buy(super::EquityOrderArgs {
@@ -50,6 +18,15 @@ fn expect_equity_buy_duration(command: Command) -> crate::shared::DurationChoice
 #[test]
 fn command_tree_is_valid() {
     Cli::command().debug_assert();
+}
+
+#[test]
+fn removed_top_level_aliases_are_rejected() {
+    for alias in ["quote", "history", "orders", "positions"] {
+        let err = Cli::try_parse_from(["schwab-agent", alias])
+            .expect_err("removed alias should not parse");
+        assert_eq!(err.kind(), ErrorKind::InvalidSubcommand);
+    }
 }
 
 #[test]
@@ -162,12 +139,6 @@ fn command_name_market_history() {
 }
 
 #[test]
-fn command_name_history_alias() {
-    let cli = Cli::parse_from(["schwab-agent", "history", "AAPL"]);
-    assert_eq!(cli.command_name(), "market.history");
-}
-
-#[test]
 fn command_name_market_history_with_all_flags() {
     let cli = Cli::parse_from([
         "schwab-agent",
@@ -212,15 +183,6 @@ fn market_history_fields_parse_output_fields() {
 }
 
 #[test]
-fn history_alias_parses_market_history_args() {
-    let cli = Cli::parse_from(["schwab-agent", "history", "SPY", "--fields", "ts,close"]);
-
-    let args = expect_history_alias(cli.command);
-    assert_eq!(args.symbol, "SPY");
-    assert_eq!(args.fields.as_deref(), Some("ts,close"));
-}
-
-#[test]
 fn market_history_all_fields_parses() {
     let cli = Cli::parse_from(["schwab-agent", "market", "history", "AAPL", "--all-fields"]);
 
@@ -234,12 +196,6 @@ fn market_history_all_fields_parses() {
 #[test]
 fn command_name_market_quote() {
     let cli = Cli::parse_from(["schwab-agent", "market", "quote", "AAPL"]);
-    assert_eq!(cli.command_name(), "market.quote");
-}
-
-#[test]
-fn command_name_quote_alias() {
-    let cli = Cli::parse_from(["schwab-agent", "quote", "AAPL"]);
     assert_eq!(cli.command_name(), "market.quote");
 }
 
@@ -262,15 +218,6 @@ fn market_quote_fields_parse_output_and_api_fields() {
     assert_eq!(args.fields.as_deref(), Some("sym,last"));
     assert_eq!(args.api_fields.as_deref(), Some("quote,reference"));
     assert!(!args.all_fields);
-}
-
-#[test]
-fn quote_alias_parses_market_quote_args() {
-    let cli = Cli::parse_from(["schwab-agent", "quote", "AAPL", "--fields", "sym,last"]);
-
-    let args = expect_quote_alias(cli.command);
-    assert_eq!(args.symbols, ["AAPL"]);
-    assert_eq!(args.fields.as_deref(), Some("sym,last"));
 }
 
 #[test]
@@ -327,12 +274,6 @@ fn command_name_account() {
 #[test]
 fn command_name_account_with_positions() {
     let cli = Cli::parse_from(["schwab-agent", "account", "--positions"]);
-    assert_eq!(cli.command_name(), "account");
-}
-
-#[test]
-fn command_name_positions_alias() {
-    let cli = Cli::parse_from(["schwab-agent", "positions"]);
     assert_eq!(cli.command_name(), "account");
 }
 
@@ -444,28 +385,6 @@ fn parse_account_selector_with_positions() {
     assert!(args.positions);
     assert!(args.include_positions());
     assert!(args.requests_summary());
-}
-
-#[test]
-fn positions_alias_requests_positions_for_all_accounts() {
-    let cli = Cli::parse_from(["schwab-agent", "positions"]);
-
-    let args = expect_positions_alias(&cli.command);
-    let account_args = super::AccountArgs::from(args);
-    assert!(account_args.selector.is_none());
-    assert!(account_args.positions);
-    assert!(account_args.include_positions());
-}
-
-#[test]
-fn positions_alias_accepts_selector() {
-    let cli = Cli::parse_from(["schwab-agent", "positions", "Trading"]);
-
-    let args = expect_positions_alias(&cli.command);
-    let account_args = super::AccountArgs::from(args);
-    assert_eq!(account_args.selector.as_deref(), Some("Trading"));
-    assert!(account_args.positions);
-    assert!(account_args.requests_summary());
 }
 
 #[test]
@@ -704,24 +623,9 @@ fn parse_order_dry_run_conflicts_with_preview_alias() {
 }
 
 #[test]
-fn command_name_orders_alias() {
-    let cli = Cli::parse_from(["schwab-agent", "orders", "--symbol", "AAPL"]);
-    assert_eq!(cli.command_name(), "order.get");
-}
-
-#[test]
 fn command_name_order_get() {
     let cli = Cli::parse_from(["schwab-agent", "order", "get", "--symbol", "AAPL"]);
     assert_eq!(cli.command_name(), "order.get");
-}
-
-#[test]
-fn orders_alias_parses_order_get_args() {
-    let cli = Cli::parse_from(["schwab-agent", "orders", "--symbol", "AAPL"]);
-
-    let args = expect_orders_alias(cli.command);
-    assert_eq!(args.symbol.as_deref(), Some("AAPL"));
-    assert!(args.account.is_none());
 }
 
 #[test]

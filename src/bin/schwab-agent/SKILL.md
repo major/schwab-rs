@@ -63,8 +63,6 @@ If you get `auth.token_missing`, run `auth login-url` then `auth exchange`. If `
 ## Market Data
 
 ```bash
-schwab-agent quote AAPL                         # alias for market quote
-schwab-agent history SPY                        # alias for market history
 schwab-agent market quote AAPL              # single quote
 schwab-agent market quote AAPL MSFT GOOG    # multiple quotes
 schwab-agent market quote AAPL --fields sym,last,pct,vol
@@ -91,7 +89,6 @@ Recommended workflow: `account` -> choose `account_hash` or nickname -> pass to 
 ```bash
 schwab-agent account                                    # list accounts with balances
 schwab-agent account --positions                        # include holdings as compact objects
-schwab-agent positions                                  # alias for account --positions
 schwab-agent account Trading                            # resolve nickname to canonical hash
 schwab-agent account Trading --positions                # selected account summary with holdings
 schwab-agent account ABCDEF1234567890                   # verify a known hash
@@ -338,7 +335,6 @@ schwab-agent order place-raw --account HASH --json '{
 ## Order Lifecycle
 
 ```bash
-schwab-agent orders --symbol AAPL                                                       # alias for order get --symbol AAPL
 schwab-agent order get                                                                    # active orders across all linked accounts
 schwab-agent order get --account HASH                                                     # active orders for one account
 schwab-agent order get --symbol IBM                                                       # active orders whose legs include IBM
